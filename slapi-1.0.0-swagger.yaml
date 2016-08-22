@@ -119,16 +119,6 @@ paths:
 
 definitions:
   framework:
-    allOf:
-      - $ref: '#/definitions/framework'
-      - required:
-        - id
-        properties:
-          id:
-            type: integer
-            format: int64
-
-  framework:
     required:
       - message
       - room
@@ -136,17 +126,7 @@ definitions:
       message:
         type: string
       room:
-        type: string 
-  framework_attachment:
-    allOf:
-      - $ref: '#/definitions/framework_attachment'
-      - required:
-        - id
-        properties:
-          id:
-            type: integer
-            format: int64
-
+        type: string
   framework_attachment:
     required:
       - text
