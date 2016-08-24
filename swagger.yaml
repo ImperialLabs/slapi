@@ -126,7 +126,8 @@ definitions:
       message:
         type: string
       room:
-        type: string
+        type: string 
+        
   framework_attachment:
     required:
       - text
