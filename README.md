@@ -2,11 +2,7 @@
 
 
 ## Prerequisites
-You need to install ruby >= 2.2.2 and run:
-
-```
-bundle install
-```
+You need Docker 1.10 or later installed.
 
 ## Getting started
 
