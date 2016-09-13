@@ -1,14 +1,17 @@
 FROM ruby:2.3
 
 RUN apt-get update -qq && \
+    apt-get autoremove -y && \
     apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 # Setup App Environment and User
 ENV APP_HOME /slapi
+
 RUN mkdir $APP_HOME && \
     adduser slapi --disabled-password --gecos "" && \
     chown -R slapi:slapi $APP_HOME && \
-    echo "slapi            ALL = (ALL) NOPASSWD: ALL" >> /etc/sudoers     && \
+    echo "slapi            ALL = (ALL) NOPASSWD: ALL" >> /etc/sudoers
+
 WORKDIR $APP_HOME
 
 ADD Gemfile* $APP_HOME/
