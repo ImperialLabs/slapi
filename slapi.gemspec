@@ -1,4 +1,5 @@
 # coding: utf-8
+# frozen_string_literal: true
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'rbconfig'
@@ -19,7 +20,20 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ['lib']
 
+  spec.add_dependency 'rest-client', '~> 1.8'
+  spec.add_dependency 'docker-api', '~> 1.31.0'
+  spec.add_dependency 'sinatra'
+  spec.add_dependency 'sinatra-contrib'
+  spec.add_dependency 'slack-ruby-client'
+
   spec.add_development_dependency 'rake', '~> 10.5'
   spec.add_development_dependency 'rspec', '~> 3.4'
-  spec.add_dependency 'rest-client', '~> 1.8'
+  spec.add_development_dependency 'nyan-cat-formatter'
+  spec.add_development_dependency 'rubocop'
+  spec.add_development_dependency 'debase'
+  spec.add_development_dependency 'ruby-debug-ide'
+  spec.add_development_dependency 'thin'
+  spec.add_development_dependency 'rack-test'
+  spec.add_development_dependency 'capybara'
+  spec.add_development_dependency 'yard'
 end

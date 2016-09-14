@@ -1,11 +1,13 @@
+# frozen_string_literal: true
 require 'sinatra'
 require 'sinatra/base'
 require 'sinatra/config_file'
 
 # SLAPI Init
-class SLAPI < Sinatra::Base
+class Slapi < Sinatra::Application
   register Sinatra::ConfigFile
   # enable :sessions
+
   config_file 'config/environments.yml'
 
   set :environment, :production
@@ -13,7 +15,6 @@ class SLAPI < Sinatra::Base
   configure :production, :development, :test do
     enable :logging
   end
-
 end
 
 require_relative 'lib/init'

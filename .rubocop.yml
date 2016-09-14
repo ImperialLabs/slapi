@@ -3,18 +3,7 @@
 AllCops:
   Exclude:
     - 'vendor/**/*'
-    - 'spec/fixtures/**/*'
-    - 'tmp/**/*'
-  TargetRubyVersion: 1.9
-
-Metrics/ClassLength:
-  Max: 123
-
-Metrics/CyclomaticComplexity:
-  Max: 7
+  TargetRubyVersion: 2.3
 
 Metrics/LineLength:
-  Max: 146
-
-Metrics/MethodLength:
-  Max: 55
+  Max: 143

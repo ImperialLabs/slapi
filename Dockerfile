@@ -15,6 +15,7 @@ RUN mkdir $APP_HOME && \
 WORKDIR $APP_HOME
 
 ADD Gemfile* $APP_HOME/
+ADD *.gemspec $APP_HOME/
 
 RUN bundle install
 
@@ -22,3 +23,8 @@ RUN bundle install
 USER slapi
 
 ADD . $APP_HOME
+
+EXPOSE 4568
+ENV RACK_ENV=production
+
+CMD ["bundle", "exec", "rackup", "--host", "0.0.0.0", "-p", "4568"]
