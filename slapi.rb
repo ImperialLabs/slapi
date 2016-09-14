@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'sinatra'
 require 'sinatra/base'
 require 'sinatra/config_file'
@@ -13,7 +14,6 @@ class SLAPI < Sinatra::Base
   configure :production, :development, :test do
     enable :logging
   end
-
 end
 
 require_relative 'lib/init'

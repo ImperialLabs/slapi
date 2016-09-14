@@ -1,0 +1,80 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Local File",
+            "type": "Ruby",
+            "request": "launch",
+            "cwd": "${workspaceRoot}",
+            "program": "${workspaceRoot}/main.rb"
+        },
+        {
+            "name": "Listen for rdebug-ide",
+            "type": "Ruby",
+            "request": "attach",
+            "cwd": "${workspaceRoot}",
+            "remoteHost": "127.0.0.1",
+            "remotePort": "4567",
+            "remoteWorkspaceRoot": "${workspaceRoot}"
+        },
+        {
+            "name": "Rails server",
+            "type": "Ruby",
+            "request": "launch",
+            "cwd": "${workspaceRoot}",
+            "program": "${workspaceRoot}/bin/rails",
+            "args": [
+                "server"
+            ]
+        },
+        {
+            "name": "Sinatra",
+            "type": "Ruby",
+            "request": "launch",
+            "cwd": "${workspaceRoot}",
+            "program": "${workspaceRoot}/bin/rackup",
+            "useBundler": true,
+            "pathToBundler": "${env.HOME}/.rvm/gems/ruby-2.3.0/wrappers/bundle",
+            "showDebuggerOutput": true,
+            "pathToRDebugIDE": "${workspaceRoot}/bin/rdebug-ide"
+        },
+        {
+            "name": "RSpec - all",
+            "type": "Ruby",
+            "request": "launch",
+            "cwd": "${workspaceRoot}",
+            "program": "${workspaceRoot}/bin/rspec",
+            "useBundler": true,
+            "pathToBundler": "${env.HOME}/.rvm/gems/ruby-2.3.0/wrappers/bundle",
+            "showDebuggerOutput": true,
+            "pathToRDebugIDE": "${workspaceRoot}/bin/rdebug-ide",
+            "args": [
+                "-I",
+                "${workspaceRoot}"
+            ]
+        },
+        {
+            "name": "RSpec - active spec file only",
+            "type": "Ruby",
+            "request": "launch",
+            "cwd": "${workspaceRoot}",
+            "program": "${workspaceRoot}/bin/rspec",
+            "useBundler": true,
+            "pathToBundler": "${env.HOME}/.rvm/gems/ruby-2.3.0/wrappers/bundle",
+            "showDebuggerOutput": true,
+            "pathToRDebugIDE": "${workspaceRoot}/bin/rdebug-ide",
+            "args": [
+                "-I",
+                "${workspaceRoot}",
+                "${file}"
+            ]
+        },
+        {
+            "name": "Cucumber",
+            "type": "Ruby",
+            "request": "launch",
+            "cwd": "${workspaceRoot}",
+            "program": "${workspaceRoot}/bin/cucumber"
+        }
+    ]
+}
