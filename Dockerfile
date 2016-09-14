@@ -24,6 +24,7 @@ USER slapi
 
 ADD . $APP_HOME
 
-EXPOSE 8123
+EXPOSE 4568
+ENV RACK_ENV=production
 
-CMD rackup -p 4567
+CMD ["bundle", "exec", "rackup", "--host", "0.0.0.0", "-p", "4568"]
