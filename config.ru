@@ -1,0 +1,2 @@
+require './slapi'
+run SLAPI

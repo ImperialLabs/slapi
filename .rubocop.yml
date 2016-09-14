@@ -1,0 +1,20 @@
+# This is the configuration used to check the rubocop source code.
+
+AllCops:
+  Exclude:
+    - 'vendor/**/*'
+    - 'spec/fixtures/**/*'
+    - 'tmp/**/*'
+  TargetRubyVersion: 1.9
+
+Metrics/ClassLength:
+  Max: 123
+
+Metrics/CyclomaticComplexity:
+  Max: 7
+
+Metrics/LineLength:
+  Max: 146
+
+Metrics/MethodLength:
+  Max: 55
