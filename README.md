@@ -6,10 +6,6 @@ You need Docker 1.10 or later installed.
 
 ## Getting started
 
-To run sinatra locally 
-
-## Development
-
 ### Bundler
 
 run
@@ -22,6 +18,30 @@ run
     bundle install --binstubs --path vendor/bundle
 
 And set breakpoints and debug.
+
+### Running the server
+
+To run sinatra locally simply run:
+
+    rackup -p 4567
+
+Which will use simple the thin server.
+
+This should work in Visual Studio Code when selecting the `Sinatra` debug option, however sometimes it seems you need to restart all of Visual Studio Code.
+
+### Running the docker container
+
+To build the docker containter locally simply run:
+
+    docker build --tag=slapi_local ./
+
+NOTE: this will currently pull all of the development dependencies, need to revisit this.
+
+To run the docker container:
+
+    docker run -d -p 4567:4567 --name slapi_local slapi_local
+
+## Development
 
 ### Testing
 

@@ -15,6 +15,7 @@ RUN mkdir $APP_HOME && \
 WORKDIR $APP_HOME
 
 ADD Gemfile* $APP_HOME/
+ADD *.gemspec $APP_HOME/
 
 RUN bundle install
 
@@ -22,3 +23,7 @@ RUN bundle install
 USER slapi
 
 ADD . $APP_HOME
+
+EXPOSE 8123
+
+CMD rackup -p 4567

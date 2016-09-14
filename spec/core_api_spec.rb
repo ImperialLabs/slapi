@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'capybara/rspec'
 require_relative '../slapi.rb'
-Capybara.app = SLAPI
+Capybara.app = Slapi
 
 describe 'call the speak API', type: :feature do
   it 'returns' do

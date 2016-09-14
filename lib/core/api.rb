@@ -8,7 +8,7 @@ require 'slack-ruby-client'
 # == Ruby Slack Client
 # The ruby Slack client will be used to connect into Slack
 # @see https://github.com/slack-ruby/slack-ruby-client
-class SLAPI < Sinatra::Base
+class Slapi < Sinatra::Application
   def initialize
     Slack.configure do |config|
       config.token = settings.SLACK_API_TOKEN

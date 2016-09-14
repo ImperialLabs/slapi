@@ -4,9 +4,10 @@ require 'sinatra/base'
 require 'sinatra/config_file'
 
 # SLAPI Init
-class SLAPI < Sinatra::Base
+class Slapi < Sinatra::Application
   register Sinatra::ConfigFile
   # enable :sessions
+
   config_file 'config/environments.yml'
 
   set :environment, :production
