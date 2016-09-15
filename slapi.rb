@@ -2,6 +2,7 @@
 require 'sinatra'
 require 'sinatra/base'
 require 'sinatra/config_file'
+require_relative 'lib/core/realtime'
 
 # SLAPI Init
 class Slapi < Sinatra::Application
@@ -15,6 +16,8 @@ class Slapi < Sinatra::Application
   configure :production, :development, :test do
     enable :logging
   end
+
+  @realtime = RealTimeClient.new settings
 end
 
 require_relative 'lib/init'

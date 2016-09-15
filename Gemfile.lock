@@ -3,6 +3,8 @@ PATH
   specs:
     slapi (0.0.1.alpha)
       docker-api (~> 1.31.0)
+      eventmachine
+      faye-websocket
       rest-client (~> 1.8)
       sinatra
       sinatra-contrib
@@ -43,6 +45,9 @@ GEM
       multipart-post (>= 1.2, < 3)
     faraday_middleware (0.10.0)
       faraday (>= 0.7.4, < 0.10)
+    faye-websocket (0.10.4)
+      eventmachine (>= 0.12.0)
+      websocket-driver (>= 0.5.1)
     gli (2.14.0)
     hashie (3.4.4)
     http-cookie (1.0.2)
