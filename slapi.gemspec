@@ -25,6 +25,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'sinatra'
   spec.add_dependency 'sinatra-contrib'
   spec.add_dependency 'slack-ruby-client'
+  spec.add_dependency 'eventmachine'
+  spec.add_dependency 'faye-websocket'
 
   spec.add_development_dependency 'rake', '~> 10.5'
   spec.add_development_dependency 'rspec', '~> 3.4'
