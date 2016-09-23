@@ -10,8 +10,12 @@ require 'slack-ruby-client'
 # @see https://github.com/slack-ruby/slack-ruby-client
 class Slapi < Sinatra::Application
   def initialize
+    puts settings.environment
+    puts settings.SLACK_API_TOKEN
+    logger.warning(settings)
     Slack.configure do |config|
       config.token = settings.SLACK_API_TOKEN
+      #config.token = 'xoxb-77267071536-eoLGgtTgxAY2kcSUrYv9HEK9'
       raise 'Missing SLACK_API_TOKEN configuration!' unless config.token
     end
 
