@@ -12,7 +12,7 @@ class Slapi < Sinatra::Application
   def initialize
     puts settings.environment
     puts settings.SLACK_API_TOKEN
-    logger.warning(settings)
+    #logger.warning(settings)
     Slack.configure do |config|
       config.token = settings.SLACK_API_TOKEN
       #config.token = 'xoxb-77267071536-eoLGgtTgxAY2kcSUrYv9HEK9'
