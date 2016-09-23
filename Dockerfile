@@ -4,12 +4,12 @@ RUN apt-get update -qq && \
     apt-get install -qq -y nginx && \
     # temporay for debugging remove nano
     apt-get install -qq -y nano && \
+    apt-get install -qq -y supervisor && \
     apt-get autoremove -y && \
     apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 # Setup App Environment and User
 ENV APP_HOME /slapi
-
 
 RUN mkdir $APP_HOME && \
     adduser slapi --disabled-password --gecos "" && \
@@ -42,4 +42,4 @@ ENV RACK_ENV=production
 
 #CMD ["bundle", "exec", "rackup", "--host", "0.0.0.0", "-p", "4568"]
 
-ENTRYPOINT unicorn -c $APP_HOME/unicorn.rb && service nginx start
+ENTRYPOINT ["supervisord", "-n"]
