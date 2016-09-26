@@ -22,6 +22,7 @@ class Slapi < Sinatra::Application
   #logger.info(settings)
 
   @realtime = RealTimeClient.new settings
+  @realtime.run_bot
 end
 
 require_relative 'lib/init'
