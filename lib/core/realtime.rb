@@ -21,7 +21,7 @@ class RealTimeClient
     # TODO: Authorization test does not work for realtime client
     #@client.auth_test
 
-    run_bot
+    #run_bot
   end
 
   def run_bot
