@@ -13,13 +13,11 @@ class Slapi < Sinatra::Application
 
   config_file 'config/environments.yml'
 
-  set :environment, :production
+  # set :environment, :production
 
   configure :production, :development, :test do
     enable :logging
   end
-
-  #logger.info(settings)
 
   @realtime = RealTimeClient.new settings
   @realtime.run_bot
