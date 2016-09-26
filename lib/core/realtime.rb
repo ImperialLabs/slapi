@@ -12,15 +12,15 @@ require 'slack-ruby-client'
 class RealTimeClient
   def initialize settings
     #logger.warn(settings)
-    puts settings.environment
-    puts settings.SLACK_API_TOKEN
+    #puts settings.environment
+    #puts settings.SLACK_API_TOKEN
     Slack.configure do |config|
       config.token = settings.SLACK_API_TOKEN
       raise 'Missing SLACK_API_TOKEN configuration!' unless config.token
     end
 
     # to test real time client: https://api.slack.com/methods/rtm.start/test
-    #@client = Slack::RealTime::Client.new
+    @client = Slack::RealTime::Client.new
     # TODO: Authorization test does not work for realtime client
     #@client.auth_test
 
