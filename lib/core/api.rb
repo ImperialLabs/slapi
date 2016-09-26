@@ -37,6 +37,11 @@ class Slapi < Sinatra::Application
   # @return [String] the resulting webpage
   post '/v1/attachment' do
     raise 'missing channel' unless params[:channel]
+    raise 'missing text' unless params[:text]
+    raise 'missing fallback' unless params[:attachments][:fallback]
+    raise 'missing pretext' unless params[:attachments][:pretext]
+    raise 'missing title' unless params[:attachments][:title]
+    raise 'missing title_link' unless params[:attachments][:title_link]
 
     logger.debug('attach was called')
     @client.chat_postMessage(
@@ -68,9 +73,11 @@ class Slapi < Sinatra::Application
   # @param [Hash] params the parameters sent on the request
   # @option params [String] :channel The Slack Channel ID (Name may work in some instances)
   # @option params [String] :text The text that will be posted in the channel, supports formatting
-  # @option params [String] :as_user ('true')
   # @return [String] the resulting webpage
   post '/v1/emote' do
+    raise 'missing channel' unless params[:channel]
+    raise 'missing text' unless params[:text]
+
     logger.debug('emote was called')
     # interestingly... this did not work with name of room, only ID
     @client.chat_meMessage(channel: params[:channel],
@@ -90,6 +97,9 @@ class Slapi < Sinatra::Application
   # @option params [String] :as_user ('true')
   # @return [String] the resulting webpage
   post '/v1/speak' do
+    raise 'missing channel' unless params[:channel]
+    raise 'missing text' unless params[:text]
+
     logger.debug('speak was called')
     @client.chat_postMessage(channel: params[:channel],
                              text: params[:text],
