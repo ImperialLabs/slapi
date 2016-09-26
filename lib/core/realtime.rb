@@ -11,6 +11,9 @@ require 'slack-ruby-client'
 # @see https://github.com/slack-ruby/slack-ruby-client
 class RealTimeClient
   def initialize settings
+    #logger.warn(settings)
+    #puts settings.environment
+    #puts settings.SLACK_API_TOKEN
     Slack.configure do |config|
       config.token = settings.SLACK_API_TOKEN
       raise 'Missing SLACK_API_TOKEN configuration!' unless config.token
