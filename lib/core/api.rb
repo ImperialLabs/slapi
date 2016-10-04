@@ -2,6 +2,7 @@
 require 'json'
 require 'logger'
 require 'slack-ruby-client'
+require_relative '../plugin/plugins'
 
 # SLAPI class is for the API to interact with Slack
 #
@@ -17,6 +18,10 @@ class Slapi < Sinatra::Application
 
     @client = Slack::Web::Client.new
     @client.auth_test
+  end
+
+  post '/reload' do
+    @plugins = Plugins.new
   end
 
   # Handles a POST request for '/v1/attachment'

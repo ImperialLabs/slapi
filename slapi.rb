@@ -6,6 +6,7 @@ require 'json'
 require 'logger'
 require_relative 'lib/core/realtime'
 
+
 # SLAPI Init
 class Slapi < Sinatra::Application
   register Sinatra::ConfigFile
@@ -20,7 +21,7 @@ class Slapi < Sinatra::Application
   # Environment should be set outside of application be either:
   # RACK_ENV=production
   # sending in the -E flag as in: unicorn -c path/to/unicorn.rb -E development -D
-  # set :environment, :production
+  set :environment, :production
 
   # Logging outside of requests is not available in Sinatra unless you do something like this:
   # http://stackoverflow.com/questions/14463512/how-do-i-access-sinatras-logger-outside-the-request-scope
