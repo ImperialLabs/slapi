@@ -17,6 +17,7 @@ run
 
     bundle clean
     bundle install --binstubs --path vendor/bundle
+    bundle clean
 
 And set breakpoints and debug.
 
@@ -30,6 +31,8 @@ Which will use simple the thin server.
 
 This should work in Visual Studio Code when selecting the `Sinatra` debug option, however sometimes it seems you need to restart all of Visual Studio Code.
 
+When running in Visual Studio Code, Sinatra tends to run on port 9292.
+
 ### Running the docker container
 
 To build the docker containter locally simply run:
@@ -40,7 +43,7 @@ NOTE: this will currently pull all of the development dependencies, need to revi
 
 To run the docker container:
 
-    docker run -d -p 4567:4567 --name slapi_local slapi_local
+    docker run -d -p 4567:4567 -p 80:80 --name slapi_local slapi_local
 
 ## Development
 
@@ -67,6 +70,3 @@ To run rubocop either run:
     rubocop
 
 Or use a plugin in your favorite editor.
-
-
-

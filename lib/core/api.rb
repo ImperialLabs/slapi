@@ -10,9 +10,6 @@ require 'slack-ruby-client'
 # @see https://github.com/slack-ruby/slack-ruby-client
 class Slapi < Sinatra::Application
   def initialize
-    #puts settings.environment
-    #puts settings.SLACK_API_TOKEN
-    #logger.warning(settings)
     Slack.configure do |config|
       config.token = settings.SLACK_API_TOKEN
       raise 'Missing SLACK_API_TOKEN configuration!' unless config.token
@@ -40,8 +37,13 @@ class Slapi < Sinatra::Application
   # @return [String] the resulting webpage
   post '/v1/attachment' do
     raise 'missing channel' unless params[:channel]
+    raise 'missing text' unless params[:text]
+    raise 'missing fallback' unless params[:attachments][:fallback]
+    raise 'missing pretext' unless params[:attachments][:pretext]
+    raise 'missing title' unless params[:attachments][:title]
+    raise 'missing title_link' unless params[:attachments][:title_link]
 
-    logger.info('attach was called')
+    logger.debug('attach was called')
     @client.chat_postMessage(
       channel: params[:channel],
       text: params[:text],
@@ -58,7 +60,7 @@ class Slapi < Sinatra::Application
         }
       ].to_json
     )
-    logger.info('attached to room')
+    logger.debug('attached to room')
     status 200
 
     { 'message' => 'yes, it worked' }.to_json
@@ -71,14 +73,16 @@ class Slapi < Sinatra::Application
   # @param [Hash] params the parameters sent on the request
   # @option params [String] :channel The Slack Channel ID (Name may work in some instances)
   # @option params [String] :text The text that will be posted in the channel, supports formatting
-  # @option params [String] :as_user ('true')
   # @return [String] the resulting webpage
   post '/v1/emote' do
-    logger.info('emote was called')
+    raise 'missing channel' unless params[:channel]
+    raise 'missing text' unless params[:text]
+
+    logger.debug('emote was called')
     # interestingly... this did not work with name of room, only ID
     @client.chat_meMessage(channel: params[:channel],
                            text: params[:text])
-    logger.info('posted to room')
+    logger.debug('posted to room')
     status 200
     { 'message' => 'yes, it worked' }.to_json
   end
@@ -93,12 +97,14 @@ class Slapi < Sinatra::Application
   # @option params [String] :as_user ('true')
   # @return [String] the resulting webpage
   post '/v1/speak' do
-    logger.info('speak was called')
+    raise 'missing channel' unless params[:channel]
+    raise 'missing text' unless params[:text]
+
+    logger.debug('speak was called')
     @client.chat_postMessage(channel: params[:channel],
                              text: params[:text],
                              as_user: params[:as_user] ? params[:as_user] : true)
-    logger.info('posted to room')
-    status 200
+    logger.debug('posted to room')
     { 'message' => 'yes, it worked' }.to_json
   end
 end

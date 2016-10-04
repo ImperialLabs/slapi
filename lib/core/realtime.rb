@@ -10,21 +10,16 @@ require 'slack-ruby-client'
 # The ruby Slack client will be used to connect into Slack
 # @see https://github.com/slack-ruby/slack-ruby-client
 class RealTimeClient
-  def initialize settings
-    #logger.warn(settings)
-    #puts settings.environment
-    #puts settings.SLACK_API_TOKEN
+  def initialize(settings)
     Slack.configure do |config|
       config.token = settings.SLACK_API_TOKEN
       raise 'Missing SLACK_API_TOKEN configuration!' unless config.token
     end
 
-    # to test real time client: https://api.slack.com/methods/rtm.start/test
+    # To test real time client: https://api.slack.com/methods/rtm.start/test
     @client = Slack::RealTime::Client.new
     # TODO: Authorization test does not work for realtime client
-    #@client.auth_test
-
-    #run_bot
+    # @client.auth_test
   end
 
   def run_bot
@@ -36,13 +31,13 @@ class RealTimeClient
       puts data
       case data.text
       when 'bot hi' then
-        @client.web_client.chat_postMessage channel: data.channel, 
+        @client.web_client.chat_postMessage channel: data.channel,
                                             text: "Hi <@#{data.user}>!"
       # it is here that I believe we should parse the second word as the name of the plugin.
       # Then forward on the request to the plugin based on configuration.
-      # May need a check for configuration of and 
+      # May need a check for configuration of and
       when /^bot/ then
-        @client.web_client.chat_postMessage channel: data.channel, 
+        @client.web_client.chat_postMessage channel: data.channel,
                                             text: "Sorry <@#{data.user}>, what?"
       end
     end
