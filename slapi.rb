@@ -30,7 +30,9 @@ class Slapi < Sinatra::Application
   # TODO: also set up log to write to log file
   puts "current environment is set to: #{settings.environment}"
 
-  @realtime = RealTimeClient.new settings
+  # TODO: Plugin Cache
+
+  @realtime = RealTimeClient.new settings, plugins
   @realtime.run_bot
 end
 

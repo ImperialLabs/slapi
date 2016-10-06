@@ -22,7 +22,10 @@ class Plugins
   # Currently does not take any parameters nor does it return anything.
   # Future iterations should allow for configuration based on commands from chat.
   def load
-    #TODO: play with where we want the plugin configuration to live.
+    # TODO: Should this remove all images
+    # TODO: Should this remove all untagged images?
+    #
+    # TODO: play with where we want the plugin configuration to live.
     yaml_files = File.expand_path('../../plugins/*.yml', File.dirname(__FILE__))
     Dir.glob(yaml_files).each do |file|
       @plugin_hash[File.basename(file)] = Plugin.new(file)
@@ -36,6 +39,8 @@ class Plugins
   # If the plugin does not exist then it
   # @param string command
   # @return boolean - whether the command was passed on
+
+  # pager get on call
   def exec(command)
     # if contains a space
     if command.include? ''
@@ -52,4 +57,11 @@ class Plugins
     end
     false
   end
+
+
+  # TODO should this be exposed to cleanout any unused docker containers
+  def cleanup_docker
+    # Loop through the list of containers and plugins matching and remove any not connected
+  end
+
 end
