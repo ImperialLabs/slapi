@@ -18,7 +18,7 @@ class Plugin
   end
 
   def initialize(file)
-    @name = File.basename(file)
+    @name = File.basename(file, ".*")
     @config = YAML.load_file(file)
     @lang_settings = lang_settings
     @container = nil
@@ -28,11 +28,9 @@ class Plugin
 
   # TODO: use name or label to match up with the config name
   def load
-    case @config.type
-    when SCRIPT
-      if Docker::Container.get(@name)
-        @container = Docker::Container.create(@config['config'])
-      end
+    case @config[@name]['type']
+    when 'script'
+      @container = Docker::Container.create(@lang_settings['image'])
     when CONTAINER
       # load the docker container set in the config
     when API
@@ -48,7 +46,8 @@ class Plugin
   end
 
   def lang_settings 
-    case @config.language
+    lang = {}
+    case @config[@name]['config']['language']
     when 'ruby', 'rb'
       lang[:file_type] = '.rb'
       lang[:image] = 'slapi/ruby'

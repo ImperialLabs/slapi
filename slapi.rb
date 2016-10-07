@@ -32,7 +32,7 @@ class Slapi < Sinatra::Application
 
   # TODO: Plugin Cache
 
-  @realtime = RealTimeClient.new settings, plugins
+  @realtime = RealTimeClient.new settings
   @realtime.run_bot
 end
 
