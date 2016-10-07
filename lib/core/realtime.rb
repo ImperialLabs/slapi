@@ -2,6 +2,7 @@
 require 'json'
 require 'logger'
 require 'slack-ruby-client'
+require_relative '../plugin/plugins'
 
 # RealTimeClient class sets up a listener as a bot in the Slack Channel to route
 # the messages to the appropriate location.
@@ -10,7 +11,7 @@ require 'slack-ruby-client'
 # The ruby Slack client will be used to connect into Slack
 # @see https://github.com/slack-ruby/slack-ruby-client
 class RealTimeClient
-  def initialize(settings)
+  def initialize(settings, plugins)
     Slack.configure do |config|
       config.token = settings.SLACK_API_TOKEN
       raise 'Missing SLACK_API_TOKEN configuration!' unless config.token
@@ -20,6 +21,11 @@ class RealTimeClient
     @client = Slack::RealTime::Client.new
     # TODO: Authorization test does not work for realtime client
     # @client.auth_test
+    @plugins = plugins
+  end
+
+  def update_plugin_cache plugins
+    @plugins = plugins
   end
 
   def run_bot
@@ -37,8 +43,9 @@ class RealTimeClient
       # Then forward on the request to the plugin based on configuration.
       # May need a check for configuration of and
       when /^bot/ then
-        @client.web_client.chat_postMessage channel: data.channel,
-                                            text: "Sorry <@#{data.user}>, what?"
+        #@client.web_client.chat_postMessage channel: data.channel,
+                                            #text: "Sorry <@#{data.user}>, what?"
+        @plugins.exec data
       end
     end
 

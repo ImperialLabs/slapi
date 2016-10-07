@@ -22,6 +22,7 @@ class Slapi < Sinatra::Application
 
   post '/reload' do
     @plugins = Plugins.new
+    @realtime.update_plugin_cache @plugins
   end
 
   # Handles a POST request for '/v1/attachment'

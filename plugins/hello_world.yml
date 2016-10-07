@@ -1,0 +1,9 @@
+hello_world:
+    type: script
+    config:
+        command: my_script # aka 'bot my_script $args'
+        language: bash
+        # Using pagerduty get-oncall as example
+        run: >
+          #!/bin/bash
+          echo "hello world"

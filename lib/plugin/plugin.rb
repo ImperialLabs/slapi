@@ -30,10 +30,13 @@ class Plugin
   def load
     case @config[@name]['type']
     when 'script'
-      @container = Docker::Container.create(@lang_settings['image'])
-    when CONTAINER
+      image = Docker::Image.create('fromImage' => 'ubuntu:14.04')
+      @container = Docker::Container.create(Image: @lang_settings[:image])
+      @container = Docker::Container.create(Image: @lang_settings[:image], 'Cmd' => @config[@name]['config']['run'], 'Tty' => true)
+    when 'container'
       # load the docker container set in the config
-    when API
+      @container = Docker::Container.create(@config[:config])
+    when 'api'
       
     else
 
@@ -41,10 +44,24 @@ class Plugin
       
   end
 
-  def exec
+  # Execute the command sent from chat
+  #
+  # @param string data_from_chat
+  # @return boolean representing Success/Failure
+  def exec(data_from_chat)
     # based on some meta information like the type then execute the proper way
+    case @config[@name]['type']
+    when 'script', 'container'
+      @container.run([data_from_chat])
+    when 'api'
+      response = HTTParty.get(@config['api']['url'])
+      puts response
+    else
+      # Error log and chat?
+    end
   end
 
+  # TODO 
   def lang_settings 
     lang = {}
     case @config[@name]['config']['language']
@@ -59,7 +76,7 @@ class Plugin
       lang[:image] = 'slapi/nodejs'
     when 'bash', 'shell'
       lang[:file_type] = '.sh'
-      lang[:image] = 'slapi/base'
+      lang[:image] = 'ubuntu'
     else
       # TODO error logging for this
       # could also use the langage sent in

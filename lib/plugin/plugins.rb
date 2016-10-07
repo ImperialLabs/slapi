@@ -28,7 +28,7 @@ class Plugins
     # TODO: play with where we want the plugin configuration to live.
     yaml_files = File.expand_path('../../plugins/*.yml', File.dirname(__FILE__))
     Dir.glob(yaml_files).each do |file|
-      @plugin_hash[File.basename(file)] = Plugin.new(file)
+      @plugin_hash[File.basename(file, ".*")] = Plugin.new(file)
     end
   end
 
@@ -37,13 +37,13 @@ class Plugins
   # Splits off the first word it encounters and looks for a plugin with this name.
   # If the plugin exists then it send the command on.
   # If the plugin does not exist then it
-  # @param string command
+  # @param Hash data
   # @return boolean - whether the command was passed on
-
-  # pager get on call
-  def exec(command)
+  def exec(data)
     # if contains a space
-    if command.include? ''
+    if data.text.include? ''
+      bot_name = data.text.match(" ").pre_match
+      command = data.text.match(" ").post_match
       requested_plugin = command.match(" ").pre_match
       @plugin_hash.each do |name, plugin|
         if name == requested_plugin
