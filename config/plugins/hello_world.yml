@@ -2,11 +2,7 @@ plugin:
     type: script
     language: bash
     description: "simple hello world"
-    config:
-        command: my_script # aka 'bot my_script $args'
-        language: bash
-        # Using pagerduty get-oncall as example
-        run: >
-          #!/bin/bash
-          
-          echo "hello world"
+    write: >
+        #!/bin/bash
+        
+        echo "hello world"

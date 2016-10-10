@@ -26,6 +26,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'sinatra-contrib'
   spec.add_dependency 'slack-ruby-client'
   spec.add_dependency 'unicorn'
+  spec.add_dependency 'httparty'
   # Use Celluloid over eventmachine/websocket
   # See: https://github.com/slack-ruby/slack-ruby-client/issues/96
   # spec.add_dependency 'eventmachine'

@@ -9,7 +9,6 @@ require 'httparty'
 #  1. Load the configuration of the specific plugin and load anything needed for that type.
 #  2. Execute the command properly based on the type
 class Plugin
-
   # TODO: likely this type of numberic enum is not the right route and symbols should be used.
   # however I like the idea of the list being bound by possibilities.
   module TypeEnum
@@ -31,14 +30,23 @@ class Plugin
   def load
     case @config['plugin']['type']
     when 'script'
-      filename = "scripts/#{@name}#{@lang_settings[:file_type]}"
-      File.open( filename, "#{@config['plugin']['write']}")
-      Docker::Image.create(fromImage: @lang_settings[:image])
+      filename = "#{@name}#{@lang_settings[:file_type]}"
+      File.open("scripts/#{filename}", 'w') do |file|
+        file.write(@config['plugin']['write'])
+      end
+      File.chmod(0777, "scripts/#{filename}")
+      #File.open( filename, "#{@config['plugin']['write']}")
+      image = Docker::Image.create(fromImage: @lang_settings[:image])
       #@container = Docker::Container.create(Image: @lang_settings[:image])
-      @container = Docker::Container.create(Image: @lang_settings[:image],
-                                            Volumes: ["/scripts/#{filename}:/scripts/#{filename}"],
-                                            Entrypoint: "/scripts/#{filename}",
-                                            Tty: true)
+      config_hash = {Image: @lang_settings[:image],
+                    HostConfig: {
+                      Binds: ["#{Dir.pwd}/scripts/#{filename}:/scripts/#{filename}"]
+                    },
+                    Entrypoint: "/scripts/#{filename}",
+                    Tty: true}
+      puts "config_hash: \n\n  #{config_hash}"
+      
+      @container = Docker::Container.create(config_hash)
     when 'container'
       # load the docker container set in the config
       @container = Docker::Container.create(@config[:config])
@@ -59,7 +67,7 @@ class Plugin
     case @config['plugin']['type']
     when 'script', 'container'
       #output = @container.run([data_from_chat])
-      output = @container.run('ls -1', 10)
+      output = @container.run('ls -l')
       puts output
     when 'api'
       response = HTTParty.get(@config['api']['url'])
@@ -70,14 +78,14 @@ class Plugin
     output
   end
 
-  # TODO
-  def lang_settings
+  # TODO likely move to a helper class
+  def lang_settings 
     lang = {}
     case @config['plugin']['language']
     when 'ruby', 'rb'
       lang[:file_type] = '.rb'
       #lang[:image] = 'slapi/ruby'
-      lang[:image] = 'ubuntu'
+      lang[:image] = 'slapi/base:latest'
     when 'python', 'py'
       lang[:file_type] = '.py'
       lang[:image] = 'slapi/python'
@@ -86,12 +94,12 @@ class Plugin
       lang[:image] = 'slapi/nodejs'
     when 'bash', 'shell'
       lang[:file_type] = '.sh'
-      lang[:image] = 'slapi/base'
+      lang[:image] = 'slapi/base:latest'
     else
       # TODO error logging for this
       # could also use the langage sent in
       lang[:file_type] = '.sh'
-      lang[:image] = 'slapi/base'
+      lang[:image] = 'slapi/base:latest'
     end
     lang
   end
