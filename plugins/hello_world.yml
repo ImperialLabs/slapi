@@ -1,5 +1,7 @@
-hello_world:
+plugin:
     type: script
+    language: bash
+    description: "simple hello world"
     config:
         command: my_script # aka 'bot my_script $args'
         language: bash

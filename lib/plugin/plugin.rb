@@ -28,11 +28,13 @@ class Plugin
 
   # TODO: use name or label to match up with the config name
   def load
-    case @config[@name]['type']
+    case @config['plugin']['type']
     when 'script'
-      image = Docker::Image.create('fromImage' => 'ubuntu:14.04')
-      @container = Docker::Container.create(Image: @lang_settings[:image])
-      @container = Docker::Container.create(Image: @lang_settings[:image], 'Cmd' => @config[@name]['config']['run'], 'Tty' => true)
+      Docker::Image.create(fromImage: @lang_settings[:image])
+      #@container = Docker::Container.create(Image: @lang_settings[:image])
+      @container = Docker::Container.create(Image: @lang_settings[:image], 
+                                            Cmd: @config['plugin']['write'],
+                                            Tty: true)
     when 'container'
       # load the docker container set in the config
       @container = Docker::Container.create(@config[:config])
@@ -50,24 +52,28 @@ class Plugin
   # @return boolean representing Success/Failure
   def exec(data_from_chat)
     # based on some meta information like the type then execute the proper way
-    case @config[@name]['type']
+    case @config['plugin']['type']
     when 'script', 'container'
-      @container.run([data_from_chat])
+      #output = @container.run([data_from_chat])
+      output = @container.run('ls -1', 10)
+      puts output
     when 'api'
       response = HTTParty.get(@config['api']['url'])
       puts response
     else
       # Error log and chat?
     end
+    output
   end
 
-  # TODO 
+  # TODO
   def lang_settings 
     lang = {}
-    case @config[@name]['config']['language']
+    case @config['plugin']['language']
     when 'ruby', 'rb'
       lang[:file_type] = '.rb'
-      lang[:image] = 'slapi/ruby'
+      #lang[:image] = 'slapi/ruby'
+      lang[:image] = 'ubuntu'
     when 'python', 'py'
       lang[:file_type] = '.py'
       lang[:image] = 'slapi/python'
