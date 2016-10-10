@@ -8,4 +8,5 @@ plugin:
         # Using pagerduty get-oncall as example
         run: >
           #!/bin/bash
+          
           echo "hello world"

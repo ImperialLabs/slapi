@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 require 'yaml'
 require 'docker'
+require 'httparty'
 
 # Plugin class will represent an individual plugin.
 # It will check the metadata of the type of plugins to make decisions.
@@ -8,7 +9,7 @@ require 'docker'
 #  1. Load the configuration of the specific plugin and load anything needed for that type.
 #  2. Execute the command properly based on the type
 class Plugin
-  
+
   # TODO: likely this type of numberic enum is not the right route and symbols should be used.
   # however I like the idea of the list being bound by possibilities.
   module TypeEnum
@@ -30,20 +31,23 @@ class Plugin
   def load
     case @config['plugin']['type']
     when 'script'
+      filename = "scripts/#{@name}#{@lang_settings[:file_type]}"
+      File.open( filename, "#{@config['plugin']['write']}")
       Docker::Image.create(fromImage: @lang_settings[:image])
       #@container = Docker::Container.create(Image: @lang_settings[:image])
-      @container = Docker::Container.create(Image: @lang_settings[:image], 
-                                            Cmd: @config['plugin']['write'],
+      @container = Docker::Container.create(Image: @lang_settings[:image],
+                                            Volumes: ["/scripts/#{filename}:/scripts/#{filename}"],
+                                            Entrypoint: "/scripts/#{filename}",
                                             Tty: true)
     when 'container'
       # load the docker container set in the config
       @container = Docker::Container.create(@config[:config])
     when 'api'
-      
+      # TODO httparty config
     else
 
     end
-      
+
   end
 
   # Execute the command sent from chat
@@ -67,7 +71,7 @@ class Plugin
   end
 
   # TODO
-  def lang_settings 
+  def lang_settings
     lang = {}
     case @config['plugin']['language']
     when 'ruby', 'rb'
@@ -82,7 +86,7 @@ class Plugin
       lang[:image] = 'slapi/nodejs'
     when 'bash', 'shell'
       lang[:file_type] = '.sh'
-      lang[:image] = 'ubuntu'
+      lang[:image] = 'slapi/base'
     else
       # TODO error logging for this
       # could also use the langage sent in

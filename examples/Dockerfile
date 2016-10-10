@@ -1,0 +1,1 @@
+FROM slapi/ruby:latest

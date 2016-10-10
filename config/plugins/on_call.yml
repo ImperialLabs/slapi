@@ -4,7 +4,6 @@ plugin:
   description: "gets on-calls for pagerduty"
   write: >
     #!/usr/bin/env ruby
-    # -*- coding: UTF-8 -*-
 
     require 'httparty'
 
