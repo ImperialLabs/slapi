@@ -43,9 +43,10 @@ class RealTimeClient
       # Then forward on the request to the plugin based on configuration.
       # May need a check for configuration of and
       when /^bot/ then
-        #@client.web_client.chat_postMessage channel: data.channel,
-                                            #text: "Sorry <@#{data.user}>, what?"
-        @plugins.exec data
+
+        output = @plugins.exec data
+        @client.web_client.chat_postMessage channel: data.channel,
+                                            text: output
       end
     end
 

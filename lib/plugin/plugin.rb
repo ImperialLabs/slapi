@@ -38,10 +38,12 @@ class Plugin
       #File.open( filename, "#{@config['plugin']['write']}")
       image = Docker::Image.create(fromImage: @lang_settings[:image])
       #@container = Docker::Container.create(Image: @lang_settings[:image])
+      command = ["bash", "-c", "if [ -t 1 ]; then echo -n \"I'm a TTY!\"; fi"]
       config_hash = {Image: @lang_settings[:image],
                     HostConfig: {
                       Binds: ["#{Dir.pwd}/scripts/#{filename}:/scripts/#{filename}"]
                     },
+                    Cmd: command,
                     Entrypoint: "/scripts/#{filename}",
                     Tty: true}
       puts "config_hash: \n\n  #{config_hash}"
@@ -67,8 +69,14 @@ class Plugin
     case @config['plugin']['type']
     when 'script', 'container'
       #output = @container.run([data_from_chat])
-      output = @container.run('ls -l')
+      #output = @container.run('ls -l')
+      
+      #command = ["bash", "-c", "if [ -t 1 ]; then echo -n \"I'm a TTY!\"; fi"]
+      #container = Docker::Container.create('Image' => 'ubuntu', 'Cmd' => command, 'Tty' => true)
+      @container.tap(&:start).attach(:tty => true)
+      output = @container.logs(stdout: true)
       puts output
+
     when 'api'
       response = HTTParty.get(@config['api']['url'])
       puts response

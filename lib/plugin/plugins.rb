@@ -50,12 +50,12 @@ class Plugins
           # TODO: may need to either:
           #   return the return from plugin.exec
           #   or make a call through the API to post in the channel
-          plugin.exec command.match(" ").post_match
-          return true
+          output = plugin.exec command.match(" ").post_match
+          return output
         end
       end
     end
-    false
+    nil
   end
 
 
