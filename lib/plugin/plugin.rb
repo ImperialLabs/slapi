@@ -33,7 +33,7 @@ class Plugin
     when 'script'
       filename = "#{@name}#{@lang_settings[:file_type]}"
       File.open("scripts/#{filename}", 'w') do |file|
-        file.write(@config[:plugin][:write])
+        file.write(@config['plugin']['write'])
       end
       File.chmod(0777, "scripts/#{filename}")
       _image = Docker::Image.create(fromImage: @lang_settings[:image])
