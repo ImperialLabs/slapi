@@ -5,8 +5,6 @@ require 'sinatra/config_file'
 require 'json'
 require 'logger'
 require_relative 'lib/core/realtime'
-require_relative 'lib/plugin/plugins'
-
 
 # SLAPI Init
 class Slapi < Sinatra::Application
@@ -31,13 +29,7 @@ class Slapi < Sinatra::Application
   # TODO: also set up log to write to log file
   puts "current environment is set to: #{settings.environment}"
 
-  # TODO: Plugin Cache
-  # may have to comment this out to do development on the the loading of plugins
-  # Cannot set breakpoints on load.
-  @plugins = Plugins.new
-  puts @plugins
-
-  @realtime = RealTimeClient.new(settings, @plugins)
+  @realtime = RealTimeClient.new(settings)
   @realtime.run_bot
 end
 

@@ -11,11 +11,11 @@ require 'httparty'
 class Plugin
   # TODO: likely this type of numberic enum is not the right route and symbols should be used.
   # however I like the idea of the list being bound by possibilities.
-  module TypeEnum
-    SCRIPT = 1
-    CONTAINER = 2
-    API = 4
-  end
+  type_enum = {
+    script: 'script',
+    container: 'container',
+    API: 'api'
+  }
 
   def initialize(file)
     @name = File.basename(file, ".*")
@@ -25,9 +25,10 @@ class Plugin
     load
   end
 
-
-  # TODO: use name or label to match up with the config name
-  # Setup plugin by type
+  # Load the plugin configuration.
+  # The plugin type is the important switch here.
+  #
+  # TODO: need a lot more error checking.
   def load
     case @config['plugin']['type']
     when 'script'
@@ -55,7 +56,8 @@ class Plugin
     when 'api'
       # TODO httparty config
     else
-
+      puts "unknown plugin type configured #{@config['plugin']['type']}"
+      puts "only 'script', 'container', and 'api' are known"
     end
 
   end
@@ -63,21 +65,23 @@ class Plugin
   # Execute the command sent from chat
   #
   # @param string data_from_chat
-  # @return boolean representing Success/Failure
+  # @return string representing response to be displayed
   def exec(data_from_chat)
     # based on some meta information like the type then execute the proper way
     case @config['plugin']['type']
     when 'script', 'container'
       @container.tap(&:start).attach(:tty => true)
       # TODO find a better way to get stdout or only last log entry? Possibly delete/recreate each time? If not, it will post the entire log into chat.
-      output = @container.logs(stdout: true)
+      response = @container.logs(stdout: true)
     when 'api'
       response = HTTParty.get(@config['api']['url'])
       puts response
     else
       # Error log and chat?
+      # Since it will only make it to this level if the bot was invoked
+      # then may it is appropriate to state that the bot does not understand?
     end
-    output
+    response
   end
 
   # TODO likely move to a helper class

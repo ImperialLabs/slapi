@@ -41,7 +41,7 @@ class Plugins
   # @return boolean - whether the command was passed on
   def exec(data)
     # if contains a space
-    if data.text.include? ''
+    if data.text.include? ' '
       bot_name = data.text.match(" ").pre_match
       command = data.text.match(" ").post_match
       requested_plugin = command.match(" ").pre_match
