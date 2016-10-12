@@ -10,6 +10,7 @@ require 'slack-ruby-client'
 # @see https://github.com/slack-ruby/slack-ruby-client
 class Slapi < Sinatra::Application
   def initialize
+    super()
     Slack.configure do |config|
       config.token = settings.SLACK_API_TOKEN
       raise 'Missing SLACK_API_TOKEN configuration!' unless config.token
@@ -22,6 +23,10 @@ class Slapi < Sinatra::Application
   # Handles a POST request for '/reload'
   # Forces a reload of the @plugins configurations
   post '/reload' do
+    # NOTE: this currently does not work for a running system
+    # however breakpoints are not working on server startup.
+    # so this helps to test/inspect the load.
+    @realtime = RealTimeClient.new settings
     @realtime.update_plugin_cache
   end
 

@@ -32,21 +32,24 @@ class Plugin
   def load
     case @config['plugin']['type']
     when 'script'
+      clear_existing_container(@name)
       filename = "#{@name}#{@lang_settings[:file_type]}"
       File.open("scripts/#{filename}", 'w') do |file|
         file.write(@config['plugin']['write'])
       end
       File.chmod(0777, "scripts/#{filename}")
       _image = Docker::Image.create(fromImage: @lang_settings[:image])
+      # NOTE: The use of hash rockets is intentional
+      # see: https://github.com/swipely/docker-api/issues/360 and https://github.com/swipely/docker-api/pull/365
       config_hash = {
-        name: @name,
-        Image: @lang_settings[:image],
-        HostConfig: {
-          Binds: ["#{Dir.pwd}/scripts/#{filename}:/scripts/#{filename}"]
+        'name' => @name,
+        'Image' => @lang_settings[:image],
+        'HostConfig' => {
+          'Binds' => ["#{Dir.pwd}/scripts/#{filename}:/scripts/#{filename}"]
         },
-        Cmd: ["bash", "/scripts/#{filename}"],
-        Entrypoint: "/scripts/#{filename}",
-        Tty: true
+        'Cmd' => ['bash', "/scripts/#{filename}"],
+        'Entrypoint' => "/scripts/#{filename}",
+        'Tty' => true
       }
       @container = Docker::Container.create(config_hash)
     when 'container'
@@ -84,6 +87,23 @@ class Plugin
     response
   end
 
+  # Clears out existing container with the name planned to use
+  # Avoids this error:
+  # Uncaught exception: Conflict. The name "/hello_world" is already in use by container 23ee03db81c8ba6f8176f27247c05131866cffcc2281c93cb7dd9eba206c3a7e. 
+  #      You have to remove (or rename) that container to be able to reuse that name.
+  def clear_existing_container(name)
+    begin
+      container = Docker::Container.get(name)
+    rescue StandardError => error
+      #puts "The #{name} container doesn't exist"
+      #puts "#{error.class} was thrown with message #{error.message}"
+      #puts error.inspect
+      return false
+    end
+    container.delete(force: true) if container
+  end
+
+
   # TODO likely move to a helper class
   def lang_settings
     lang = {}
@@ -110,3 +130,5 @@ class Plugin
     lang
   end
 end
+
+
