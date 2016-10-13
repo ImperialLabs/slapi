@@ -1,0 +1,8 @@
+plugin:
+    type: script
+    language: bash
+    description: "simple hello world"
+    write: >
+        #!/bin/bash
+        
+        echo "hello world"

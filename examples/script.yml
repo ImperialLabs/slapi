@@ -1,0 +1,33 @@
+plugin:
+  type: script
+  language: python
+  description: "gets pagerduty schedules for configured account"
+  help: # will be used to populate help options for schedules command
+    schedules: "gets pagerduty schedules for configured account" # overrides the description set due to being the primary command for plugin.
+  write: >
+    #!/usr/bin/env python
+    import requests
+
+    # Update to match your API key
+    API_KEY = '3c3gRvzx7uGfMYEnWKvF'
+
+    # Update to match your chosen parameters
+    QUERY = ''
+
+
+    def list_schedules():
+        url = 'https://api.pagerduty.com/schedules'
+        headers = {
+            'Accept': 'application/vnd.pagerduty+json;version=2',
+            'Authorization': 'Token token={token}'.format(token=API_KEY)
+        }
+        payload = {
+            'query': QUERY
+        }
+        r = requests.get(url, headers=headers, params=payload)
+        print 'Status Code: {code}'.format(code=r.status_code)
+        print r.json()
+
+    if __name__ == '__main__':
+        list_schedules()
+
