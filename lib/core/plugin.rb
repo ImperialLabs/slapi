@@ -23,6 +23,7 @@ class Plugin
     @lang_settings = lang_settings
     @container = nil
     @container_info = nil
+    @contianer_hash = {}
     @help_hash = {}
     load
   end
@@ -88,7 +89,6 @@ class Plugin
         @help_hash[label] = desc
       end
     end
-    n = 1 + 1
   end
 
   # Execute the command sent from chat
@@ -102,7 +102,7 @@ class Plugin
       case @config['plugin']['listen_type']
       when 'passive'
         @container_hash['Cmd'] = [data_from_chat]
-        @container = Docker::Container.create(container_hash)
+        @container = Docker::Container.create(@container_hash)
         @container.tap(&:start).attach(:tty => true)
         response = @container.logs(stdout: true)
         @container.delete
