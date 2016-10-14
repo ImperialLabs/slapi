@@ -1,8 +1,18 @@
 plugin:
     type: script
     language: bash
+    help:
+      hello world: "Says things"
     description: "simple hello world"
     write: >
-        #!/bin/bash
-        
-        echo "hello world"
+      #!/bin/bash
+
+      if [ "${1}" == 'test' ]; then
+
+          echo 'Hello World!'
+
+      else
+
+          echo 'I dont like you'
+
+      fi

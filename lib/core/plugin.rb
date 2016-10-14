@@ -22,6 +22,8 @@ class Plugin
     @config = YAML.load_file(file)
     @lang_settings = lang_settings
     @container = nil
+    @container_info = nil
+    @help_hash = {}
     load
   end
 
@@ -29,40 +31,64 @@ class Plugin
   # The plugin type is the important switch here.
   #
   # TODO: need a lot more error checking.
+  def load_docker
+    clear_existing_container(@name)
+    _image = Docker::Image.create(fromImage: @lang_settings[:image])
+  end
+
   def load
     case @config['plugin']['type']
     when 'script'
-      clear_existing_container(@name)
+      load_docker
       filename = "#{@name}#{@lang_settings[:file_type]}"
       File.open("scripts/#{filename}", 'w') do |file|
         file.write(@config['plugin']['write'])
       end
       File.chmod(0777, "scripts/#{filename}")
-      _image = Docker::Image.create(fromImage: @lang_settings[:image])
       # NOTE: The use of hash rockets is intentional
       # see: https://github.com/swipely/docker-api/issues/360 and https://github.com/swipely/docker-api/pull/365
-      config_hash = {
+      @container_hash = {
         'name' => @name,
         'Image' => @lang_settings[:image],
         'HostConfig' => {
           'Binds' => ["#{Dir.pwd}/scripts/#{filename}:/scripts/#{filename}"]
         },
-        'Cmd' => ['bash', "/scripts/#{filename}"],
         'Entrypoint' => "/scripts/#{filename}",
         'Tty' => true
       }
-      @container = Docker::Container.create(config_hash)
     when 'container'
       # load the docker container set in the config
-      _image = Docker::Image.create(fromImage: @lang_settings[:image])
-      @container = Docker::Container.create(@config[:config])
+      load_docker
+      case @config['plugin']['listen_type']
+      when 'passive'
+        @container = Docker::Container.create(@config[:config])
+        @container_info = @container.info
+        @container.delete
+      when 'active'
+        @container = Docker::Container.create(@config[:config])
+        @container.start
+        @container_info = @container.info
+      end
     when 'api'
       # TODO httparty config
     else
       puts "unknown plugin type configured #{@config['plugin']['type']}"
       puts "only 'script', 'container', and 'api' are known"
     end
+    help_load
+  end
 
+  def help_load
+    case @config['plugin']['type']
+    when 'script', 'api'
+      @help_hash = @config['plugin']['help']
+    when 'container'
+      @help_hash = {}
+      @container_info['Labels'].each do |label, desc|
+        @help_hash[label] = desc
+      end
+    end
+    n = 1 + 1
   end
 
   # Execute the command sent from chat
@@ -73,12 +99,18 @@ class Plugin
     # based on some meta information like the type then execute the proper way
     case @config['plugin']['type']
     when 'script', 'container'
-      @container.tap(&:start).attach(:tty => true)
-      # TODO find a better way to get stdout or only last log entry? Possibly delete/recreate each time? If not, it will post the entire log into chat.
-      response = @container.logs(stdout: true)
+      case @config['plugin']['listen_type']
+      when 'passive'
+        @container_hash['Cmd'] = [data_from_chat]
+        @container = Docker::Container.create(container_hash)
+        @container.tap(&:start).attach(:tty => true)
+        response = @container.logs(stdout: true)
+        @container.delete
+      when 'active'
+        @container.exec([data_from_chat])
+      end
     when 'api'
       response = HTTParty.get(@config['api']['url'])
-      puts response
     else
       # Error log and chat?
       # Since it will only make it to this level if the bot was invoked
@@ -89,7 +121,7 @@ class Plugin
 
   # Clears out existing container with the name planned to use
   # Avoids this error:
-  # Uncaught exception: Conflict. The name "/hello_world" is already in use by container 23ee03db81c8ba6f8176f27247c05131866cffcc2281c93cb7dd9eba206c3a7e. 
+  # Uncaught exception: Conflict. The name "/hello_world" is already in use by container 23ee03db81c8ba6f8176f27247c05131866cffcc2281c93cb7dd9eba206c3a7e.
   #      You have to remove (or rename) that container to be able to reuse that name.
   def clear_existing_container(name)
     begin
@@ -103,6 +135,10 @@ class Plugin
     container.delete(force: true) if container
   end
 
+  # Shutdown procedures for container and script plugins
+  def shutdown(name)
+    clear_existing_container(@name)
+  end
 
   # TODO likely move to a helper class
   def lang_settings
@@ -121,6 +157,14 @@ class Plugin
     when 'bash', 'shell'
       lang[:file_type] = '.sh'
       lang[:image] = 'slapi/base:latest'
+    # Future Languages for Script Type
+    # Uncomment when ready for script languages
+    # when 'php'
+    #   lang[:file_type] = '.php' # or is this phar?
+    #   lang[:image] = 'slapi/base:latest'
+    # when 'posh', 'powershell'
+    #   lang[:file_type] = '.ps'
+    #   lang[:image] = 'slapi/base:latest'
     else
       # TODO error logging for this
       # could also use the langage sent in
@@ -130,5 +174,3 @@ class Plugin
     lang
   end
 end
-
-
