@@ -1,19 +1,16 @@
 development:
-  SLACK_API_TOKEN: "xoxb-77267071536-eoLGgtTgxAY2kcSUrYv9HEK9"
   api_version: '1.0'
   base_path: 'http://localhost:4567'
   swagger_version: '1.1'
   format_specifier: '.json'
   using: 'development'
 test:
-  SLACK_API_TOKEN: "xoxb-77267071536-eoLGgtTgxAY2kcSUrYv9HEK9"
   api_version: '1.0'
   base_path: 'http://localhost:4567'
   swagger_version: '1.1'
   format_specifier: '.json'
   using: 'test'
 production:
-  SLACK_API_TOKEN: "xoxb-77267071536-eoLGgtTgxAY2kcSUrYv9HEK9"
   api_version: '1.0'
   base_path: 'http://localhost:4567'
   swagger_version: '1.1'

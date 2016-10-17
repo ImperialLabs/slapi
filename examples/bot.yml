@@ -1,0 +1,15 @@
+# Adapter Settings
+adapter:
+  type: slack # Enables option alternative adapters
+  bot_name: # additional name for bot (if wanting to use something other than client name)
+  token: # API token
+
+# Admin Settings
+admin:
+  users: # Array of names or IDs who are admins
+  dm_limit: # True/False Limits bot DMs, will not respond to DMs from non-admins.
+
+# Help Settings
+help:
+  level: 1 # 1/2; 1 only lists plugin names, 2 lists names and opts
+  dm_user: false # True/False; True to send all help requests as DM, false to post in room
