@@ -58,11 +58,16 @@ class Plugins
     nil
   end
 
+  # Searches for phrased based plugins
+  def phrase_lookup
+    # search plugin hash and container labels?
+  end
+
   # Creates primary help list
   #
   # Utilizes the bot.yml help hash to determine response level.
   def help
-    # Merge all hashes together or parse out a file(s)? 
+    # Merge all hashes together or parse out a file(s)?
   end
 
 

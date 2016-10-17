@@ -44,12 +44,11 @@ class RealTimeClient
     @client.on :message do |data|
       puts data
       case data.text
-      when /#{@bot_name} ping| @#{@bot_name} ping/ then
+      when /^#{@bot_name} ping|^@#{@bot_name} ping|^\<@#{@client.self.id}\> ping/ then
           @client.web_client.chat_postMessage channel: data.channel,
                                               text: 'PONG'
-      # Reads from configuration for bot name
-      # TODO: get bot name from Slack
-      when /#{@bot_name} | @#{@bot_name} / then
+      # Reads from configuration for bot name or uses the bot name/id from Slack
+      when /^#{@bot_name} |^@#{@bot_name} |^\<@#{@client.self.id}\> / then
         output = @plugins.exec data
         if output && !output.empty?
           @client.web_client.chat_postMessage channel: data.channel,
@@ -61,7 +60,7 @@ class RealTimeClient
         end
       # TODO: Work in config options to utilize help in the appropriate way.
       # TODO: Decide on how to cache help data to be able to post in chat
-      #when /#{@bot_name} help| @#{@bot_name} help/ then
+      #when /^#{@bot_name} help|^@#{@bot_name} help|^\<@#{@client.self.id}\> help/ then
         # TODO: Make output function based on config options (level 1 or 2)
         #output = @plugins.help data
         #if output && !output.empty?
