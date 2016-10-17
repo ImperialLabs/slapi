@@ -41,12 +41,11 @@ class RealTimeClient
     @client.on :message do |data|
       puts data
       case data.text
-      when /#{@bot_name} ping| @#{@bot_name} ping/ then
+      when /^#{@bot_name} ping|^@#{@bot_name} ping|^\<@#{@client.self.id}\> ping/ then
           @client.web_client.chat_postMessage channel: data.channel,
                                               text: 'PONG'
-      # Reads from configuration for bot name
-      # TODO: get bot name from Slack
-      when /#{@bot_name} | @#{@bot_name} / then
+      # Reads from configuration for bot name or uses the bot name/id from Slack
+      when /^#{@bot_name} |^@#{@bot_name} |^\<@#{@client.self.id}\> / then
         output = @plugins.exec data
         if output && !output.empty?
           @client.web_client.chat_postMessage channel: data.channel,
@@ -55,7 +54,7 @@ class RealTimeClient
         else
           @client.web_client.chat_postMessage channel: data.channel,
                                               text: "Hi <@#{data.user}>, I did not understand that command."
-        end
+        end        
       end
     end
 
