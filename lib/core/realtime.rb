@@ -41,15 +41,21 @@ class RealTimeClient
     @client.on :message do |data|
       puts data
       case data.text
-      when 'bot hi' then
-        @client.web_client.chat_postMessage channel: data.channel,
-                                            text: "Hi <@#{data.user}>!"
+      when /#{@bot_name} ping| @#{@bot_name} ping/ then
+          @client.web_client.chat_postMessage channel: data.channel,
+                                              text: 'PONG'
       # Reads from configuration for bot name
       # TODO: get bot name from Slack
       when /#{@bot_name} | @#{@bot_name} / then
         output = @plugins.exec data
-        @client.web_client.chat_postMessage channel: data.channel,
-                                            text: output
+        if output && !output.empty?
+          @client.web_client.chat_postMessage channel: data.channel,
+                                              text: output
+        # TODO: could simply not respond at all or make configurable.
+        else
+          @client.web_client.chat_postMessage channel: data.channel,
+                                              text: "Hi <@#{data.user}>, I did not understand that command."
+        end
       end
     end
 
