@@ -28,15 +28,16 @@ class Plugin
     load
   end
 
-  # Load the plugin configuration.
-  # The plugin type is the important switch here.
-  #
-  # TODO: need a lot more error checking.
+  # Keeping DRY, all repetive load tasks go here.
   def load_docker
     clear_existing_container(@name)
     _image = Docker::Image.create(fromImage: @lang_settings[:image])
   end
 
+  # Load the plugin configuration.
+  # The plugin type is the important switch here.
+  #
+  # TODO: need a lot more error checking.
   def load
     case @config['plugin']['type']
     when 'script'
@@ -79,6 +80,7 @@ class Plugin
     help_load
   end
 
+  # Build out help commands for users to query in chat
   def help_load
     case @config['plugin']['type']
     when 'script', 'api'
