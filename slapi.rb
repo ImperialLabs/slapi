@@ -12,6 +12,7 @@ class Slapi < Sinatra::Application
   # enable :sessions
 
   config_file 'config/environments.yml'
+  config_file 'config/bot.yml'
 
   configure :production, :development, :test do
     enable :logging

@@ -21,6 +21,16 @@ run
 
 And set breakpoints and debug.
 
+### configuration
+
+You will need a bot configuration from Slack.  See: https://api.slack.com/bot-users
+
+Once you have configured a bot then you will have a token like: "xoxb-XXXXXXXXXXXX-TTTTTTTTTTTTTT"
+
+You will need to put this in the file config/bot.yml or config/environments.yml for example:
+
+    SLACK_API_TOKEN: 'xoxb-XXXXXXXXXXXX-TTTTTTTTTTTTTT'
+
 ### Running the server
 
 To run sinatra locally simply run:
