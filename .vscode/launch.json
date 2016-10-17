@@ -28,13 +28,24 @@
             ]
         },
         {
-            "name": "Sinatra",
+            "name": "Sinatra-rvm",
             "type": "Ruby",
             "request": "launch",
             "cwd": "${workspaceRoot}",
             "program": "${workspaceRoot}/bin/rackup",
             "useBundler": true,
             "pathToBundler": "${env.HOME}/.rvm/gems/ruby-2.3.0/wrappers/bundle",
+            "showDebuggerOutput": true,
+            "pathToRDebugIDE": "${workspaceRoot}/bin/rdebug-ide"
+        },
+        {
+            "name": "Sinatra-rbenv",
+            "type": "Ruby",
+            "request": "launch",
+            "cwd": "${workspaceRoot}",
+            "program": "${workspaceRoot}/bin/rackup",
+            "useBundler": true,
+            "pathToBundler": "${env.HOME}/.rbenv/shims/bundle",
             "showDebuggerOutput": true,
             "pathToRDebugIDE": "${workspaceRoot}/bin/rdebug-ide"
         },
