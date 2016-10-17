@@ -21,6 +21,7 @@ class RealTimeClient
     # TODO: Authorization test does not work for realtime client
     # @client.auth_test
     @plugins = Plugins.new
+    @bot_name = settings.bot_name
   end
 
   # Reload all of the plugins from configuration files
@@ -43,11 +44,9 @@ class RealTimeClient
       when 'bot hi' then
         @client.web_client.chat_postMessage channel: data.channel,
                                             text: "Hi <@#{data.user}>!"
-      # it is here that I believe we should parse the second word as the name of the plugin.
-      # Then forward on the request to the plugin based on configuration.
-      # May need a check for configuration of and
-      when /^bot/ then
-
+      # Reads from configuration for bot name
+      # TODO: get bot name from Slack
+      when /#{@bot_name} | @#{@bot_name} / then
         output = @plugins.exec data
         @client.web_client.chat_postMessage channel: data.channel,
                                             text: output
