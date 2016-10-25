@@ -10,9 +10,18 @@ require_relative 'lib/core/realtime'
 class Slapi < Sinatra::Application
   register Sinatra::ConfigFile
   # enable :sessions
-
   config_file 'config/environments.yml'
-  config_file 'config/bot.yml'
+  config_file 'config/bot.local.yml'
+
+  # Enable local configs to be ignored
+  # Adds Exception for missing config
+  # if File.file?('config/bot.yml')
+  #   config_file 'config/bot.yml'
+  # elsif File.file?('config/bot.local.yml')
+  #   config_file 'config/bot.local.yml'
+  # else
+  #   raise "No bot config found"
+  # end
 
   configure :production, :development, :test do
     enable :logging

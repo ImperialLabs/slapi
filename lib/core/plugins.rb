@@ -42,15 +42,22 @@ class Plugins
   def exec(data)
     # if contains a space
     if data.text.include? ' '
-      bot_name = data.text.match(" ").pre_match
-      command = data.text.match(" ").post_match
-      requested_plugin = command.match(" ").pre_match
+      data_array = data.text.split(" ")
+      command = data_array[2]
+      requested_plugin = data_array[1]
+      puts "Requested Plugin: #{requested_plugin}"
+      puts "Command: #{command}"
+      puts "Command Args: #{data_array[-2,2]}"
+      # _bot_name = data.text.match(" ").pre_match
+      # command = data.text.match(" ").post_match
+      # requested_plugin = command.match(" ").pre_match
       @plugin_hash.each do |name, plugin|
         if name == requested_plugin
           # TODO: may need to either:
           #   return the return from plugin.exec
           #   or make a call through the API to post in the channel
-          output = plugin.exec command.match(" ").post_match
+          #output = plugin.exec command.match(" ").post_match
+          output = plugin.exec data_array[-2,2]
           return output
         end
       end

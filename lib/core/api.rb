@@ -12,8 +12,8 @@ class Slapi < Sinatra::Application
   def initialize
     super()
     Slack.configure do |config|
-      config.token = settings.SLACK_API_TOKEN
-      raise 'Missing SLACK_API_TOKEN configuration!' unless config.token
+      config.token = settings.adapter['token']
+      raise 'Missing Slack Token configuration!' unless config.token
     end
 
     @client = Slack::Web::Client.new

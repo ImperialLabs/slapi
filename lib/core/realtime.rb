@@ -13,20 +13,27 @@ require_relative 'plugins'
 # To test real time client: https://api.slack.com/methods/rtm.start/test
 class RealTimeClient
   def initialize(settings)
+    # TODO: Make non-slack specific to enable other adapters?
     Slack.configure do |config|
-      config.token = settings.SLACK_API_TOKEN
-      raise 'Missing SLACK_API_TOKEN configuration!' unless config.token
+      config.token = settings.adapter['token']
+      raise 'Missing Slack Token configuration!' unless config.token
     end
     @client = Slack::RealTime::Client.new
     # TODO: Authorization test does not work for realtime client
     # @client.auth_test
     @plugins = Plugins.new
-    @bot_name = settings.bot_name
+    @bot_name = settings.bot['name']
     # Adding for later use
-    @help_options = settings['help']
-    @admin_options = settings['admin']
+    @help_options = settings.help || {}
+    @admin_options = settings.admin || {}
   end
 
+  # Avoid potential empty variable so bot responds to all items that start with @
+  def bot_name
+    if @bot_name.nil?
+      @bot_name = @client.self.name
+    end
+  end
   # Reload all of the plugins from configuration files
   def update_plugin_cache
     @plugins.load
@@ -37,6 +44,8 @@ class RealTimeClient
   # has a basic 'hello' to act as a ping.
   # will route all messages that start with 'bot' to the Plugins class to route to the correct plugin
   def run_bot
+    # Ensure there is a bot name to be referenced
+    bot_name
     @client.on :hello do
       puts "Successfully connected, welcome '#{@client.self.name}' to the '#{@client.team.name}' team at https://#{@client.team.domain}.slack.com."
     end
