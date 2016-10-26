@@ -35,7 +35,6 @@ class Plugin
     when 'script'
       @image = Docker::Image.create(fromImage: @lang_settings[:image])
       @container_hash = {
-        'name' => @name,
         'Image' => @lang_settings[:image],
         'HostConfig' => {
           'Binds' => ["#{Dir.pwd}/scripts/#{filename}:/scripts/#{filename}"]

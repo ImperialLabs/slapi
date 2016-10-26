@@ -56,9 +56,17 @@ class RealTimeClient
       when /^#{@bot_name} ping|^@#{@bot_name} ping|^\<@#{@client.self.id}\> ping/ then
           @client.web_client.chat_postMessage channel: data.channel,
                                               text: 'PONG'
+      # TODO: Add another listener specific to help command ?
+      # TODO: Decide on how to cache help data to be able to post in chat
       when /^#{@bot_name} help|^@#{@bot_name} help|^\<@#{@client.self.id}\> help/ then
           @client.web_client.chat_postMessage channel: data.channel,
                                               text: 'Imagine a help list here! WHAT?'
+      # TODO: Make output function based on config options (level 1 or 2)
+      #output = @plugins.help data
+      #if output && !output.empty?
+      # TODO: add ability to switch responses from channel or DM based on config settings
+      #  @client.web_client.chat_postMessage channel: data.channel,
+      #                                      text: output
       when /^#{@bot_name} reload|^@#{@bot_name} reload|^\<@#{@client.self.id}\> reload/ then
           @client.web_client.chat_postMessage channel: data.channel,
                                               text: 'Reloading Plugins, please wait.'
@@ -76,20 +84,6 @@ class RealTimeClient
           @client.web_client.chat_postMessage channel: data.channel,
                                               text: "Hi <@#{data.user}>, I did not understand that command."
         end
-      # TODO: Work in config options to utilize help in the appropriate way.
-      # TODO: Decide on how to cache help data to be able to post in chat
-      #when /^#{@bot_name} help|^@#{@bot_name} help|^\<@#{@client.self.id}\> help/ then
-        # TODO: Make output function based on config options (level 1 or 2)
-        #output = @plugins.help data
-        #if output && !output.empty?
-        # TODO: add ability to switch responses from channel or DM based on config settings
-        #  @client.web_client.chat_postMessage channel: data.channel,
-        #                                      text: output
-        #else
-        #  @client.web_client.chat_postMessage channel: data.channel,
-        #                                      text: "Sorry <@#{data.user}>, I could not find any help information on that"
-        #end
-        # TODO: Add another listener specific to help command ?
       end
     end
 
