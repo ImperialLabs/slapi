@@ -56,6 +56,15 @@ class RealTimeClient
       when /^#{@bot_name} ping|^@#{@bot_name} ping|^\<@#{@client.self.id}\> ping/ then
           @client.web_client.chat_postMessage channel: data.channel,
                                               text: 'PONG'
+      when /^#{@bot_name} help|^@#{@bot_name} help|^\<@#{@client.self.id}\> help/ then
+          @client.web_client.chat_postMessage channel: data.channel,
+                                              text: 'Imagine a help list here! WHAT?'
+      when /^#{@bot_name} reload|^@#{@bot_name} reload|^\<@#{@client.self.id}\> reload/ then
+          @client.web_client.chat_postMessage channel: data.channel,
+                                              text: 'Reloading Plugins, please wait.'
+          update_plugin_cache
+          @client.web_client.chat_postMessage channel: data.channel,
+                                              text: 'Plugins Reloaded'
       # Reads from configuration for bot name or uses the bot name/id from Slack
       when /^#{@bot_name} |^@#{@bot_name} |^\<@#{@client.self.id}\> / then
         output = @plugins.exec data

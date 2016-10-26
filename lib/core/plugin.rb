@@ -111,7 +111,7 @@ class Plugin
   #
   # @param string data_from_chat
   # @return string representing response to be displayed
-  def exec(data_from_chat)
+  def exec(data_from_chat=nil)
     # based on some meta information like the type then execute the proper way
     case @config['plugin']['type']
     when 'script', 'container'
