@@ -160,10 +160,13 @@ class Plugin
       #   chat:
       #     {
       #       user: data_from_chat['user'],
-      #       channel: data_from_chat['channel']
+      #       channel: data_from_chat['channel'],
+      #       type: data_from_chat['type'],
+      #       timestamp: data_from_chat['ts']
       #     },
       #   command: {
-      #     data: data_chat_array
+      #     # text without username or plugin name
+      #     data: data_chat_array.drop(2)
       #   }
       # }
       # response = HTTParty.get(@config['api']['url'], body: payload, headers: @headers)
