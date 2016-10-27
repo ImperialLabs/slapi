@@ -14,12 +14,14 @@ class Slapi < Sinatra::Application
 
   # Enable local configs to be ignored
   # Adds Exception for missing config
+  botfile = File.file?('config/bot.yml')
+  botlocalfile = File.file?('config/bot.yml')
 
-  config_file 'config/bot.yml' if botfile == File.file?('config/bot.yml')
+  config_file 'config/bot.yml' if botfile
 
-  config_file 'config/bot.local.yml'  if botlocalfile == File.file?('config/bot.local.yml')
+  config_file 'config/bot.local.yml' if botlocalfile
 
-  raise 'No bot config found' unless botfile || botlocalfile
+  raise 'No bot config found' unless botfile | botlocalfile
 
   configure :production, :development, :test do
     enable :logging

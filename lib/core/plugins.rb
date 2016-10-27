@@ -39,23 +39,15 @@ class Plugins
   # If the plugin does not exist then it
   # @param Hash data
   # @return boolean - whether the command was passed on
-  # rubocop:disable Metrics/MethodLength
   def exec(data)
-    data_array_test = data.text.split(' ')
-    data_array_test2 = data.text.split(/ /)
-    puts "Here's the array"
-    puts data_array_test
-    puts "Here's the array 2"
-    puts data_array_test2
     # if contains a space
     if data.text.include? ' '
       # Create array based on spaces
       data_array = data.text.split(' ')
       requested_plugin = data_array[1]
       @plugin_hash.each do |name, plugin|
-        break if name == requested_plugin
         output = plugin.exec data_array.drop(2) if name == requested_plugin
-        return output
+        return output if name == requested_plugin
       end
     end
     nil
