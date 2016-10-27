@@ -30,10 +30,9 @@ class RealTimeClient
 
   # Avoid potential empty variable so bot responds to all items that start with @
   def bot_name
-    if @bot_name.nil?
-      @bot_name = @client.self.name
-    end
+    @bot_name = @client.self.name if @bot_name.nil?
   end
+
   # Reload all of the plugins from configuration files
   def update_plugin_cache
     @plugins.load
@@ -43,6 +42,8 @@ class RealTimeClient
   #
   # has a basic 'hello' to act as a ping.
   # will route all messages that start with 'bot' to the Plugins class to route to the correct plugin
+  # rubocop:disable Metrics/MethodLength
+  # rubocop:disable Metrics/AbcSize
   def run_bot
     # Ensure there is a bot name to be referenced
     bot_name
@@ -54,25 +55,25 @@ class RealTimeClient
       puts data
       case data.text
       when /^#{@bot_name} ping|^@#{@bot_name} ping|^\<@#{@client.self.id}\> ping/ then
-          @client.web_client.chat_postMessage channel: data.channel,
-                                              text: 'PONG'
+        @client.web_client.chat_postMessage channel: data.channel,
+                                            text: 'PONG'
       # TODO: Add another listener specific to help command ?
       # TODO: Decide on how to cache help data to be able to post in chat
       when /^#{@bot_name} help|^@#{@bot_name} help|^\<@#{@client.self.id}\> help/ then
-          @client.web_client.chat_postMessage channel: data.channel,
-                                              text: 'Imagine a help list here! WHAT?'
+        @client.web_client.chat_postMessage channel: data.channel,
+                                            text: 'Imagine a help list here! WHAT?'
       # TODO: Make output function based on config options (level 1 or 2)
-      #output = @plugins.help data
-      #if output && !output.empty?
+      # output = @plugins.help data
+      # if output && !output.empty?
       # TODO: add ability to switch responses from channel or DM based on config settings
       #  @client.web_client.chat_postMessage channel: data.channel,
       #                                      text: output
       when /^#{@bot_name} reload|^@#{@bot_name} reload|^\<@#{@client.self.id}\> reload/ then
-          @client.web_client.chat_postMessage channel: data.channel,
-                                              text: 'Reloading Plugins, please wait.'
-          update_plugin_cache
-          @client.web_client.chat_postMessage channel: data.channel,
-                                              text: 'Plugins Reloaded'
+        @client.web_client.chat_postMessage channel: data.channel,
+                                            text: 'Reloading Plugins, please wait.'
+        update_plugin_cache
+        @client.web_client.chat_postMessage channel: data.channel,
+                                            text: 'Plugins Reloaded'
       # Reads from configuration for bot name or uses the bot name/id from Slack
       when /^#{@bot_name} |^@#{@bot_name} |^\<@#{@client.self.id}\> / then
         output = @plugins.exec data
@@ -86,7 +87,6 @@ class RealTimeClient
         end
       end
     end
-
     # Need to use async because @client.start! will block the rest of the program
     # execution in the event listener loop.
     @client.start_async

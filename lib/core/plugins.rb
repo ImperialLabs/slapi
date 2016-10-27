@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-#require 'yaml'
+# require 'yaml'
 require_relative 'plugin'
 
 # Plugins class will act as a cache of the plugins currently loaded.
@@ -28,7 +28,7 @@ class Plugins
     # TODO: play with where we want the plugin configuration to live.
     yaml_files = File.expand_path('../../config/plugins/*.yml', File.dirname(__FILE__))
     Dir.glob(yaml_files).each do |file|
-      @plugin_hash[File.basename(file, ".*")] = Plugin.new(file)
+      @plugin_hash[File.basename(file, '.*')] = Plugin.new(file)
     end
   end
 
@@ -39,19 +39,23 @@ class Plugins
   # If the plugin does not exist then it
   # @param Hash data
   # @return boolean - whether the command was passed on
+  # rubocop:disable Metrics/MethodLength
   def exec(data)
+    data_array_test = data.text.split(' ')
+    data_array_test2 = data.text.split(/ /)
+    puts "Here's the array"
+    puts data_array_test
+    puts "Here's the array 2"
+    puts data_array_test2
     # if contains a space
     if data.text.include? ' '
-      data_array = data.text.split(" ")
+      # Create array based on spaces
+      data_array = data.text.split(' ')
       requested_plugin = data_array[1]
       @plugin_hash.each do |name, plugin|
-        if name == requested_plugin
-          # TODO: may need to either:
-          #   return the return from plugin.exec
-          #   or make a call through the API to post in the channel
-          output = plugin.exec data_array.drop(2)
-          return output
-        end
+        break if name == requested_plugin
+        output = plugin.exec data_array.drop(2) if name == requested_plugin
+        return output
       end
     end
     nil
@@ -69,10 +73,8 @@ class Plugins
     # Merge all hashes together or parse out a file(s)?
   end
 
-
-  # TODO should this be exposed to cleanout any unused docker containers
+  # TODO: should this be exposed to cleanout any unused docker containers
   def cleanup_docker
     # Loop through the list of containers and plugins matching and remove any not connected
   end
-
 end

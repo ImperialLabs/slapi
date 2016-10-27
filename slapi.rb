@@ -19,7 +19,7 @@ class Slapi < Sinatra::Application
   elsif File.file?('config/bot.local.yml')
     config_file 'config/bot.local.yml'
   else
-    raise "No bot config found"
+    raise 'No bot config found'
   end
 
   configure :production, :development, :test do
