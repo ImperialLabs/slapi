@@ -46,7 +46,7 @@ class Plugins
       data_array = data.text.split(' ')
       requested_plugin = data_array[1]
       @plugin_hash.each do |name, plugin|
-        output = plugin.exec data_array.drop(2) if name == requested_plugin
+        output = plugin.exec data if name == requested_plugin
         return output if name == requested_plugin
       end
     end

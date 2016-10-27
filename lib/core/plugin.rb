@@ -84,6 +84,10 @@ class Plugin
 
   def load_api
     # TODO: Add API Loading Config
+    # @headers = {
+    #   'Content-Type' => @config['api']['content_type'],
+    #   'Authorization' => @config['api']['auth']
+    # }
   end
 
   # Load the plugin configuration.
@@ -135,6 +139,7 @@ class Plugin
   # @return string representing response to be displayed
   def exec(data_from_chat = nil)
     # based on some meta information like the type then execute the proper way
+    data_chat_array = data_from_chat.text.split(' ', 4)
     case @config['plugin']['type']
     when 'script', 'container'
       case @config['plugin']['listen_type']
@@ -142,16 +147,26 @@ class Plugin
         unless @config['plugin']['mount_config'].nil?
           @container_hash['HostConfig'] = { 'Binds' => ["#{Dir.pwd}/config/plugins/#{@name}.yml:#{@config['plugin']['mount_config']}"] }
         end
-        @container_hash['Cmd'] = data_from_chat
+        @container_hash['Cmd'] = data_chat_array.drop(2)
         @container = Docker::Container.create(@container_hash)
         @container.tap(&:start).attach(tty: true)
         response = @container.logs(stdout: true)
         @container.delete(force: true)
       when 'active'
-        @container.exec([data_from_chat])
+        @container.exec([data_chat_array.drop(2)])
       end
     when 'api'
-      response = HTTParty.get(@config['api']['url'])
+      # payload = {
+      #   chat:
+      #     {
+      #       user: data_from_chat['user'],
+      #       channel: data_from_chat['channel']
+      #     },
+      #   command: {
+      #     data: data_chat_array
+      #   }
+      # }
+      # response = HTTParty.get(@config['api']['url'], body: payload, headers: @headers)
       # else ?
       # Error log and chat?
       # Since it will only make it to this level if the bot was invoked
