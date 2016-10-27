@@ -1,0 +1,24 @@
+# Adapter Settings
+adapter:
+  type: slack # Enables option alternative adapters
+  token: # API token
+  # user_agent: # User-agent, defaults to Slack Ruby Client/version.
+  # proxy: # Optional HTTP proxy.
+  # ca_path: # Optional SSL certificates path.
+  # ca_file: # Optional SSL certificates file.
+  # endpoint: # Slack endpoint, default is https://slack.com/api.
+  # logger: # Optional Logger instance that logs HTTP requests.
+
+# Bot ConfigFile
+bot:
+  name: bot # name for bot to respond to (optional)
+
+# Admin Settings
+admin:
+  users: # Array of names or IDs who are admins
+  dm_limit: # True/False Limits bot DMs, will not respond to DMs from non-admins.
+
+# Help Settings
+help:
+  level: 1 # 1/2; 1 only lists plugin names, 2 lists names and opts
+  dm_user: false # True/False; True to send all help requests as DM, false to post in room
