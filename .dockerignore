@@ -1,0 +1,3 @@
+# ignore any config files
+  ./config/plugins/*.yml
+  ./config/*.yml
