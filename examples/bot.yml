@@ -1,8 +1,17 @@
 # Adapter Settings
 adapter:
   type: slack # Enables option alternative adapters
-  bot_name: # additional name for bot (if wanting to use something other than client name)
   token: # API token
+  # user_agent: # User-agent, defaults to Slack Ruby Client/version.
+  # proxy: # Optional HTTP proxy.
+  # ca_path: # Optional SSL certificates path.
+  # ca_file: # Optional SSL certificates file.
+  # endpoint: # Slack endpoint, default is https://slack.com/api.
+  # logger: # Optional Logger instance that logs HTTP requests.
+
+# Bot ConfigFile
+bot:
+  name: bot # name for bot to respond to (optional)
 
 # Admin Settings
 admin:

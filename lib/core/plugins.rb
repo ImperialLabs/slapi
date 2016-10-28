@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-#require 'yaml'
+# require 'yaml'
 require_relative 'plugin'
 
 # Plugins class will act as a cache of the plugins currently loaded.
@@ -28,7 +28,7 @@ class Plugins
     # TODO: play with where we want the plugin configuration to live.
     yaml_files = File.expand_path('../../config/plugins/*.yml', File.dirname(__FILE__))
     Dir.glob(yaml_files).each do |file|
-      @plugin_hash[File.basename(file, ".*")] = Plugin.new(file)
+      @plugin_hash[File.basename(file, '.*')] = Plugin.new(file)
     end
   end
 
@@ -42,26 +42,31 @@ class Plugins
   def exec(data)
     # if contains a space
     if data.text.include? ' '
-      bot_name = data.text.match(" ").pre_match
-      command = data.text.match(" ").post_match
-      requested_plugin = command.match(" ").pre_match
+      # Create array based on spaces
+      data_array = data.text.split(' ')
+      requested_plugin = data_array[1]
       @plugin_hash.each do |name, plugin|
-        if name == requested_plugin
-          # TODO: may need to either:
-          #   return the return from plugin.exec
-          #   or make a call through the API to post in the channel
-          output = plugin.exec command.match(" ").post_match
-          return output
-        end
+        output = plugin.exec data if name == requested_plugin
+        return output if name == requested_plugin
       end
     end
     nil
   end
 
+  # Searches for phrased based plugins
+  def phrase_lookup
+    # search plugin hash and container labels?
+  end
 
-  # TODO should this be exposed to cleanout any unused docker containers
+  # Creates primary help list
+  #
+  # Utilizes the bot.yml help hash to determine response level.
+  def help
+    # Merge all hashes together or parse out a file(s)?
+  end
+
+  # TODO: should this be exposed to cleanout any unused docker containers
   def cleanup_docker
     # Loop through the list of containers and plugins matching and remove any not connected
   end
-
 end
