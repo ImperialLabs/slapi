@@ -4,7 +4,8 @@
 
 ## Prerequisites
 
-You need Docker 1.10 or later installed.
+* Docker 1.10 or later
+* Ruby 2.2 or later
 
 ## Getting started
 
@@ -79,6 +80,8 @@ Which will use simple the thin server.
 This should work in Visual Studio Code when selecting the `Sinatra` debug option, however sometimes it seems you need to restart all of Visual Studio Code.
 
 When running in Visual Studio Code, Sinatra tends to run on port 9292.
+
+The settings for Visual Studio Code can be found in the `launch.json` file.
 
 ### Running the docker container
 
