@@ -3,13 +3,6 @@ require 'yaml'
 require 'docker'
 require 'httparty'
 
-# Rubocop settings
-# rubocop:disable Metrics/MethodLength
-# rubocop:disable Metrics/ClassLength
-# rubocop:disable Metrics/AbcSize
-# rubocop:disable Metrics/NumericLiteralPrefix
-# rubocop:disable Style/SafeNavigation
-
 # Plugin class will represent an individual plugin.
 # It will check the metadata of the type of plugins to make decisions.
 # It's two main functions are to:

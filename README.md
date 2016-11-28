@@ -13,13 +13,13 @@
 
 run
 
-```
+```bash
 bundle install
 ```
 
 (Optional) The project is set up with extra helpers for VS Code. If you chose to use this then you should be able to run:
 
-```
+```bash
 bundle clean
 bundle install --binstubs --path vendor/bundle
 bundle clean
@@ -69,9 +69,11 @@ help:
 
 ### Running the server
 
+#### Local
+
 To run Sinatra locally simply run:
 
-```
+```bash
 rackup -p 4567
 ```
 
@@ -83,11 +85,11 @@ When running in Visual Studio Code, Sinatra tends to run on port 9292.
 
 The settings for Visual Studio Code can be found in the `launch.json` file.
 
-### Running the docker container
+#### Running w/ Docker
 
 To build the docker container locally simply run:
 
-```
+```bash
 docker build --tag=slapi_local ./
 ```
 
@@ -95,19 +97,34 @@ NOTE: this will currently pull all of the development dependencies, need to revi
 
 To run the docker container:
 
+```bash
+docker run -d -p 4567:4567 -v /var/run/docker.sock:/var/run/docker.sock --name slapi_local slapi_local
 ```
-docker run -d -p 4567:4567 -p 80:80 --name slapi_local slapi_local
+
+To run a released version:
+
+```bash
+docker run -d -p 4567:4567 -v /var/run/docker.sock:/var/run/docker.sock --name slapi slapi/slapi:latest
 ```
+
+Run w/ Config files:
+
+```bash
+docker run -d -p 4567:4567 -v /var/run/docker.sock:/var/run/docker.sock -v /path/to/config:/slapi/config --name slapi slapi/slapi:latest
+```
+
 
 ## Development
 
 ### Testing
 
+#### Local Testing
+
 There are currently rspec integration tests using capybara. These could use more help.
 
 To run this tests simply:
 
-```
+```bash
 rspec
 ```
 
@@ -121,14 +138,31 @@ To run all tests in Visual Studio Code use the `RSpec - all` configuration.
 
 Select `Sinatra-rbenv` or `Sinatra-rvm` in VS Code depending on your setup to do standard debugging.
 
-### Lint
+Or use a plugin in your favorite editor.
+
+#### Remote Testing (Docker)
+
+If Making changes to the Dockerfile and/or container itself build your changes by running:
+
+```bash
+docker build --tag=slapi_local ./
+```
+
+To run the docker container:
+
+```bash
+docker run -d -p 4567:4567 -v /var/run/docker.sock:/var/run/docker.sock --name slapi_local slapi_local
+```
+
+
+### Linting
 
 Rubocop is being used. Try to keep the lint clean by either addressing the issues or updating the .rubocop.yml.
 
 To run rubocop either run:
 
-```
+```bash
 rubocop
 ```
 
-Or use a plugin in your favorite editor.
+## How to Contribute
