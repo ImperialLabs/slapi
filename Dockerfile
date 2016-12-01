@@ -35,4 +35,4 @@ RUN apk update && apk add \
 
 EXPOSE 4567
 
-ENTRYPOINT ["supervisord", "-c", "/etc/supervisor.d/supervisord.conf", "-n"]
+CMD ["supervisord", "-c", "/etc/supervisor.d/supervisord.conf", "-n"]

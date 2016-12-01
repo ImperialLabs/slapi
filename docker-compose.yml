@@ -1,0 +1,47 @@
+version: '2'
+services:
+  dind_host:
+    image: docker:dind
+    privileged: true
+    volumes:
+        - scripts:/usr/src/slapi/scripts
+    networks:
+        slapi-net:
+            ipv4_address: 172.16.238.2
+  bot:
+    image: slapi_test
+    ports:
+        - "4567:4567"
+    environment:
+        DOCKER_URL: 'docker:2375'
+    volumes:
+        - scripts:/usr/src/slapi/scripts:rw
+        - ./config\:/usr/src/slapi/config/
+    networks:
+        slapi-net:
+            ipv4_address: 172.16.238.3
+    extra_hosts:
+        - "docker:172.16.238.2"
+    depends_on:
+        - dind_host
+        # - brain
+#   brain:
+#     image: postgres
+#     ports:
+#     networks:
+#         - slapi-net
+#             ipv4_address: 172.16.238.4
+#     depends_on:
+#         - dind_host
+
+volumes:
+  scripts:
+    driver: local
+networks:
+  slapi-net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.16.238.0/24
+        gateway: 172.16.238.1
