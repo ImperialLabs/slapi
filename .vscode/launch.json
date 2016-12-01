@@ -55,6 +55,16 @@
             ]
         },
         {
+            "name": "Attach to Docker",
+            "type": "Ruby",
+            "request": "attach",
+            "remotePort": "1234",
+            "remoteHost": "0.0.0.0",
+            "remoteWorkspaceRoot": "/usr/src/slapi",
+            "cwd": "${workspaceRoot}",
+            "showDebuggerOutput": true
+        },
+        {
             "name": "RSpec - all as production",
             "type": "Ruby",
             "request": "launch",

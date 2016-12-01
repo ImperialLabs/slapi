@@ -11,10 +11,7 @@ services:
   bot:
     build: .
     ports:
-        - "1234:1234"
         - "4567:4567"
-        - "26162:26162"
-    command: bundle exec rdebug-ide --host 0.0.0.0 --port 1234 -- /usr/local/bundle/bin/rackup --host 0.0.0.0 -p 4567
     environment:
         DOCKER_URL: 'docker:2375'
     volumes:

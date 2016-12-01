@@ -93,9 +93,12 @@ To build the docker container locally simply run:
 docker build --tag=slapi_local ./
 ```
 
-NOTE: this will currently pull all of the development dependencies, need to revisit this.
+##### CLI w/ Mounted Sock Port
+
+Run with SLAPI using localhost Docker for Plugins
 
 To run the docker container:
+**Note: This will only work on Linux or OSX Based Hosts
 
 ```bash
 docker run -d -p 4567:4567 -v /var/run/docker.sock:/var/run/docker.sock --name slapi_local slapi_local
@@ -113,6 +116,23 @@ Run w/ Config files:
 docker run -d -p 4567:4567 -v /var/run/docker.sock:/var/run/docker.sock -v /path/to/config:/slapi/config --name slapi slapi/slapi:latest
 ```
 
+##### Docker Compose w/ DinD
+
+This setup should work on all Operating Systems supported by Docker
+
+Run the standard compose file [docker-compose.yml](docker-compose.yml) inside the root of the project
+
+Pulls Latest SLAPI Build and mounts the local ./config directory for bot configs. Change the compose file as needed.
+
+```bash
+docker-compose up
+```
+
+Build SLAPI container from scratch w/ compose.
+
+```bash
+docker-compose -f slapi-build-compose.yml
+```
 
 ## Development
 
@@ -148,12 +168,35 @@ If Making changes to the Dockerfile and/or container itself build your changes b
 docker build --tag=slapi_local ./
 ```
 
+
+##### Mounted Socks
+
+Run with SLAPI using localhost Docker for Plugins
+
+To run the docker container:
+**Note: This will only work on Linux or OSX Based Hosts
+
 To run the docker container:
 
 ```bash
 docker run -d -p 4567:4567 -v /var/run/docker.sock:/var/run/docker.sock --name slapi_local slapi_local
 ```
 
+##### Compose & DinD
+
+This setup should work on all Operating Systems supported by Docker
+
+Utilizes the image built previously
+
+```bash
+docker-compose -f slapi-dev-prebuilt-compose.yml up
+```
+
+Build SLAPI container/image from scratch w/ compose.
+
+```bash
+docker-compose -f slapi-dev-compose.yml
+```
 
 ### Linting
 
