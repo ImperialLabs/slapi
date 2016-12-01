@@ -132,7 +132,7 @@ Since these are integration tests they will cause messages to be posted in a cha
 
 imperiallabs.slack.com is currently a free Slack team that you would need an invite to join.
 
-Ensure you have followed all the tasks in [Bundler Section](### Bundler)
+Ensure you have followed all the tasks in [Bundler Section](#Bundler)
 
 To run all tests in Visual Studio Code use the `RSpec - all` configuration.
 

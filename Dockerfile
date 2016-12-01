@@ -1,32 +1,38 @@
-FROM ruby:2.3
+FROM ruby:2.3-alpine
 
-RUN apt-get update -qq && \
-    apt-get install -qq -y supervisor &&\
-    apt-get autoremove -y && \
-    apt-get clean -y && rm -rf /var/lib/apt/lists/*
+MAINTAINER SLAPI Dev Team
 
-# Setup App Environment and User
-ENV APP_HOME /slapi
+ENV APP_HOME /usr/src/slapi
 
-RUN mkdir -p $APP_HOME
-
-ADD supervisord.conf /etc/supervisor/conf.d/
-ADD . $APP_HOME
-
-RUN adduser slapi --disabled-password --gecos "" && \
-    echo "slapi            ALL = (ALL) NOPASSWD: ALL" >> /etc/sudoers &&\
-    chown -R slapi:slapi $APP_HOME && \
-    chmod -R 774 $APP_HOME &&\
-    chmod -R 777 /etc/supervisor &&\
-    chown -R root:slapi /usr/local/lib/ruby/ &&\
-    chmod -R 775 /usr/local/lib/ruby
+RUN mkdir -p $APP_HOME &&\
+    mkdir -p $APP_HOME/log &&\
+    chmod -R 777 $APP_HOME &&\
+    chmod -R 777 /usr/local/lib/ruby/
 
 WORKDIR $APP_HOME
 
-RUN bundle install --binstubs --path vendor/bundle
+COPY supervisord.conf /etc/supervisor.d/supervisord.conf
+COPY . $APP_HOME
 
-USER slapi
+RUN apk update && apk add \
+    bash \
+    supervisor \
+    git &&\
+    runDeps="$( \
+		scanelf --needed --nobanner --recursive /usr/local \
+			| awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
+			| sort -u \
+			| xargs -r apk info --installed \
+			| sort -u \
+	)" &&\
+	apk add --virtual .ruby-builddeps $runDeps \
+    build-base \
+    linux-headers &&\
+    bundle install &&\
+    apk del .ruby-builddeps &&\
+    rm -rf /var/cache/apk/* &&\
+    rm -rf /tmp/*
 
 EXPOSE 4567
 
-ENTRYPOINT ["supervisord", "-n"]
+ENTRYPOINT ["supervisord", "-c", "/etc/supervisor.d/supervisord.conf", "-n"]
