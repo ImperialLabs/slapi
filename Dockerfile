@@ -1,45 +1,37 @@
-FROM ruby:2.3
+FROM ruby:2.3-alpine
 
-RUN apt-get update -qq && \
-    apt-get install -qq -y nginx && \
-    # temporay for debugging remove nano
-    apt-get install -qq -y nano && \
-    apt-get install -qq -y supervisor && \
-    apt-get autoremove -y && \
-    apt-get clean -y && rm -rf /var/lib/apt/lists/*
+MAINTAINER SLAPI Dev Team
 
-# Setup App Environment and User
-ENV APP_HOME /slapi
+ENV APP_HOME /usr/src/slapi
 
-RUN mkdir $APP_HOME && \
-    adduser slapi --disabled-password --gecos "" && \
-    chown -R slapi:slapi $APP_HOME && \
-    echo "slapi            ALL = (ALL) NOPASSWD: ALL" >> /etc/sudoers
-
-RUN mkdir $APP_HOME/tmp && \
-    mkdir $APP_HOME/tmp/sockets && \
-    mkdir $APP_HOME/tmp/pids && \
-    mkdir $APP_HOME/log
+RUN mkdir -p $APP_HOME &&\
+    mkdir -p $APP_HOME/log
 
 WORKDIR $APP_HOME
 
-ADD Gemfile* $APP_HOME/
-ADD *.gemspec $APP_HOME/
+COPY supervisord.conf /etc/supervisor.d/supervisord.conf
+COPY . $APP_HOME
 
-RUN bundle install
+RUN apk update && apk add \
+    bash \
+    supervisor \
+    git &&\
+    runDeps="$( \
+		scanelf --needed --nobanner --recursive /usr/local \
+			| awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
+			| sort -u \
+			| xargs -r apk info --installed \
+			| sort -u \
+	)" &&\
+    if [ -f Gemfile.lock ]; then rm -f Gemfile.lock; fi &&\
+	apk add --virtual .ruby-builddeps $runDeps \
+    build-base \
+    linux-headers &&\
+    bundle install &&\
+    apk del .ruby-builddeps &&\
+    rm -rf /var/cache/apk/* &&\
+    rm -rf /tmp/*
 
-ADD nginx-sites.conf /etc/nginx/nginx.conf
-ADD . $APP_HOME
+EXPOSE 4567
 
-#RUN chown -R slapi:slapi $APP_HOME
-
-# Dowgrade to App User
-#USER slapi
-
-EXPOSE 4568
-EXPOSE 80
-ENV RACK_ENV=production
-
-#CMD ["bundle", "exec", "rackup", "--host", "0.0.0.0", "-p", "4568"]
-
-ENTRYPOINT ["supervisord", "-n"]
+CMD ["supervisord", "-c", "/etc/supervisor.d/supervisord.conf", "-n"]

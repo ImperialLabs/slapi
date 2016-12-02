@@ -5,15 +5,11 @@ plugin:
     help:
       hello world: "Says things"
     description: "simple hello world"
-    write: >
+    write: |
       #!/bin/bash
 
       if [ "${1}" == 'test' ]; then
-
           echo 'Hello World!'
-
       else
-
           echo 'I dont like you'
-
       fi
