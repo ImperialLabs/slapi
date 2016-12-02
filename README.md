@@ -1,11 +1,11 @@
 # Simple Lightweight API Bot (SLAPI)
 
-[![Stories in Ready](https://badge.waffle.io/ImperialLabs/slapi.png?label=ready&title=Ready)](https://waffle.io/ImperialLabs/slapi)
+[![Travis](https://img.shields.io/travis/ImperialLabs/slapi.svg)](https://travis-ci.org/ImperialLabs/slapi) [![Stories in Ready](https://badge.waffle.io/ImperialLabs/slapi.png?label=ready&title=Ready)](https://waffle.io/ImperialLabs/slapi) [![Docker Automated buil](https://img.shields.io/docker/automated/slapi/slapi.svg)](https://hub.docker.com/r/slapi/slapi/) [![Docker Pulls](https://img.shields.io/docker/pulls/slapi/slapi.svg)](https://hub.docker.com/r/slapi/slapi/) [![Docker Stars](https://img.shields.io/docker/stars/slapi/slapi.svg)](https://hub.docker.com/r/slapi/slapi/) [![GitHub release](https://img.shields.io/github/release/slapi/slapi.svg)](https://github.com/ImperialLabs/slapi/releases) [![Github Releases](https://img.shields.io/github/downloads/slapi/slapi/latest/total.svg)](https://github.com/ImperialLabs/slapi/releases)
 
 ## Prerequisites
 
 * Docker 1.10 or later
-* Ruby 2.2 or later
+* Ruby 2.2 or laterπ
 
 ## Getting started
 
