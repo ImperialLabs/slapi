@@ -35,7 +35,7 @@ Once you have configured a bot then you will have a token like: "xoxb-XXXXXXXXXX
 
 You will need to put this in the file config/bot.yml or config/bot.local.yml for example:
 
-**Note:** any .local.yml files are automatically ignored by git or docker
+**NOTE:** any .local.yml files are automatically ignored by git or docker
 
 ```yaml
 # Adapter Settings
@@ -98,7 +98,10 @@ docker build --tag=slapi_local ./
 Run with SLAPI using localhost Docker for Plugins
 
 To run the docker container:
-**Note: This will only work on Linux or OSX Based Hosts
+
+**NOTE**: This will only work on Linux or OSX Based Hosts
+
+**NOTE**:Running without a config attached your bot will not connect you may want to add a `-v /path/to/config:/usr/src/slapi/config` or run `docker exec -it slapi_local bash` and manually edit one for testing.
 
 ```bash
 docker run -d -p 4567:4567 -v /var/run/docker.sock:/var/run/docker.sock --name slapi_local slapi_local
@@ -113,7 +116,7 @@ docker run -d -p 4567:4567 -v /var/run/docker.sock:/var/run/docker.sock --name s
 Run w/ Config files:
 
 ```bash
-docker run -d -p 4567:4567 -v /var/run/docker.sock:/var/run/docker.sock -v /path/to/config:/slapi/config --name slapi slapi/slapi:latest
+docker run -d -p 4567:4567 -v /var/run/docker.sock:/var/run/docker.sock -v /path/to/config:/usr/src/slapi/config --name slapi slapi/slapi:latest
 ```
 
 ##### Docker Compose w/ DinD
@@ -173,7 +176,7 @@ docker build --tag=slapi_local ./
 Run with SLAPI using localhost Docker for Plugins
 
 To run the docker container:
-**Note: This will only work on Linux or OSX Based Hosts
+**NOTE**: This will only work on Linux or OSX Based Hosts
 
 To run the docker container:
 
@@ -223,7 +226,7 @@ rubocop
 * Push your work back up to your fork
 * Submit a Pull Request so that we can review your changes
 
-NOTE: Be sure to merge the latest from "upstream" before making a pull request!
+**NOTE**: Be sure to merge the latest from "upstream" before making a pull request!
 
 ### Internal Contributors
 
@@ -233,4 +236,4 @@ NOTE: Be sure to merge the latest from "upstream" before making a pull request!
 * Push your work back up to your branch
 * Submit a Pull Request so the changes can be reviewed
 
-NOTE: Be sure to merge the latest from "upstream" before making a pull request!
+**NOTE**: Be sure to merge the latest from "upstream" before making a pull request!
