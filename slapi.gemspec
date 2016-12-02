@@ -33,7 +33,7 @@ Gem::Specification.new do |spec|
   # spec.add_dependency 'faye-websocket'
   # spec.add_dependency 'celluloid-io', require: ['celluloid/current', 'celluloid/io']
 
-  spec.add_development_dependency 'rake', '~> 10.5'
+  spec.add_development_dependency 'rake'
   spec.add_development_dependency 'rspec', '~> 3.4'
   spec.add_development_dependency 'nyan-cat-formatter'
   spec.add_development_dependency 'rubocop'

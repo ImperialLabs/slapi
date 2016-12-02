@@ -12,7 +12,7 @@ services:
             # Setting a specific address allows us to add this to the host file of the bot container
             ipv4_address: 172.16.238.2
   bot:
-    image: slapi_test
+    image: slapi_local
     ports:
         - "4567:4567"
     environment:

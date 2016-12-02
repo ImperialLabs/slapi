@@ -134,7 +134,7 @@ docker-compose up
 Build SLAPI container from scratch w/ compose.
 
 ```bash
-docker-compose -f slapi-build-compose.yml
+docker-compose -f slapi-build-compose.yml up
 ```
 
 ## Development
