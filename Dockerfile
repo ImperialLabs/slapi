@@ -5,9 +5,7 @@ MAINTAINER SLAPI Dev Team
 ENV APP_HOME /usr/src/slapi
 
 RUN mkdir -p $APP_HOME &&\
-    mkdir -p $APP_HOME/log &&\
-    chmod -R 777 $APP_HOME &&\
-    chmod -R 777 /usr/local/lib/ruby/
+    mkdir -p $APP_HOME/log
 
 WORKDIR $APP_HOME
 

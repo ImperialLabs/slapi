@@ -8,4 +8,4 @@
   ./examples
   ./.vscode
   ./.github
-  
+  ./Gemfile.lock

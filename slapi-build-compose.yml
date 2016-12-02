@@ -16,7 +16,7 @@ services:
         DOCKER_URL: 'docker:2375'
     volumes:
         - scripts:/usr/src/slapi/scripts:rw
-        - ./config\:/usr/src/slapi/config/
+        - ./config:/usr/src/slapi/config/
     networks:
         slapi-net:
             ipv4_address: 172.16.238.3
