@@ -168,7 +168,6 @@ If Making changes to the Dockerfile and/or container itself build your changes b
 docker build --tag=slapi_local ./
 ```
 
-
 ##### Mounted Socks
 
 Run with SLAPI using localhost Docker for Plugins
@@ -186,7 +185,7 @@ docker run -d -p 4567:4567 -v /var/run/docker.sock:/var/run/docker.sock --name s
 
 This setup should work on all Operating Systems supported by Docker
 
-Utilizes the image built previously
+Utilizes the image built previously, this is probably the option you want to use for windows. There has been issues getting docker-compose to build images on windows, so utilize the build option under [Remote Testing](#Remote-Testing) header.
 
 ```bash
 docker-compose -f slapi-dev-prebuilt-compose.yml up
@@ -195,8 +194,14 @@ docker-compose -f slapi-dev-prebuilt-compose.yml up
 Build SLAPI container/image from scratch w/ compose.
 
 ```bash
-docker-compose -f slapi-dev-compose.yml
+docker-compose -f slapi-dev-compose.yml up
 ```
+
+#### Attaching Debugger to Docker
+
+The debuggers run on port 1234, so just connect to `127.0.0.1:1234`
+
+If you are using VS Code, you can select the `Attach to Docker` profile in the debugger.
 
 ### Linting
 
@@ -209,3 +214,23 @@ rubocop
 ```
 
 ## How to Contribute
+
+### External Contributors
+
+* [Fork](https://github.com/ImperialLabs/slapi#fork-destination-box) the repo on GitHub
+* Clone the project to your own machine
+* Commit changes to your own branch
+* Push your work back up to your fork
+* Submit a Pull Request so that we can review your changes
+
+NOTE: Be sure to merge the latest from "upstream" before making a pull request!
+
+### Internal Contributors
+
+* Clone the project to your own machine
+* Create a new branch from master
+* Commit changes to your own branch
+* Push your work back up to your branch
+* Submit a Pull Request so the changes can be reviewed
+
+NOTE: Be sure to merge the latest from "upstream" before making a pull request!
