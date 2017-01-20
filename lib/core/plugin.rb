@@ -22,7 +22,8 @@ class Plugin
     @config = YAML.load_file(file)
     @lang_settings = lang_settings
     @container = nil
-    @container_info = nil
+    @container_info = {}
+    @api_info = {}
     @container_hash = { 'name' => @name }
     @help_hash = {}
     load
@@ -42,6 +43,7 @@ class Plugin
         'Entrypoint' => "/scripts/#{filename}",
         'Tty' => true
       }
+      @container_hash['Labels'] = @config['plugin']['help']
     when 'container'
       @image = Docker::Image.create(fromImage: @config['plugin']['config']['Image'])
       @container_hash['Entrypoint'] = @image.info['Config']['Entrypoint']
@@ -61,9 +63,8 @@ class Plugin
   end
 
   def load_passive
-    @container = Docker::Container.create(@container_hash)
-    @container_info = @container.info
-    @container.delete(force: true) if @container
+    # placeholder
+    nil
   end
 
   def load_active
@@ -115,15 +116,26 @@ class Plugin
 
   # Build out help commands for users to query in chat
   def help_load
-    # case @config['plugin']['type']
-    # when 'script', 'api'
-    #   @help_hash = @config['plugin']['help']
-    # when 'container'
-    #   @help_hash = {}
-    #   @container_info['Labels'].each do |label, desc|
-    #     @help_hash[label] = desc
-    #   end
-    # end
+    @help_list = ''
+    if @container_hash['Labels']
+      @container_hash['Labels'].each do |label, desc|
+        @help_list += '    ' + label + ' : ' + desc + "\n"
+      end
+    elsif @api_info.key? :Help
+      @api_info['help'].each do |arg, desc|
+        @help_list += '    ' + arg + ' : ' + desc + "\n"
+      end
+    elsif @config['plugin']['help']
+      @config['plugin']['help'].each do |arg, desc|
+        @help_list += '    ' + arg + ' : ' + desc + "\n"
+      end
+    else
+      puts @name + ': no labels or help info found'
+    end
+  end
+
+  def help
+    @help_list
   end
 
   # Execute the command sent from chat
@@ -185,7 +197,7 @@ class Plugin
       # puts error.inspect
       return false
     end
-    container.delete(force: true) if container
+    container&.delete(force: true) if container
   end
 
   # Shutdown procedures for container and script plugins

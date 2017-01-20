@@ -1,6 +1,6 @@
 # Simple Lightweight API Bot (SLAPI)
 
-[![Travis](https://img.shields.io/travis/ImperialLabs/slapi.svg)](https://travis-ci.org/ImperialLabs/slapi) [![Stories in Ready](https://badge.waffle.io/ImperialLabs/slapi.png?label=ready&title=Ready)](https://waffle.io/ImperialLabs/slapi) [![Docker Automated buil](https://img.shields.io/docker/automated/slapi/slapi.svg)](https://hub.docker.com/r/slapi/slapi/) [![Docker Pulls](https://img.shields.io/docker/pulls/slapi/slapi.svg)](https://hub.docker.com/r/slapi/slapi/) [![Docker Stars](https://img.shields.io/docker/stars/slapi/slapi.svg)](https://hub.docker.com/r/slapi/slapi/) [![GitHub release](https://img.shields.io/github/release/slapi/slapi.svg)](https://github.com/ImperialLabs/slapi/releases) [![Github Releases](https://img.shields.io/github/downloads/slapi/slapi/latest/total.svg)](https://github.com/ImperialLabs/slapi/releases)
+[![Travis](https://img.shields.io/travis/ImperialLabs/slapi.svg)](https://travis-ci.org/ImperialLabs/slapi) [![Stories in Ready](https://badge.waffle.io/ImperialLabs/slapi.png?label=ready&title=Ready)](https://waffle.io/ImperialLabs/slapi) [![Docker Automated Build](https://img.shields.io/docker/automated/slapi/slapi.svg)](https://hub.docker.com/r/slapi/slapi/) [![Docker Pulls](https://img.shields.io/docker/pulls/slapi/slapi.svg)](https://hub.docker.com/r/slapi/slapi/) [![Docker Stars](https://img.shields.io/docker/stars/slapi/slapi.svg)](https://hub.docker.com/r/slapi/slapi/) [![GitHub release](https://img.shields.io/github/release/slapi/slapi.svg)](https://github.com/ImperialLabs/slapi/releases) [![Github Releases](https://img.shields.io/github/downloads/slapi/slapi/latest/total.svg)](https://github.com/ImperialLabs/slapi/releases)
 
 ## Prerequisites
 
@@ -155,7 +155,7 @@ Since these are integration tests they will cause messages to be posted in a cha
 
 imperiallabs.slack.com is currently a free Slack team that you would need an invite to join.
 
-Ensure you have followed all the tasks in [Bundler Section](#Bundler)
+Ensure you have followed all the tasks in [Bundler Section](#bundler)
 
 To run all tests in Visual Studio Code use the `RSpec - all` configuration.
 

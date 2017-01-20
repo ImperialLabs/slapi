@@ -7,10 +7,10 @@ AllCops:
   TargetRubyVersion: 2.3
 
 Metrics/AbcSize:
-  Max: 21
+  Max: 25
 
 Metrics/LineLength:
   Max: 147
 
 Metrics/MethodLength:
-  Max: 15
+  Max: 25

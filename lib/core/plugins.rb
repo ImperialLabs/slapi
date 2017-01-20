@@ -10,7 +10,9 @@ class Plugins
   # TODO: determine if this hash is needed outside of this class
   attr_reader :plugin_hash
 
-  def initialize
+  def initialize(settings)
+    @help_options = settings.help || {}
+    @admin_options = settings.admin || {}
     @plugin_hash = {}
     load
   end
@@ -39,21 +41,15 @@ class Plugins
   # If the plugin does not exist then it
   # @param Hash data
   # @return boolean - whether the command was passed on
-  def exec(data)
-    # if contains a space
-    if data.text.include? ' '
-      # Create array based on spaces
-      data_array = data.text.split(' ')
-      requested_plugin = data_array[1]
-      @plugin_hash.each do |name, plugin|
-        output = plugin.exec data if name == requested_plugin
-        return output if name == requested_plugin
-      end
+  def exec(requested_plugin, data)
+    @plugin_hash.each do |name, plugin|
+      output = plugin.exec data if name == requested_plugin
+      return output if name == requested_plugin
     end
-    nil
   end
 
   # Searches for phrased based plugins
+  # TODO: Create Phrases for Plugins: Create code to sift through chat data to match specific phrases for plugins
   def phrase_lookup
     # search plugin hash and container labels?
   end
@@ -61,8 +57,33 @@ class Plugins
   # Creates primary help list
   #
   # Utilizes the bot.yml help hash to determine response level.
-  def help
-    # Merge all hashes together or parse out a file(s)?
+  # TODO: Build Help Hash/Response to return after .each
+  def help(data)
+    if data.text.include? ' '
+      data_array = data.text.split(' ')
+      # Check if data is coming from a DM or regular channel
+      requested_plugin = data_array[2] unless data.channel[0] == 'D'
+      requested_plugin = data_array[1] if data.channel[0] == 'D'
+    end
+    if requested_plugin
+      help_return = ''
+      @plugin_hash.each do |name, plugin|
+        output = plugin.help if name == requested_plugin
+        help_return += name + ':' + "\n" + output if name == requested_plugin
+      end
+    elsif @help_options['level'] == 1
+      help_return = ''
+      @plugin_hash.each do |name, _plugin|
+        help_return += name + "\n"
+      end
+    elsif @help_options['level'] == 2
+      help_return = ''
+      @plugin_hash.each do |name, plugin|
+        output = plugin.help
+        help_return += name + ':' + "\n" + output
+      end
+    end
+    help_return
   end
 
   # TODO: should this be exposed to cleanout any unused docker containers

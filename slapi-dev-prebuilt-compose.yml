@@ -9,7 +9,7 @@ services:
         slapi-net:
             ipv4_address: 172.16.238.2
   bot:
-    image: slapi_local
+    image: slapi_help
     ports:
         - "1234:1234"
         - "4567:4567"
