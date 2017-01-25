@@ -2,7 +2,7 @@ plugin:
   type: docker
   managed: true # Choose True or False for SLAPI management
   listen_type: passive # Choose passive or active.
-  messageData: true # True/False to acccept the message data from who sent a message
+  data_type: simple # Can set level as simple or advanced, simple is the default
   config:
     name: schedules # Name of instance
     Image: 'slapi/schedules' # Enter user/repo (standard docker pull procedures), you can also pull from a private repo via domain.com/repo

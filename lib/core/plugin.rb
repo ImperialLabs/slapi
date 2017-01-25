@@ -2,6 +2,7 @@
 require 'yaml'
 require 'docker'
 require 'httparty'
+require 'json'
 
 # Plugin class will represent an individual plugin.
 # It will check the metadata of the type of plugins to make decisions.
@@ -144,22 +145,29 @@ class Plugin
   # @return string representing response to be displayed
   def exec(data_from_chat = nil)
     # based on some meta information like the type then execute the proper way
+    # Strip an incorrection coded qoutes to UTF8 ones
     data_from_chat.text.tr!('“', '"')
+    # Split chat data after @bot plugin into args to pass into plugin.
+    # Split args based on qoutes, args are based on spaces unless in qoutes
     chat_text_array = data_from_chat.text.split(/\s(?=(?:[^"]|"[^"]*")*$)/)
+    exec_data = chat_text_array.drop(2) unless @config['plugin']['data_type'] == 'all'
+    exec_data = data_from_chat.to_json if @config['plugin']['data_type'] == 'all'
     case @config['plugin']['type']
     when 'script', 'container'
       case @config['plugin']['listen_type']
       when 'passive'
+        # Will mount the plugins yml file into the container at specified path.
+        # This enable configing the plugin with a single file at both level (SLAPI and Self)
         unless @config['plugin']['mount_config'].nil?
           @container_hash['HostConfig'] = { 'Binds' => ["#{Dir.pwd}/config/plugins/#{@name}.yml:#{@config['plugin']['mount_config']}"] }
         end
-        @container_hash['Cmd'] = chat_text_array.drop(2)
+        @container_hash['Cmd'] = exec_data
         @container = Docker::Container.create(@container_hash)
         @container.tap(&:start).attach(tty: true)
         response = @container.logs(stdout: true)
         @container.delete(force: true)
       when 'active'
-        @container.exec([chat_text_array.drop(2)])
+        @container.exec([exec_data])
       end
     when 'api'
       # payload = {

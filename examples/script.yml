@@ -4,6 +4,7 @@ plugin:
   description: "gets pagerduty schedules for configured account"
   help: # will be used to populate help options for schedules command
     schedules: "gets pagerduty schedules for configured account" # overrides the description set due to being the primary command for plugin.
+  data_type: simple # Can set level as simple or advanced, simple is the default
   write: |
     #!/usr/bin/env python
     import requests

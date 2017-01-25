@@ -143,9 +143,8 @@ class RealTimeClient
             requested_plugin = data.text
           end
 
-          if requested_plugin
-            plugin_return = @plugins.exec(requested_plugin, data)
-          end
+          plugin_return = @plugins.exec(requested_plugin, data) if requested_plugin
+
           # phrase_return = @plugins.phrase_lookup data
           if plugin_return && !plugin_return.empty?
             data_array = data.text.split(' ')

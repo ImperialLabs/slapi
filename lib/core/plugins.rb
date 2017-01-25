@@ -42,10 +42,11 @@ class Plugins
   # @param Hash data
   # @return boolean - whether the command was passed on
   def exec(requested_plugin, data)
+    @plugin_output = nil
     @plugin_hash.each do |name, plugin|
-      output = plugin.exec data if name == requested_plugin
-      return output if name == requested_plugin
+      @plugin_output = plugin.exec data if requested_plugin == name
     end
+    @plugin_output
   end
 
   # Searches for phrased based plugins
