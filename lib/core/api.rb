@@ -28,6 +28,9 @@ class Slapi < Sinatra::Application
     # so this helps to test/inspect the load.
     @realtime = RealTimeClient.new settings
     @realtime.update_plugin_cache
+
+    status 200
+    { 'message' => 'yes, it worked' }.to_json
   end
 
   # Handles a POST request for '/v1/attachment'

@@ -14,7 +14,7 @@ class Plugins
     @help_options = settings.help || {}
     @admin_options = settings.admin || {}
     @plugin_hash = {}
-    load
+    load(settings)
   end
 
   # Loads the plugin configuration.
@@ -23,12 +23,12 @@ class Plugins
   #
   # Currently does not take any parameters nor does it return anything.
   # Future iterations should allow for configuration based on commands from chat.
-  def load
+  def load(settings)
     # TODO: Should this remove all images
     # TODO: Should this remove all untagged images?
     #
     # TODO: play with where we want the plugin configuration to live.
-    yaml_files = File.expand_path('../../config/plugins/*.yml', File.dirname(__FILE__))
+    yaml_files = settings.plugins['location'] ? File.expand_path(settings.plugins['location'], File.dirname(__FILE__)) : File.expand_path('../../config/plugins/*.yml', File.dirname(__FILE__))
     Dir.glob(yaml_files).each do |file|
       @plugin_hash[File.basename(file, '.*')] = Plugin.new(file)
     end

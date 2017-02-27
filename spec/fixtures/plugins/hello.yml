@@ -1,0 +1,14 @@
+plugin:
+    type: script
+    language: bash
+    listen_type: passive
+    help:
+      hello world: "Says things"
+    description: "simple hello world"
+    write: |
+      #!/bin/bash
+      if [ "${1}" == 'test' ]; then
+          echo 'Hello World!'
+      else
+          echo 'I dont like you'
+      fi

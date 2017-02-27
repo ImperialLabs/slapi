@@ -27,6 +27,8 @@ class RealTimeClient
     # Adding for later use
     @help_options = settings.help || {}
     @admin_options = settings.admin || {}
+    #TODO: this is a litte odd to save settings in this way
+    @settings = settings
   end
 
   # Avoid potential empty variable so bot responds to all items that start with @
@@ -36,7 +38,7 @@ class RealTimeClient
 
   # Reload all of the plugins from configuration files
   def update_plugin_cache
-    @plugins.load
+    @plugins.load @settings
   end
 
   # Start the bot and define the listeners

@@ -27,6 +27,28 @@ bundle clean
 
 And set breakpoints and debug.
 
+NOTE on rvm
+
+You will need to install bundler on the default gemset (even if you work on another gemset) to not have to change the launch.json for VSCode.
+
+So for whatever ruby you are working on:
+
+```
+rvm gemset use default
+gem install bundler
+```
+
+The reason for this is so that the `"pathToBundler": "${env.HOME}/.rvm/gems/${env.rvm_ruby_string}/wrappers/bundle"` does not need to change as you switch rubies.
+
+At the time of this writing, since this is using beta versions of the debugger and has many latest libraries that are interdependent, you may have to run:
+
+```
+gem update —system
+rm -rf vendor/bundle
+bundle install --binstubs --path vendor/bundle
+```
+To get the latest RubyGems.
+
 ### configuration
 
 You will need a bot configuration from Slack. See: <https://api.slack.com/bot-users>

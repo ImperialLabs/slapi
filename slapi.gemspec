@@ -37,10 +37,11 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '~> 3.4'
   spec.add_development_dependency 'nyan-cat-formatter'
   spec.add_development_dependency 'rubocop'
-  spec.add_development_dependency 'debase'
-  spec.add_development_dependency 'ruby-debug-ide'
+  spec.add_development_dependency 'debase', '~>0.2.2.beta10'
+  spec.add_development_dependency 'ruby-debug-ide', '~> 0.6.1.beta4'
   spec.add_development_dependency 'thin'
   spec.add_development_dependency 'rack-test'
   spec.add_development_dependency 'capybara'
   spec.add_development_dependency 'yard'
+  spec.add_development_dependency 'simplecov'
 end

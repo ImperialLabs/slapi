@@ -22,7 +22,7 @@ GEM
       public_suffix (~> 2.0, >= 2.0.2)
     ast (2.3.0)
     backports (3.6.8)
-    capybara (2.11.0)
+    capybara (2.12.0)
       addressable
       mime-types (>= 1.16)
       nokogiri (>= 1.3.3)
@@ -52,29 +52,30 @@ GEM
       timers (>= 4.1.1)
     concurrent-ruby (1.0.4)
     daemons (1.2.4)
-    debase (0.2.1)
+    debase (0.2.2.beta10)
       debase-ruby_core_source
     debase-ruby_core_source (0.9.6)
-    diff-lcs (1.2.5)
+    diff-lcs (1.3)
+    docile (1.1.5)
     docker-api (1.31.0)
       excon (>= 0.38.0)
       json
     domain_name (0.5.20161129)
       unf (>= 0.0.5, < 1.0.0)
-    eventmachine (1.2.1)
-    excon (0.54.0)
+    eventmachine (1.2.2)
+    excon (0.55.0)
     faraday (0.11.0)
       multipart-post (>= 1.2, < 3)
-    faraday_middleware (0.11.0)
+    faraday_middleware (0.11.0.1)
       faraday (>= 0.7.4, < 1.0)
-    gli (2.14.0)
-    hashie (3.4.6)
+    gli (2.15.0)
+    hashie (3.5.1)
     hitimes (1.2.4)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
     httparty (0.14.0)
       multi_xml (>= 0.5.2)
-    i18n (0.7.0)
+    i18n (0.8.0)
     json (2.0.3)
     kgio (2.11.0)
     mime-types (2.99.3)
@@ -89,7 +90,7 @@ GEM
       mini_portile2 (~> 2.1.0)
     nyan-cat-formatter (0.11)
       rspec (>= 2.99, >= 2.14.2, < 4)
-    parser (2.3.3.1)
+    parser (2.4.0.0)
       ast (~> 2.2)
     powerpack (0.1.1)
     public_suffix (2.0.5)
@@ -118,16 +119,21 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.5.0)
     rspec-support (3.5.0)
-    rubocop (0.47.0)
+    rubocop (0.47.1)
       parser (>= 2.3.3.1, < 3.0)
       powerpack (~> 0.1)
       rainbow (>= 1.99.1, < 3.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (~> 1.0, >= 1.0.1)
-    ruby-debug-ide (0.6.0)
+    ruby-debug-ide (0.6.1.beta4)
       rake (>= 0.8.1)
     ruby-progressbar (1.8.1)
-    sinatra (1.4.7)
+    simplecov (0.13.0)
+      docile (~> 1.1.0)
+      json (>= 1.8, < 3)
+      simplecov-html (~> 0.10.0)
+    simplecov-html (0.10.0)
+    sinatra (1.4.8)
       rack (~> 1.5)
       rack-protection (~> 1.4)
       tilt (>= 1.3, < 3)
@@ -138,9 +144,9 @@ GEM
       rack-test
       sinatra (~> 1.4.0)
       tilt (>= 1.3, < 3)
-    slack-ruby-client (0.7.7)
+    slack-ruby-client (0.7.8)
       activesupport
-      faraday
+      faraday (>= 0.9)
       faraday_middleware
       gli
       hashie
@@ -151,7 +157,7 @@ GEM
       eventmachine (~> 1.0, >= 1.0.4)
       rack (>= 1, < 3)
     thread_safe (0.3.5)
-    tilt (2.0.5)
+    tilt (2.0.6)
     timers (4.1.2)
       hitimes
     tzinfo (1.2.2)
@@ -163,7 +169,7 @@ GEM
     unicorn (5.2.0)
       kgio (~> 2.6)
       raindrops (~> 0.7)
-    websocket-driver (0.6.4)
+    websocket-driver (0.6.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.2)
     xpath (2.0.0)
@@ -176,16 +182,17 @@ PLATFORMS
 DEPENDENCIES
   capybara
   celluloid-io
-  debase
+  debase (~> 0.2.2.beta10)
   nyan-cat-formatter
   rack-test
   rake
   rspec (~> 3.4)
   rubocop
-  ruby-debug-ide
+  ruby-debug-ide (~> 0.6.1.beta4)
+  simplecov
   slapi!
   thin
   yard
 
 BUNDLED WITH
-   1.13.4
+   1.14.3

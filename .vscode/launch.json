@@ -8,7 +8,7 @@
             "cwd": "${workspaceRoot}",
             "program": "${workspaceRoot}/bin/rackup",
             "useBundler": true,
-            "pathToBundler": "${env.HOME}/.rvm/gems/ruby-2.3.0/wrappers/bundle",
+            "pathToBundler": "${env.HOME}/.rvm/gems/${env.rvm_ruby_string}/wrappers/bundle",
             "showDebuggerOutput": true,
             "pathToRDebugIDE": "${workspaceRoot}/bin/rdebug-ide"
         },
@@ -34,13 +34,13 @@
             "showDebuggerOutput": true
         },
         {
-            "name": "RSpec - all",
+            "name": "RSpec - all(rvm)",
             "type": "Ruby",
             "request": "launch",
             "cwd": "${workspaceRoot}",
             "program": "${workspaceRoot}/bin/rspec",
             "useBundler": true,
-            "pathToBundler": "${env.HOME}/.rvm/gems/ruby-2.3.0/wrappers/bundle",
+            "pathToBundler": "${env.HOME}/.rvm/gems/${env.rvm_ruby_string}/wrappers/bundle",
             "showDebuggerOutput": true,
             "pathToRDebugIDE": "${workspaceRoot}/bin/rdebug-ide",
             "args": [
@@ -55,7 +55,7 @@
             "cwd": "${workspaceRoot}",
             "program": "${workspaceRoot}/bin/rspec",
             "useBundler": true,
-            "pathToBundler": "${env.HOME}/.rvm/gems/ruby-2.3.0/wrappers/bundle",
+            "pathToBundler": "${env.HOME}/.rvm/gems/${env.rvm_ruby_string}/wrappers/bundle",
             "showDebuggerOutput": true,
             "pathToRDebugIDE": "${workspaceRoot}/bin/rdebug-ide",
             "args": [
@@ -72,7 +72,7 @@
             "program": "${workspaceRoot}/bin/rspec",
             "useBundler": true,
             "env": {"RACK_ENV": "production"},
-            "pathToBundler": "${env.HOME}/.rvm/gems/ruby-2.3.0/wrappers/bundle",
+            "pathToBundler": "${env.HOME}/.rvm/gems/${env.rvm_ruby_string}/wrappers/bundle",
             "showDebuggerOutput": true,
             "pathToRDebugIDE": "${workspaceRoot}/bin/rdebug-ide",
             "args": [

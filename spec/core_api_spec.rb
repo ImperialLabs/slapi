@@ -5,14 +5,28 @@ Capybara.app = Slapi
 
 describe 'call the speak API', type: :feature do
   it 'returns' do
-    page.driver.post '/v1/speak', channel: '#test_room', text: '*Hello* `World` ~everbodeeeee~'
+    page.driver.post '/v1/speak', channel: '#integration_tests', text: '*Hello* `World` ~everbodeeeee~'
+    expect(page).to have_content 'it worked'
+  end
+end
+
+describe 'call the help API', type: :feature do
+  it 'returns' do
+    page.driver.post '/v1/speak', channel: '#integration_tests', text: 'help'
     expect(page).to have_content 'it worked'
   end
 end
 
 describe 'call the emote API', type: :feature do
   it 'returns' do
-    page.driver.post '/v1/emote', channel: 'C27MR7Y03', text: 'dances a jig'
+    page.driver.post '/v1/emote', channel: 'C445NT42J', text: 'dances a jig'
+    expect(page).to have_content 'it worked'
+  end
+end
+
+describe 'call the reload API', type: :feature do
+  it 'returns' do
+    page.driver.post '/reload', channel: 'C445NT42J', text: 'reload'
     expect(page).to have_content 'it worked'
   end
 end
@@ -20,7 +34,7 @@ end
 describe 'call the attach API', type: :feature do
   it 'returns' do
     page.driver.post '/v1/attachment',
-                     channel: '#test_room',
+                     channel: '#integration_tests',
                      text: 'Hello World',
                      attachments:
                        {
