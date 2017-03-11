@@ -51,8 +51,8 @@ GEM
       timers (>= 4.1.1)
     celluloid-supervision (0.20.6)
       timers (>= 4.1.1)
-    codeclimate-test-reporter (0.4.8)
-      simplecov (>= 0.7.1, < 1.0.0)
+    codeclimate-test-reporter (1.0.7)
+      simplecov
     concurrent-ruby (1.0.5)
     daemons (1.2.4)
     debase (0.2.2.beta10)
@@ -183,7 +183,7 @@ PLATFORMS
 DEPENDENCIES
   capybara
   celluloid-io
-  codeclimate-test-reporter (~> 0.4.8)
+  codeclimate-test-reporter (~> 1.0.0)
   debase (~> 0.2.2.beta10)
   nyan-cat-formatter
   rack-test

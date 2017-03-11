@@ -34,7 +34,7 @@ Gem::Specification.new do |spec|
   # spec.add_dependency 'faye-websocket'
   # spec.add_dependency 'celluloid-io', require: ['celluloid/current', 'celluloid/io']
 
-  spec.add_development_dependency 'codeclimate-test-reporter', '~> 0.4.8'
+  spec.add_development_dependency 'codeclimate-test-reporter', '~> 1.0.0'
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'rspec', '~> 3.4'
   spec.add_development_dependency 'nyan-cat-formatter'

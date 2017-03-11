@@ -27,9 +27,7 @@ engines:
     - 75be298a251b7b55d2189d6e2fac80b8
 ratings:
   paths:
-  - "/lib/*.rb"
-  - "/lib/**/*.rb"
-  - "/lib/**/**/*.rb"
+  - "**.rb"
 exclude_paths:
 - config/
 - spec/
