@@ -1,45 +1,51 @@
 version: '2'
 services:
+  # Doing this allows us to completely contain and avoid version issues with docker.
+  # There are some issues with using Docker in Docker (DIND) but it allows us to support all OS'set
   dind_host:
     image: docker:dind
     privileged: true
     volumes:
         - scripts:/usr/src/slapi/scripts
+        - brain:/usr/src/slapi/brain
     networks:
         slapi-net:
+            # Setting a specific address allows us to add this to the host file of the bot container
             ipv4_address: 172.16.238.2
   bot:
-    image: slapi_help
+    image: slapi_local
     ports:
         - "1234:1234"
         - "4567:4567"
         - "26162:26162"
     command: bundle exec rdebug-ide --host 0.0.0.0 --port 1234 -- /usr/local/bundle/bin/rackup --host 0.0.0.0 -p 4567
     environment:
+        # Add the dind_host to the /etc/hosts file, docker is set below
         DOCKER_URL: 'docker:2375'
     volumes:
         - scripts:/usr/src/slapi/scripts:rw
         - ./config:/usr/src/slapi/config/
     networks:
         slapi-net:
+            # Setting static in-case needed for setup in future
             ipv4_address: 172.16.238.3
+    # Set docker as static dind_host ip so DOCKER_URL can be utilzied by bot for plugins
     extra_hosts:
         - "docker:172.16.238.2"
     depends_on:
         - dind_host
-        # - brain
-#   brain:
-#     image: postgres
-#     ports:
-#     networks:
-#         - slapi-net
-#             ipv4_address: 172.16.238.4
-#     depends_on:
-#         - dind_host
 
+
+
+# Create a volume to attach to both dind_host and bot so scripts written by bot can be attached to plugin containers
 volumes:
   scripts:
     driver: local
+  brain:
+    driver: local
+
+# Adding a specific network to setup the Docker in Docker Host
+# This enables us to set static IPs, See dind_host for more comments
 networks:
   slapi-net:
     driver: bridge

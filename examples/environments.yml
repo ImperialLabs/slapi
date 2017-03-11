@@ -1,20 +1,17 @@
 development:
   api_version: '1.0'
-  logger_level: 'debug'
   base_path: 'http://localhost:4567'
   swagger_version: '1.1'
   format_specifier: '.json'
   using: 'development'
 test:
   api_version: '1.0'
-  logger_level: 'info'
   base_path: 'http://localhost:4567'
   swagger_version: '1.1'
   format_specifier: '.json'
   using: 'test'
 production:
   api_version: '1.0'
-  logger_level: 'warn'
   base_path: 'http://localhost:4567'
   swagger_version: '1.1'
   format_specifier: '.json'

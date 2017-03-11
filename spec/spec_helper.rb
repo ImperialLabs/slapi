@@ -17,7 +17,7 @@
 # users commonly want.
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
-require_relative "helpers/mock_objects.rb"
+require_relative 'helpers/mock_objects.rb'
 require 'simplecov'
 SimpleCov.start
 

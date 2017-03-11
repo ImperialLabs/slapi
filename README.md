@@ -1,55 +1,72 @@
 # Simple Lightweight API Bot (SLAPI)
 
-[![Travis](https://img.shields.io/travis/ImperialLabs/slapi.svg)](https://travis-ci.org/ImperialLabs/slapi) [![Stories in Ready](https://badge.waffle.io/ImperialLabs/slapi.png?label=ready&title=Ready)](https://waffle.io/ImperialLabs/slapi) [![Docker Automated Build](https://img.shields.io/docker/automated/slapi/slapi.svg)](https://hub.docker.com/r/slapi/slapi/) [![Docker Pulls](https://img.shields.io/docker/pulls/slapi/slapi.svg)](https://hub.docker.com/r/slapi/slapi/) [![Docker Stars](https://img.shields.io/docker/stars/slapi/slapi.svg)](https://hub.docker.com/r/slapi/slapi/) [![GitHub release](https://img.shields.io/github/release/slapi/slapi.svg)](https://github.com/ImperialLabs/slapi/releases) [![Github Releases](https://img.shields.io/github/downloads/slapi/slapi/latest/total.svg)](https://github.com/ImperialLabs/slapi/releases)
+[![Travis](https://img.shields.io/travis/ImperialLabs/slapi.svg)](https://travis-ci.org/ImperialLabs/slapi) [![GitHub release](https://img.shields.io/github/release/slapi/slapi.svg)](https://github.com/ImperialLabs/slapi/releases) [![Code Climate](https://codeclimate.com/github/ImperialLabs/slapi/badges/gpa.svg)](https://codeclimate.com/github/ImperialLabs/slapi) [![Test Coverage](https://codeclimate.com/github/ImperialLabs/slapi/badges/coverage.svg)](https://codeclimate.com/github/ImperialLabs/slapi/coverage) [![Issue Count](https://codeclimate.com/github/ImperialLabs/slapi/badges/issue_count.svg)](https://codeclimate.com/github/ImperialLabs/slapi) [![Docker Pulls](https://img.shields.io/docker/pulls/slapi/slapi.svg)](https://hub.docker.com/r/slapi/slapi/) [![Docker Stars](https://img.shields.io/docker/stars/slapi/slapi.svg)](https://hub.docker.com/r/slapi/slapi/)
 
 ## Prerequisites
 
-* Docker 1.10 or later
-* Ruby 2.2 or laterπ
+-   Docker 1.10 or later
+-   Ruby 2.3 or later - See [Ruby](#ruby-setup) section for options
+-   Bundler - See [Bundler](#bundler) Section
 
-## Getting started
+## Getting Started
+
+Check out the Documentation for specific items
+-   [Quick Start](#quick-start)
+-   [API](https://imperiallabs.github.io/api_landing.html)
+-   [Brain](https://imperiallabs.github.io/brain_landing.html)
+-   [Plugins](https://imperiallabs.github.io/plugins_landing.html)
+-   [Configuration](#configuration)
+-   [Running The Server](#running-the-server)
+-   [Rake Tasks](#rake-tasks)
+-   [Development](#development)
+
+## Quick Start
+
+### Local
+
+There are rake tasks created to make this quick to get started.
+
+Running either will create a bot.local.yml file with the exported key and give the most basic configuration.
+
+```bash
+git clone https://github.com/ImperialLabs/slapi.git
+cd slapi
+export SLACK_TOKEN=xoxb-XXXXXXXXXXXX-TTTTTTTTTTTTTT
+bundle install --binstubs --path vendor/bundle
+bundle exec rake local
+```
+### Docker
+
+```bash
+git clone https://github.com/ImperialLabs/slapi.git
+cd slapi
+export SLACK_TOKEN=xoxb-XXXXXXXXXXXX-TTTTTTTTTTTTTT
+rake docker
+```
+
+## Usage
 
 ### Bundler
 
-run
+#### Global Install
+
+Run the following
 
 ```bash
+gem install bundler
 bundle install
 ```
 
-(Optional) The project is set up with extra helpers for VS Code. If you chose to use this then you should be able to run:
+#### Project Local Install
+
+The project is set up with extra helpers for VS Code. If you chose to use this then you should be able to run:
 
 ```bash
-bundle clean
-bundle install --binstubs --path vendor/bundle
-bundle clean
-```
-
-And set breakpoints and debug.
-
-NOTE on rvm
-
-You will need to install bundler on the default gemset (even if you work on another gemset) to not have to change the launch.json for VSCode.
-
-So for whatever ruby you are working on:
-
-```
-rvm gemset use default
 gem install bundler
-```
-
-The reason for this is so that the `"pathToBundler": "${env.HOME}/.rvm/gems/${env.rvm_ruby_string}/wrappers/bundle"` does not need to change as you switch rubies.
-
-At the time of this writing, since this is using beta versions of the debugger and has many latest libraries that are interdependent, you may have to run:
-
-```
-gem update —system
-rm -rf vendor/bundle
 bundle install --binstubs --path vendor/bundle
 ```
-To get the latest RubyGems.
 
-### configuration
+### Configuration
 
 You will need a bot configuration from Slack. See: <https://api.slack.com/bot-users>
 
@@ -57,7 +74,7 @@ Once you have configured a bot then you will have a token like: "xoxb-XXXXXXXXXX
 
 You will need to put this in the file config/bot.yml or config/bot.local.yml for example:
 
-**NOTE:** any .local.yml files are automatically ignored by git or docker
+**NOTE:** any .local.yml or .test.yml files are automatically ignored by git or docker
 
 ```yaml
 # Adapter Settings
@@ -93,10 +110,17 @@ help:
 
 #### Local
 
-To run Sinatra locally simply run:
+To run Sinatra simply run:
+
+If using [Global](#global-install)
 
 ```bash
 rackup -p 4567
+```
+If using [Project](#project-local-install)
+
+```bash
+bundle exec rackup -p 4567
 ```
 
 Which will use simple the thin server.
@@ -159,7 +183,130 @@ Build SLAPI container from scratch w/ compose.
 docker-compose -f slapi-build-compose.yml up
 ```
 
+## Rake Tasks
+
+We have built a rake file to help wrap some of the madness
+
+Just run `rake` or `bundle exec rake` for a current list of tasks
+
+### Run Bot
+
+Both quick options require a `export SLACK_TOKEN=xoxb-XXXXXXXXXXXX-TTTTTTTTTTTTTT`
+
+There are two quick options here
+-   local
+    -   Creates a bot.local.yml with the exported Slack Token
+    -   Runs a local bot using rackup in production mode
+-   docker
+    -   Creates a bot.local.yml with the exported Slack Token
+    -   Runs compose to setup the latest version in dockerhub
+
+You can also just use to avoid creating a bot config
+-   run:local
+-   run:docker
+
+### Integration Tests
+**Important** Must be a token from the http://imperiallabs.slack.com/
+
+Quick Option
+Requires a `export SLACK_TOKEN=xoxb-XXXXXXXXXXXX-TTTTTTTTTTTTTT`
+-   integration
+    -   Creates a bot.local.yml with the exported Slack Token
+    -   Runs a local bot using rackup in production mode
+
+Again, to avoid bot config creation just do
+-   integration:spec
+
+### Cleanup
+
+If you just want to clear out the cruft (scripts, bot.test.yml, bundle clean)
+-   cleanup
+
 ## Development
+
+### Quick Dev
+When just want to absolutely just run the integration tests
+
+```bash
+git clone https://github.com/ImperialLabs/slapi.git
+cd slapi
+export SLACK_TOKEN=xoxb-XXXXXXXXXXXX-TTTTTTTTTTTTTT
+bundle install --binstubs --path vendor/bundle
+bundle exec rake integration
+```
+
+### Ruby Setup
+Quick install/config Instructions for rbenv or rvm as there is a visual studio launch.json included that supports both for debugging
+
+#### rbenv
+
+##### Install
+
+```bash
+git clone https://github.com/rbenv/rbenv.git ~/.rbenv
+git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
+echo "gem: --no-document" > ~/.gemrc #(optional)
+
+cat >> '~/.bashrc' << 'EOF'
+if [ -d "~/.rbenv" ]; then
+     export PATH="$HOME/.rbenv/bin:$PATH"
+fi
+
+EOF
+
+cat >> '~/.bashrc' << 'EOF'
+rbenv ()
+{
+    local command;
+    command="$1";
+    if [ "$#" -gt 0 ]; then
+        shift;
+    fi;
+    case "$command" in
+        rehash | shell)
+            eval "$(rbenv "sh-$command" "$@")"
+        ;;
+        *)
+            command rbenv "$command" "$@"
+        ;;
+    esac
+}
+
+EOF
+
+cat >> '~/.bashrc' << 'EOF'
+eval "$(rbenv init -)"
+
+EOF
+```
+##### Configure
+
+```
+rbenv install 2.3.3
+rbenv global 2.3.3
+```
+
+#### RVM
+
+You will need to install bundler on the default gemset (even if you work on another gemset) to not have to change the launch.json for VSCode.
+
+So for whatever ruby you are working on:
+
+```
+rvm gemset use default
+gem install bundler
+```
+
+The reason for this is so that the `"pathToBundler": "${env.HOME}/.rvm/gems/${env.rvm_ruby_string}/wrappers/bundle"` does not need to change as you switch rubies.
+
+At the time of this writing, since this is using beta versions of the debugger and has many latest libraries that are interdependent, you may have to run:
+
+```
+gem update —system
+rm -rf vendor/bundle
+bundle install --binstubs --path vendor/bundle
+```
+To get the latest RubyGems.
 
 ### Testing
 
@@ -242,20 +389,20 @@ rubocop
 
 ### External Contributors
 
-* [Fork](https://github.com/ImperialLabs/slapi#fork-destination-box) the repo on GitHub
-* Clone the project to your own machine
-* Commit changes to your own branch
-* Push your work back up to your fork
-* Submit a Pull Request so that we can review your changes
+-   [Fork](https://github.com/ImperialLabs/slapi#fork-destination-box) the repo on GitHub
+-   Clone the project to your own machine
+-   Commit changes to your own branch
+-   Push your work back up to your fork
+-   Submit a Pull Request so that we can review your changes
 
 **NOTE**: Be sure to merge the latest from "upstream" before making a pull request!
 
 ### Internal Contributors
 
-* Clone the project to your own machine
-* Create a new branch from master
-* Commit changes to your own branch
-* Push your work back up to your branch
-* Submit a Pull Request so the changes can be reviewed
+-   Clone the project to your own machine
+-   Create a new branch from master
+-   Commit changes to your own branch
+-   Push your work back up to your branch
+-   Submit a Pull Request so the changes can be reviewed
 
 **NOTE**: Be sure to merge the latest from "upstream" before making a pull request!

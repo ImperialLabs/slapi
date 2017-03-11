@@ -1,0 +1,39 @@
+---
+engines:
+  bundler-audit:
+    enabled: true
+  duplication:
+    enabled: true
+    checks:
+      Similar code:
+        enabled: false
+    config:
+      languages:
+      - ruby
+  fixme:
+    enabled: true
+  rubocop:
+    enabled: true
+    exclude_fingerprints:
+    # Ignore Gemspec
+    - 598a8c83612d53152a0e528c1a5fe5d1
+    # Ignoring Complexity/Branch Condition Checks for Brain Route
+    - de62502f9a2f013e6ed0d6d5844c84e4
+    - 19425088e5f04e085d09c6a4c59adb24
+    - c0628bd8ef403ad815a173a40e1b5fac
+    # Ignoring Complexity/Branch Condition Checks for Chat Route
+    - 4ddcb6ecbd064ab3839edf2f652907ca
+    - 2f9ce57ccbf4833c52a309c3b71cfa17
+    - 75be298a251b7b55d2189d6e2fac80b8
+ratings:
+  paths:
+  - "/lib/*.rb"
+  - "/lib/**/*.rb"
+  - "/lib/**/**/*.rb"
+exclude_paths:
+- config/
+- spec/
+- examples/
+- vendor/
+- coverage/
+- scripts/

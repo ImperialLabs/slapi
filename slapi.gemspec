@@ -6,8 +6,8 @@ require 'rbconfig'
 
 Gem::Specification.new do |spec|
   spec.name          = 'slapi'
-  spec.version       = '0.0.1.alpha'
-  spec.authors       = ['Levi Smith', 'Aaron Blyth']
+  spec.version       = '0.1.0'
+  spec.authors       = ['Levi Smith', 'Aaron Blythe']
   spec.email         = ['atat@hearst.com']
 
   spec.summary       = 'SLAPI Bot, Your Gateway to ChatOps'
@@ -21,18 +21,20 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_dependency 'rest-client', '~> 1.8'
-  spec.add_dependency 'docker-api', '~> 1.31.0'
+  spec.add_dependency 'docker-api', '~> 1.33.0'
   spec.add_dependency 'sinatra'
+  spec.add_dependency 'redis'
   spec.add_dependency 'sinatra-contrib'
   spec.add_dependency 'slack-ruby-client'
-  spec.add_dependency 'unicorn'
   spec.add_dependency 'httparty'
+  spec.add_dependency 'sterile'
   # Use Celluloid over eventmachine/websocket
   # See: https://github.com/slack-ruby/slack-ruby-client/issues/96
   # spec.add_dependency 'eventmachine'
   # spec.add_dependency 'faye-websocket'
   # spec.add_dependency 'celluloid-io', require: ['celluloid/current', 'celluloid/io']
 
+  spec.add_development_dependency 'codeclimate-test-reporter', '~> 0.4.8'
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'rspec', '~> 3.4'
   spec.add_development_dependency 'nyan-cat-formatter'

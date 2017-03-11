@@ -3,12 +3,15 @@ plugin:
     language: bash
     listen_type: passive
     help:
-      hello world: "Says things"
+      # Use to build out help list
+      # arg: "description"
+      world: "Says hello world"
     description: "simple hello world"
     write: |
       #!/bin/bash
-      if [ "${1}" == 'test' ]; then
+
+      if [ "${1}" == 'world' ]; then
           echo 'Hello World!'
       else
-          echo 'I dont like you'
+          echo 'No World!'
       fi

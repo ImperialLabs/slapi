@@ -7,6 +7,7 @@ services:
     privileged: true
     volumes:
         - scripts:/usr/src/slapi/scripts
+        - brain:/usr/src/slapi/brain
     networks:
         slapi-net:
             # Setting a specific address allows us to add this to the host file of the bot container
@@ -30,20 +31,13 @@ services:
         - "docker:172.16.238.2"
     depends_on:
         - dind_host
-        # - brain
-    # Place holder for Brain Setup
-#   brain:
-#     image: postgres
-#     ports:
-#     networks:
-#         - slapi-net
-#             ipv4_address: 172.16.238.4
-#     depends_on:
-#         - dind_host
+
 
 # Create a volume to attach to both dind_host and bot so scripts written by bot can be attached to plugin containers
 volumes:
   scripts:
+    driver: local
+  brain:
     driver: local
 
 # Adding a specific network to setup the Docker in Docker Host

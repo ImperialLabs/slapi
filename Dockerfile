@@ -7,7 +7,7 @@ ENV APP_HOME /usr/src/slapi
 RUN mkdir -p $APP_HOME &&\
     mkdir -p $APP_HOME/log
 
-WORKDIR $APP_HOME
+WORKDIR /usr/src/slapi
 
 COPY supervisord.conf /etc/supervisor.d/supervisord.conf
 COPY . $APP_HOME
