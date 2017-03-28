@@ -1,12 +1,22 @@
 # Simple Lightweight API Bot (SLAPI)
 
-[![Travis](https://img.shields.io/travis/ImperialLabs/slapi.svg)](https://travis-ci.org/ImperialLabs/slapi) [![GitHub release](https://img.shields.io/github/release/slapi/slapi.svg)](https://github.com/ImperialLabs/slapi/releases) [![Code Climate](https://codeclimate.com/github/ImperialLabs/slapi/badges/gpa.svg)](https://codeclimate.com/github/ImperialLabs/slapi) [![Test Coverage](https://codeclimate.com/github/ImperialLabs/slapi/badges/coverage.svg)](https://codeclimate.com/github/ImperialLabs/slapi/coverage) [![Issue Count](https://codeclimate.com/github/ImperialLabs/slapi/badges/issue_count.svg)](https://codeclimate.com/github/ImperialLabs/slapi) [![Docker Pulls](https://img.shields.io/docker/pulls/slapi/slapi.svg)](https://hub.docker.com/r/slapi/slapi/) [![Docker Stars](https://img.shields.io/docker/stars/slapi/slapi.svg)](https://hub.docker.com/r/slapi/slapi/)
+[![Travis](https://img.shields.io/travis/ImperialLabs/slapi.svg)](https://travis-ci.org/ImperialLabs/slapi) [![GitHub release](https://img.shields.io/github/release/ImperialLabs/slapi.svg)](Ihttps://github.com/ImperialLabs/slapi/releases) [![Code Climate](https://codeclimate.com/github/ImperialLabs/slapi/badges/gpa.svg)](https://codeclimate.com/github/ImperialLabs/slapi) [![Test Coverage](https://codeclimate.com/github/ImperialLabs/slapi/badges/coverage.svg)](https://codeclimate.com/github/ImperialLabs/slapi/coverage) [![Issue Count](https://codeclimate.com/github/ImperialLabs/slapi/badges/issue_count.svg)](https://codeclimate.com/github/ImperialLabs/slapi) [![Docker Pulls](https://img.shields.io/docker/pulls/slapi/slapi.svg)](https://hub.docker.com/r/slapi/slapi/) [![Docker Stars](https://img.shields.io/docker/stars/slapi/slapi.svg)](https://hub.docker.com/r/slapi/slapi/)
 
 ## Prerequisites
 
 -   Docker 1.10 or later
 -   Ruby 2.3 or later - See [Ruby](#ruby-setup) section for options
 -   Bundler - See [Bundler](#bundler) Section
+
+## What is Slapi?
+
+Slapi is our concept of a bot. It's blind to languages. While it may be written in Ruby and using Sinatra for it's API interface, it does not care what you use for your plugins.
+
+If you can stick it in a Docker Container or Slap an API on it, you can make it a plugin. (We refer to them as slapins)
+
+Slapi is in the early stages, we just released the MVP. There is no plugins, just [examples](https://github.com/ImperialLabs/slapi/tree/master/examples) and [test](https://github.com/ImperialLabs/slapin-test) plugins.
+
+Check out the getting started below and feel free to open an issue for anything, even if you just want us to explain a little more about something.
 
 ## Getting Started
 
@@ -15,6 +25,7 @@ Check out the Documentation for specific items
 -   [Usage](#usage)
     -   [Configuration](#configuration)
     -   [Running The Server](#running-the-server)
+    -   [Docker Start](#) (Pending)
 -   [Bot Anatomy](#bot-anatomy)
     -   [API](#api)
     -   [Brain](#brain)
@@ -44,6 +55,27 @@ git clone https://github.com/ImperialLabs/slapi.git
 cd slapi
 export SLACK_TOKEN=xoxb-XXXXXXXXXXXX-TTTTTTTTTTTTTT
 rake docker
+```
+
+### Hello World Your Heart Out!
+Here's a quick script plugin to get you out the door, kick the tires and give it a go!
+
+just place this in the `./config/plugins/` folder as whatever name you wish to use for it in the bot (e.g. `hello.yml`)
+```yaml
+plugin:
+    type: script
+    language: bash
+    listen_type: passive
+    help:
+      world: "Says Hello World!"
+    description: "simple hello world"
+    write: |
+      #!/bin/bash
+      if [ "${1}" == 'world' ]; then
+          echo 'Hello World!'
+      else
+          echo 'No World for You!'
+      fi
 ```
 
 ## Usage
