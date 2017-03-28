@@ -3,14 +3,19 @@ language: ruby
 services:
   - docker
 rvm:
-- 2.3.0
-- 2.3.1
-- 2.3.2
-- 2.3.3
+  - 2.3.0
+  - 2.3.1
+  - 2.3.2
+  - 2.3.3
+ignore:
+  - *.md
+  - examples/*
+  - config/**/*
+  - LICENSE
 install:
-- bundle install --binstubs --path vendor/bundle
+  - bundle install --binstubs --path vendor/bundle
 script:
-- bundle exec rake integration
+  - bundle exec rake integration
 addons:
   code_climate:
     repo_token: 8c8cb2ca3d4bdd23364118388b7dcfa42fc38e232b88e7f8f14fc9be856218fd
