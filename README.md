@@ -14,7 +14,7 @@ Slapi is our concept of a bot. It's blind to languages. While it may be written 
 
 If you can stick it in a Docker Container or Slap an API on it, you can make it a plugin. (We refer to them as slapins)
 
-Slapi is in the early stages, we just released the MVP. There is no plugins, just [examples](https://github.com/ImperialLabs/slapi/tree/master/examples) and [test](https://github.com/ImperialLabs/slapin-test) plugins.
+Slapi is in the early stages, we just released the MVP. There is no pre-existing plugins, yet (give us time!). Just [examples](https://github.com/ImperialLabs/slapi/tree/master/examples) and [test](https://github.com/ImperialLabs/slapin-test) plugins for references.
 
 Check out the getting started below and feel free to open an issue for anything, even if you just want us to explain a little more about something.
 
