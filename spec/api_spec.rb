@@ -50,17 +50,14 @@ end
 
 describe 'calls query key from brain', type: :feature do
   it 'returns' do
-    page.driver.header 'plugin', 'integration'
-    page.driver.header 'key', 'test'
-    page.driver.get '/v1/query_key'
+    page.driver.post '/v1/query_key', plugin: 'integration', key: 'test'
     expect(page).to have_content 'data'
   end
 end
 
 describe 'calls query hash from brain', type: :feature do
   it 'returns' do
-    page.driver.header 'plugin', 'integration'
-    page.driver.get '/v1/query_hash'
+    page.driver.post '/v1/query_hash', plugin: 'integration'
     expect(page).to have_content 'test'
   end
 end

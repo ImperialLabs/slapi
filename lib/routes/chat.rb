@@ -85,6 +85,10 @@ module Sinatra
           status 200
           { 'message' => 'it worked' }.to_json
         end
+
+        slapi.get '/ping' do
+          return 'pong'
+        end
       end
     end
   end

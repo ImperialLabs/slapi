@@ -27,7 +27,7 @@ class Bot
   def exec(data)
     request = requested_plugin(data)
     @logger.debug("Slapi: Running plugin execution against #{request}")
-    @plugins.exec(data, request)
+    @plugins.exec(data, @client.self.id, request)
   end
 
   # Validate plugin exists
@@ -50,7 +50,8 @@ class Bot
 
   def requested_plugin(data)
     if data.text.include? ' '
-      chat_data_sort(data)
+      data_array = data.text.split(' ')
+      chat_data_sort(data, data_array)
     elsif data.text == 'help'
       @logger.debug('Slapi: no plugin requested, just help')
       nil
@@ -63,21 +64,15 @@ class Bot
     end
   end
 
-  def chat_data_sort(data)
-    # Create array based on spaces
-    data_array = data.text.split(' ')
-    requested_plugin = help_request(data, data_array) if data.text.include? 'help'
-    requested_plugin = data.channel[0] == 'D' ? data_array[0] : data_array[1] unless data.text.include? 'help'
+  def chat_data_sort(data, data_array)
+    if data.text.include? 'help'
+      bot_name = data.text.include?(@client.self.id)
+      requested_plugin = bot_name ? data_array[2] : data_array[1]
+    else
+      bot_name = data.text.include?(@client.self.id)
+      requested_plugin = bot_name ? data_array[1] : data_array[0]
+    end
     @logger.debug("Slapi: Plugin Requested: #{requested_plugin ? requested_plugin : 'no plugin requested'}")
     requested_plugin
-  end
-
-  def help_request(data, data_array)
-    if data.text == 'help'
-    elsif data.text.exclude? @client.self.id
-      data.channel[0] == 'D' ? data_array[1] : data_array[2]
-    elsif data.text.include? @client.self.id
-      data_array[2]
-    end
   end
 end

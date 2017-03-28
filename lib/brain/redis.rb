@@ -38,9 +38,8 @@ class Brain
     container_hash[:HostConfig][:PortBindings] = { '6379/tcp' => [{ 'HostPort' => '6379', 'HostIp' => '0.0.0.0' }] }
     container_hash[:HostConfig][:Binds] = ["#{Dir.pwd}/brain/:/data"]
     container = Docker::Container.create(container_hash)
-    container_get = Docker::Container.get('slapi_brain')
-    @container_info = container_get.info
     container.tap(&:start)
+    @container_info = Docker::Container.get('slapi_brain').info
     @redis = Redis.new(url: set_url)
   end
 
@@ -73,13 +72,13 @@ class Brain
 
   def set_url
     # Pull local IP and Brain Contianer IP
-    ip = Socket.ip_address_list.detect(&:ipv4_private?).ip_address
+    local_ip = Socket.ip_address_list.detect(&:ipv4_private?).ip_address
     container_ip = @container_info['NetworkSettings']['IPAddress']
 
     # Determine if running via DIND/Compose Config or if running local
-    compose_bot = false unless ip.rpartition('.')[0] == container_ip.rpartition('.')[0]
+    compose_bot = local_ip.rpartition('.')[0] == container_ip.rpartition('.')[0]
     @logger.debug(compose_bot ? 'Brain: running inside DIND' : 'Brain: running on local machine')
     # If Compose, set docker network ip. If, local use localhost
-    compose_bot ? "redis://#{ip}:6379" : 'redis://127.0.0.1:6379'
+    compose_bot ? "redis://#{container_ip}:6379" : "redis://#{local_ip}:6379"
   end
 end

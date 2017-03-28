@@ -20,7 +20,6 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'rest-client', '~> 1.8'
   spec.add_dependency 'docker-api', '~> 1.33.0'
   spec.add_dependency 'sinatra'
   spec.add_dependency 'redis'
@@ -28,11 +27,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'slack-ruby-client'
   spec.add_dependency 'httparty'
   spec.add_dependency 'sterile'
-  # Use Celluloid over eventmachine/websocket
-  # See: https://github.com/slack-ruby/slack-ruby-client/issues/96
-  # spec.add_dependency 'eventmachine'
-  # spec.add_dependency 'faye-websocket'
-  # spec.add_dependency 'celluloid-io', require: ['celluloid/current', 'celluloid/io']
 
   spec.add_development_dependency 'codeclimate-test-reporter', '~> 1.0.0'
   spec.add_development_dependency 'rake'

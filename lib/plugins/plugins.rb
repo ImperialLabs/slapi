@@ -29,9 +29,9 @@ class Plugins
   # Currently does not take any parameters nor does it return anything.
   # Future iterations should allow for configuration based on commands from chat.
   def load
-    file_location = @settings.plugins['location'] ? @settings.plugins['location'] : '../../config/plugins/*.yml'
+    file_location = @settings.plugins['location'] ? @settings.plugins['location'] : '../../config/plugins/'
 
-    yaml_files = File.expand_path(file_location, File.dirname(__FILE__))
+    yaml_files = File.expand_path(file_location + '*.yml', File.dirname(__FILE__))
     Dir.glob(yaml_files).each do |file|
       @plugin_hash[File.basename(file, '.*')] = Plugin.new(file, @settings)
     end
@@ -51,8 +51,8 @@ class Plugins
   end
 
   # Routes the execution to the correct plugin
-  def exec(data, requested_plugin = nil)
-    @plugin_hash[requested_plugin]&.exec data
+  def exec(data, client_id, requested_plugin = nil)
+    @plugin_hash[requested_plugin]&.exec(client_id, data)
   end
 
   # Verifies plugin that's eing executed

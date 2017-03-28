@@ -52,12 +52,12 @@ module Sinatra
         # @option headers [String] :plugin Utilizes the plugin name as Hash Name
         # @option headers [String] :key Key you wish to query
         # @return [String] returns key value
-        slapi.get '/v1/query_key' do
-          raise 'missing plugin name' unless env['HTTP_PLUGIN']
-          raise 'missing key' unless env['HTTP_KEY']
+        slapi.post '/v1/query_key' do
+          raise 'missing plugin name' unless params[:plugin]
+          raise 'missing key' unless params[:key]
 
           # Searches brain via Plugin: plugin name (hash), key
-          response = slapi.query_key(env['HTTP_PLUGIN'], env['HTTP_KEY'])
+          response = slapi.query_key(params[:plugin], params[:key])
           status 200
           response
         end
@@ -67,11 +67,11 @@ module Sinatra
         # @headers [Hash] params the parameters sent on the request
         # @option headers [String] :plugin Hash to Query for Keys (Plugin Name used as Hash Name)
         # @return [String] returns key value
-        slapi.get '/v1/query_hash' do
-          raise 'missing plugin name' unless env['HTTP_PLUGIN']
+        slapi.post '/v1/query_hash' do
+          raise 'missing plugin name' unless params[:plugin]
 
           # Searches brain via Plugin: plugin name (hash)
-          response = slapi.query_hash(env['HTTP_PLUGIN'])
+          response = slapi.query_hash(params[:plugin])
           status 200
           response
         end

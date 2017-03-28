@@ -12,11 +12,13 @@
 
 Check out the Documentation for specific items
 -   [Quick Start](#quick-start)
--   [API](https://imperiallabs.github.io/api_landing.html)
--   [Brain](https://imperiallabs.github.io/brain_landing.html)
--   [Plugins](https://imperiallabs.github.io/plugins_landing.html)
--   [Configuration](#configuration)
--   [Running The Server](#running-the-server)
+-   [Usage](#usage)
+    -   [Configuration](#configuration)
+    -   [Running The Server](#running-the-server)
+-   [Bot Anatomy](#bot-anatomy)
+    -   [API](#api)
+    -   [Brain](#brain)
+    -   [Plugins](#plugins)
 -   [Rake Tasks](#rake-tasks)
 -   [Development](#development)
 
@@ -79,9 +81,9 @@ You will need to put this in the file config/bot.yml or config/bot.local.yml for
 ```yaml
 # Adapter Settings
 adapter:
-  type: slack
-  token: "xoxb-XXXXXXXXXXXX-TTTTTTTTTTTTTT"
-  ## Future Options
+  type: slack # Enables option alternative adapters
+  token: # API token
+  # Coming Soon
   # user_agent: # User-agent, defaults to Slack Ruby Client/version.
   # proxy: # Optional HTTP proxy.
   # ca_path: # Optional SSL certificates path.
@@ -91,19 +93,20 @@ adapter:
 
 # Bot ConfigFile
 bot:
-  name: myawesomebot # Enables calling bot with @bot or if you wanted a secondary name to respond to
+  name: bot # name for bot to respond to (optional)
 
 # Admin Settings
-# Future Options
 admin:
   users: # Array of names or IDs who are admins
   dm_limit: # True/False Limits bot DMs, will not respond to DMs from non-admins.
 
 # Help Settings
-# Future Options
 help:
   level: 1 # 1/2; 1 only lists plugin names, 2 lists names and opts
   dm_user: false # True/False; True to send all help requests as DM, false to post in room
+
+plugins:
+  location: '../../config/plugins/'
 ```
 
 ### Running the server
@@ -182,6 +185,60 @@ Build SLAPI container from scratch w/ compose.
 ```bash
 docker-compose -f slapi-build-compose.yml up
 ```
+
+## Bot Anatomy
+
+Overview of how the bot is put together and what's available for use
+
+## API
+
+SLAPI has several API endpoints available to plugins and/or applications.
+
+See more in depth documentation [here](https://imperiallabs.github.io/api_landing.html)
+
+-   Chat:
+    -   Speak: Simple post to chat options
+    -   Attachment: Formatted Data posted to chat (Title, Text)
+    -   Emote: Post to chat as emote
+    -   Ping: receive a pong
+-   Brain:
+    -   Save: Save data into bot brain
+    -   Delete: Delete data from bot brain
+    -   Query_Key: Search for a key value in bot brain
+    -   Query Hash: Search for all keys in bot brain, each plugin has it's own hash
+-   Plugin:
+    -   Reload: Can call a reload of plugins without restart bot
+
+## Brain
+
+Slapi utilizes redis for the bot brain.
+
+Brain is only accessible via API for plugins
+
+See more in depth documentation [here](https://imperiallabs.github.io/brain_landing.html)
+
+## Plugins
+
+Slapi has 3 different types of plugin options.
+
+See more in depth documentation [here](https://imperiallabs.github.io/plugins_landing.html)
+
+-   Script:
+    -   Allows just utilizing a simple script as a plugin
+    -   Currently supports the following languages: Shell/Bash, Ruby, Python, NodeJS
+    -   Has two data options
+        -   Simple: passes the `hello world` from `@bot say hello world` to container as exec
+        -   All: passes the entire json blob to container as exec.
+-   Container:
+    -   Allows the use of any language or app that can run in docker on linux
+    -   Has two data options
+        -   Simple: passes the `hello world` from `@bot say hello world` to container as exec
+        -   All: passes the entire json blob to container as exec.
+-   API:
+    -   Allows use of anything that can be called by API
+    -   Requires to specific endpoints for Slapi
+        -   Info Endpoint: Provide the data to build the bot help
+        -   Command Endpoint: Configurable endpoint for Slapi to post a json payload to with all the information from slack
 
 ## Rake Tasks
 

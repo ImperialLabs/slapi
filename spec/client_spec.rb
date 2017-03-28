@@ -64,6 +64,36 @@ RSpec.describe Bot, '#exec' do
       @dm_bot.run
     end
 
+    it 'calls plugin from DM without bot name' do
+      mock = MockData.new(channel: 'D4FJHFBCK', text: 'hello world', user: 'U4F0KFA73')
+      response = @dm_bot.listener(mock.constructed)
+      expect(response['message']['attachments'][0]['text']).to eq("Hello World!\n")
+    end
+
+    it 'calls plugin from DM without args without bot name' do
+      mock = MockData.new(channel: 'D4FJHFBCK', text: 'hello', user: 'U4F0KFA73')
+      response = @dm_bot.listener(mock.constructed)
+      expect(response['message']['attachments'][0]['text']).to eq("No World!\n")
+    end
+
+    it 'calls plugin from DM with bot name' do
+      mock = MockData.new(channel: 'D4FJHFBCK', text: '<@U4DEAQX1T> hello world', user: 'U4F0KFA73')
+      response = @dm_bot.listener(mock.constructed)
+      expect(response['message']['attachments'][0]['text']).to eq("Hello World!\n")
+    end
+
+    it 'calls plugin from DM with args without bot name' do
+      mock = MockData.new(channel: 'D4FJHFBCK', text: '<@U4DEAQX1T> hello', user: 'U4F0KFA73')
+      response = @dm_bot.listener(mock.constructed)
+      expect(response['message']['attachments'][0]['text']).to eq("No World!\n")
+    end
+
+    it 'calls plugin from DM' do
+      mock = MockData.new(channel: 'D4FJHFBCK', text: 'help', user: 'U4F0KFA73')
+      response = @dm_bot.listener(mock.constructed)
+      expect(response['message']['attachments'][0]['fallback']).to eq('Your help has arrived!')
+    end
+
     it 'runs bot get help list and expects DM' do
       mock = MockData.new(channel: 'C445NT42J', text: '<@U4DEAQX1T> help', user: 'U4F0KFA73')
       response = @dm_bot.listener(mock.constructed)

@@ -22,3 +22,6 @@ admin:
 help:
   level: 1 # 1/2; 1 only lists plugin names, 2 lists names and opts
   dm_user: false # True/False; True to send all help requests as DM, false to post in room
+
+plugins:
+  location: '../../config/plugins/'

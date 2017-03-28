@@ -1,0 +1,22 @@
+plugin:
+  type: api
+  managed: true
+  build: true # Optional: Choose True or False if building a Dockerfile, managed must also be set to true
+  api_config:
+    url: 'http://localhost:4700'
+    endpoint: '/endpoint'
+    # headers:
+    #   Content-Type: # App Content Type
+    #   Authorization: # If using Token
+  config:
+    Image: 'api' # Enter user/repo (standard docker pull procedures), you can also pull from a private repo via domain.com/repo
+    HostConfig:
+      PortBindings:
+        4700/tcp:
+          -
+            HostIp: '0.0.0.0'
+            HostPort: '4700'
+    Tty: true # Set true/false for container TTY
+    RestartPolicy: # https://docs.docker.com/engine/reference/run/#/restart-policies---restart
+     Name: on-failure # no|always|unless-stopped are valid options. on-failure requires MaximumRetryCount
+     MaximumRetryCount: 2 # Max number of time to attempt to restart container/plugin before quitting

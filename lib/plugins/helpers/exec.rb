@@ -11,8 +11,10 @@ class Plugin
     data
   end
 
-  def data_type(data_from_chat, chat_text_array)
+  def data_type(data_from_chat, chat_text_array, client_id)
     data_convert = data_from_chat.to_h
-    @config['plugin']['data_type'] == 'all' ? data_convert.to_json : chat_text_array.drop(2)
+    bot_name = data_from_chat.text.include?(client_id)
+    simple_data = bot_name ? chat_text_array.drop(2) : chat_text_array.drop(1)
+    @config['plugin']['data_type'] == 'all' ? data_convert.to_json : simple_data
   end
 end

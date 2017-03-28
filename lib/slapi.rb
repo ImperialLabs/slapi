@@ -47,7 +47,7 @@ class Slapi < Sinatra::Base
     raise 'No bot config found'
   end
 
-  configure :production, :development, :test do
+  configure :production, :test, :development do
     enable :logging
   end
 

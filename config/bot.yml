@@ -24,4 +24,4 @@ help:
   dm_user: false # True/False; True to send all help requests as DM, false to post in room
 
 plugins:
-  location: '../../config/plugins/*.yml'
+  location: '../../config/plugins/'

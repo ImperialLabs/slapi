@@ -1,0 +1,7 @@
+production:
+  api_version: '1.0'
+  logger_level: 'info'
+  base_path: 'http://localhost:4700'
+  swagger_version: '1.1'
+  format_specifier: '.json'
+  using: 'production'

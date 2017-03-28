@@ -75,6 +75,8 @@ class Bot
     end
   end
 
+  private
+
   def ping(data)
     chat_attachment(
       {
@@ -142,17 +144,21 @@ class Bot
 
   def plugin(data)
     if verify(data)
-      chat_attachment(
-        {
-          title: "Plugin: #{requested_plugin(data)}",
-          fallback: 'Plugin Responded',
-          text: exec(data),
-          color: GREEN
-        },
-        nil,
-        data
-      )
-    # If configured, will mute failure response. Good for API Plugins that don't provide responses
+      exec_data = exec(data)
+      if exec_data
+        chat_attachment(
+          {
+            title: "Plugin: #{requested_plugin(data)}",
+            fallback: 'Plugin Responded',
+            text: exec_data,
+            color: exec_data.include?('Error') ? RED : GREEN
+          },
+          nil,
+          data
+        )
+      else
+        @logger.debug('SLAPI: Plugin Response was Blank, not posting to room')
+      end
     elsif !@bot_options['mute_fail']
       @logger.debug("Slapi: No matching plugin for #{data.user} request")
       chat_attachment(

@@ -57,5 +57,6 @@ build-iPhoneSimulator/
 scripts/*.*
 config/*.local.yml
 config/plugins/*.yml
+config/plugins/*/**
 
 /brain/*.*
