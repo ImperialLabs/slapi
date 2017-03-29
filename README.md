@@ -4,17 +4,18 @@
 
 ## Prerequisites
 
+-   Slack Team & Ability to Add Custom Integrations
 -   Docker 1.10 or later
 -   Ruby 2.3 or later - See [Ruby](#ruby-setup) section for options
 -   Bundler - See [Bundler](#bundler) Section
 
-## What is Slapi?
+## What is SLAPI?
 
-Slapi is our concept of a bot. It's blind to languages. While it may be written in Ruby and using Sinatra for it's API interface, it does not care what you use for your plugins.
+SLAPI is our concept of a Slack bot. It's blind to languages. While it may be written in Ruby and using Sinatra for it's API interface, it does not care what you use for your plugins.
 
-If you can stick it in a Docker Container or Slap an API on it, you can make it a plugin. (We refer to them as slapins)
+If you can stick it in a Docker Container or Slap an API on it, you can make it a plugin. (We refer to them as SLAPINs)
 
-Slapi is in the early stages, we just released the MVP. There is no pre-existing plugins, yet (give us time!). Just [examples](https://github.com/ImperialLabs/slapi/tree/master/examples) and [test](https://github.com/ImperialLabs/slapin-test) plugins for references.
+SLAPI is in the early stages, we just released the MVP. There is no pre-existing plugins, yet (give us time!). Just [examples](https://github.com/ImperialLabs/slapi/tree/master/examples) and [test](https://github.com/ImperialLabs/slapin-test) plugins for references.
 
 Check out the getting started below and feel free to open an issue for anything, even if you just want us to explain a little more about something.
 
@@ -34,6 +35,10 @@ Check out the Documentation for specific items
 -   [Development](#development)
 
 ## Quick Start
+
+### Step by Step Guide
+
+Head over to [Here](https://imperiallabs.github.io/quick_landing.html) for a walk through of the basics getting started
 
 ### Local
 
@@ -243,7 +248,7 @@ See more in depth documentation [here](https://imperiallabs.github.io/api_landin
 
 ## Brain
 
-Slapi utilizes redis for the bot brain.
+SLAPI utilizes redis for the bot brain.
 
 Brain is only accessible via API for plugins
 
@@ -251,7 +256,7 @@ See more in depth documentation [here](https://imperiallabs.github.io/brain_land
 
 ## Plugins
 
-Slapi has 3 different types of plugin options.
+SLAPI has 3 different types of plugin options.
 
 See more in depth documentation [here](https://imperiallabs.github.io/plugins_landing.html)
 
@@ -268,9 +273,9 @@ See more in depth documentation [here](https://imperiallabs.github.io/plugins_la
         -   All: passes the entire json blob to container as exec.
 -   API:
     -   Allows use of anything that can be called by API
-    -   Requires to specific endpoints for Slapi
+    -   Requires to specific endpoints for SLAPI
         -   Info Endpoint: Provide the data to build the bot help
-        -   Command Endpoint: Configurable endpoint for Slapi to post a json payload to with all the information from slack
+        -   Command Endpoint: Configurable endpoint for SLAPI to post a json payload to with all the information from slack
 
 ## Rake Tasks
 
