@@ -43,9 +43,9 @@ class Plugins
     if requested_plugin
       help_return += requested_plugin + ':' + "\n" + @plugin_hash[requested_plugin].help
     else
-      description = plugin.config['plugin']['description'] ? plugin.config['plugin']['description'] : ''
       help_return += "ping:   check the bot\nhelp:   show this help\nreload:   reload all plugins\n"
       @plugin_hash.each do |name, plugin|
+        description = plugin.config['plugin']['description'] ? plugin.config['plugin']['description'] : ''
         help_return += @settings.help['level'] == 1 ? name + ':   ' + description + "\n" : name + ':   ' + description + "\n" + plugin.help
       end
     end
