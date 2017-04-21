@@ -17,6 +17,7 @@ require_relative 'helpers/exec'
 #  2. Execute the command properly based on the type
 class Plugin
   attr_reader :help, :type
+  attr_accessor :config
 
   def initialize(file, settings)
     @logger = Logger.new(STDOUT)
