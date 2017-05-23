@@ -28,7 +28,7 @@ class Plugin
     @type = @config['plugin']['type']
     @headers = {}
     @headers = @config['plugin']['api_config']['headers'] if @config.dig('plugin', 'api_config', 'headers')
-    @listen_type = @config['plugin']['listen_type']
+    @listen_type = @config['plugin']['listen_type'] || 'passive'
     @managed = @type == 'api' ? false : true
     @managed = @config['plugin']['managed'] if @config.dig('plugin', 'managed')
     @container = nil
