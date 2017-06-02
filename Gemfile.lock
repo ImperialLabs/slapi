@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     slapi (0.1.0)
-      docker-api
+      docker-api (~> 1.33.0)
       httparty
       redis
       sinatra
@@ -177,12 +177,12 @@ PLATFORMS
 DEPENDENCIES
   capybara
   celluloid-io
-  codeclimate-test-reporter
+  codeclimate-test-reporter (~> 1.0)
   debase (~> 0.2.2.beta10)
   nyan-cat-formatter
   rack-test
   rake
-  rspec
+  rspec (~> 3.6)
   rubocop
   ruby-debug-ide (~> 0.6.1.beta4)
   simplecov

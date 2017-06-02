@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'docker-api'
+  spec.add_dependency 'docker-api', '~> 1.33.0'
   spec.add_dependency 'sinatra'
   spec.add_dependency 'redis'
   spec.add_dependency 'sinatra-contrib'
@@ -28,9 +28,9 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'httparty'
   spec.add_dependency 'sterile'
 
-  spec.add_development_dependency 'codeclimate-test-reporter'
+  spec.add_development_dependency 'codeclimate-test-reporter', '~> 1.0'
   spec.add_development_dependency 'rake'
-  spec.add_development_dependency 'rspec'
+  spec.add_development_dependency 'rspec', '~> 3.6'
   spec.add_development_dependency 'nyan-cat-formatter'
   spec.add_development_dependency 'rubocop'
   spec.add_development_dependency 'debase', '~> 0.2.2.beta10'
