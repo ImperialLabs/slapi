@@ -39,15 +39,17 @@ class Plugins
 
   # Routes the execution to the correct plugin if it exists.
   def help_list(requested_plugin = nil)
-    @help_return = ''
+    help_return = ''
     if requested_plugin
-      @help_return += requested_plugin + ':' + "\n" + @plugin_hash[requested_plugin].help
+      help_return += requested_plugin + ':' + "\n" + @plugin_hash[requested_plugin].help
     else
+      help_return += "ping:   check the bot\nhelp:   show this help\nreload:   reload all plugins\n"
       @plugin_hash.each do |name, plugin|
-        @help_return += @settings.help['level'] == 1 ? name + "\n" : name + ':' + "\n" + plugin.help
+        description = plugin.config['plugin']['description'] ? plugin.config['plugin']['description'] : ''
+        help_return += @settings.help['level'] == 1 ? name + ':   ' + description + "\n" : name + ':   ' + description + "\n" + plugin.help
       end
     end
-    @help_return
+    help_return
   end
 
   # Routes the execution to the correct plugin
