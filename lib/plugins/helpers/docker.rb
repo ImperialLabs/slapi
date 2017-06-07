@@ -69,7 +69,13 @@ class Plugin
       @container_hash['Labels'] = @image_info['Config']['Labels']
       @container_hash[:HostConfig][:Binds] = @binds
       @config['plugin']['config'].each do |key, value|
-        @container_hash[key] = value
+        if value.is_a?(Array)
+          value.each do |v|
+            @container_hash[key] << v
+          end
+        else
+          @container_hash[key] = value
+        end
       end
     end
   end
