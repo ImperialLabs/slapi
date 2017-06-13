@@ -35,9 +35,8 @@ class Plugin
     @container = nil
     @container_hash = { name: @name, HostConfig: {} }
     @api_info = {}
-    Docker.options = {
-      read_timeout: 180
-    }
+    Docker.options[:read_timeout] = 200
+    Docker.options[:write_timeout] = 200
     load
     @logger.debug("Plugin: #{@name}: Succesfully Loaded")
   end

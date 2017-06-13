@@ -48,9 +48,29 @@ class Plugin
   end
 
   def build
+    if Docker::Image.exist?(@name) && !@config['plugin']['build_force']
+      built_image
+    else
+      build_image
+    end
+  end
+
+  def built_image
+    @logger.debug("Plugin: #{@name}: Image already exists and build_force is off, using existing image")
+    @image = Docker::Image.get(@name)
+    @image_info = @image.info
+  end
+
+  def build_image
     file_location = File.expand_path('../' + @settings.plugins['location'] + @name, File.dirname(__FILE__))
     @logger.debug("Plugin: #{@name}: Building from Dockerfile from location - #{file_location}")
-    @image = Docker::Image.build_from_dir(file_location)
+    if @config['plugin']['build_stream']
+      @image = Docker::Image.build_from_dir(file_location) do |v|
+        log = JSON.parse(v)
+        $stdout.puts log['stream'] if log.key?('stream')
+      end
+    end
+    @image = Docker::Image.build_from_dir(file_location) unless @config['plugin']['build_stream']
     @image_info = Docker::Image.get(@image.info['id']).info
     @image.tag(repo: @name, tag: 'latest', force: true)
   end
