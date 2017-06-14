@@ -113,7 +113,7 @@ class Plugin
     # Complete url for plugin endpoint, configured in config/plugin/$name.yml
     if @managed
       # Builds URL based on Container Settings
-      port = @container_info['NetworkSettings']['Ports'].keys[0].to_s
+      port = @container_info['NetworkSettings']['Ports'].values[0][0]['HostPort']
       container_ip = @container_info['NetworkSettings']['IPAddress'].to_s
       local_ip = Socket.ip_address_list.detect(&:ipv4_private?).ip_address
 
@@ -123,7 +123,7 @@ class Plugin
 
       # If Compose, set docker network ip. If, local use localhost
       ip = compose_bot ? "http://#{container_ip}" : "http://#{local_ip}"
-      @api_url = ip + ':' + port.chomp('/tcp')
+      @api_url = ip + ':' + port
     else
       @api_url = @config['plugin']['api_config']['url']
     end
