@@ -26,29 +26,28 @@ class Plugin
 
   private
 
-  def bind_set(filename = nil, script = nil)
+  def bind_set(filename = nil)
     @binds = []
     @logger.debug("Plugin: #{@name}: Setting Binds")
-    @binds.push("#{Dir.pwd}/scripts/#{filename}:/scripts/#{filename}") if script
-    @binds.push("#{Dir.pwd}/config/plugins/#{@name}.yml:#{@config['plugin']['mount_config']}") if @config['plugin']['mount_config']
+    @binds.push("#{Dir.pwd}/scripts/#{filename}:/scripts/#{filename}") if @config['type'] == 'script'
+    @binds.push("#{Dir.pwd}/config/plugins/#{@name}.yml:#{@config['mount_config']}") if @config['mount_config']
   end
 
   def image_set
-    repo = @type == 'script' ? @lang_settings[:image] : @config['plugin']['config']['Image']
+    repo = @config['type'] == 'script' ? @lang_settings[:image] : @config['config']['Image']
     @image = Docker::Image.create(fromImage: repo)
     @image_info = @image.info
   end
 
   def manage_set
     clear_existing_container(@name)
-    ip = Socket.ip_address_list.detect(&:ipv4_private?).ip_address
-    @container_hash['Env'] = ["BOT_URL=#{ip}:#{@settings.port}"]
-    build if @config['plugin']['build']
-    image_set unless @config['plugin']['build']
+    @container_hash['Env'] = ["BOT_URL=#{@bot_ip}:#{@settings.port}"]
+    build if @config['build']
+    image_set unless @config['build']
   end
 
   def build
-    if Docker::Image.exist?(@name) && !@config['plugin']['build_force']
+    if Docker::Image.exist?(@name) && !@config['build_force']
       built_image
     else
       build_image
@@ -64,38 +63,50 @@ class Plugin
   def build_image
     file_location = File.expand_path('../' + @settings.plugins['location'] + @name, File.dirname(__FILE__))
     @logger.debug("Plugin: #{@name}: Building from Dockerfile from location - #{file_location}")
-    if @config['plugin']['build_stream']
+    if @config['build_stream']
       @image = Docker::Image.build_from_dir(file_location) do |v|
         log = JSON.parse(v)
         $stdout.puts log['stream'] if log.key?('stream')
       end
     end
-    @image = Docker::Image.build_from_dir(file_location) unless @config['plugin']['build_stream']
+    @image = Docker::Image.build_from_dir(file_location) unless @config['build_stream']
     @image_info = Docker::Image.get(@image.info['id']).info
     @image.tag(repo: @name, tag: 'latest', force: true)
   end
 
-  def hash_set(filename = nil, script = nil)
-    if script
-      @container_hash[:image] = @lang_settings[:image]
-      @container_hash[:HostConfig][:Binds] = @binds
-      @container_hash[:Entrypoint] = "/scripts/#{filename}"
-      @container_hash[:Tty] = true
-      @container_hash['Labels'] = @config['plugin']['help']
+  def hash_set(filename = nil)
+    @container_hash[:HostConfig][:Binds] = @binds
+    if @config['type'] == 'script'
+      script_hash(filename)
     else
-      @container_hash['Entrypoint'] = @image_info['Config']['Entrypoint'] ? @image_info['Config']['Entrypoint'] : @image_info['Config']['Cmd']
-      @container_hash['ExposedPorts'] = @image_info['Config']['ExposedPorts'] if @image_info['Config']['ExposedPorts']
-      @container_hash['WorkingDir'] = @image_info['Config']['WorkingDir']
-      @container_hash['Labels'] = @image_info['Config']['Labels']
-      @container_hash[:HostConfig][:Binds] = @binds
-      @config['plugin']['config'].each do |key, value|
-        if value.is_a?(Array)
-          value.each do |v|
-            @container_hash[key] << v
-          end
-        else
-          @container_hash[key] = value
+      managed_hash
+      build_hash
+    end
+  end
+
+  def script_hash(filename)
+    @container_hash[:image] = @lang_settings[:image]
+    @container_hash[:Entrypoint] = "/scripts/#{filename}"
+    @container_hash[:Labels] = @config['help']
+  end
+
+  def managed_hash
+    @container_hash[:Entrypoint] = @image_info['Config']['Entrypoint'] ? @image_info['Config']['Entrypoint'] : @image_info['Config']['Cmd']
+    @container_hash[:ExposedPorts] = @image_info['Config']['ExposedPorts'] if @image_info.dig('Config', 'ExposedPorts')
+    @container_hash[:WorkingDir] = @image_info['Config']['WorkingDir']
+    @container_hash[:Labels] = {}
+    @container_hash[:Labels].merge!(@image_info['Config']['Labels']) if @image_info.dig('Config', 'Labels')
+    @container_hash[:Labels].merge(@config['help']) unless @config['help'].blank?
+  end
+
+  def build_hash
+    @config['config'].each do |key, value|
+      if value.is_a?(Array)
+        value.each do |v|
+          @container_hash[key] << v
         end
+      else
+        @container_hash[key] = value
       end
     end
   end

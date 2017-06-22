@@ -1,5 +1,6 @@
 # coding: utf-8
 # frozen_string_literal: true
+
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'rbconfig'
@@ -29,6 +30,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'sterile'
 
   spec.add_development_dependency 'codeclimate-test-reporter', '~> 1.0'
+  spec.add_development_dependency 'github_changelog_generator', '~> 1.14.1'
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'rspec', '~> 3.6'
   spec.add_development_dependency 'nyan-cat-formatter'

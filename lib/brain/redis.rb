@@ -39,8 +39,8 @@ class Brain
     container_hash[:HostConfig][:Binds] = ["#{Dir.pwd}/brain/:/data"]
     container = Docker::Container.create(container_hash)
     container.tap(&:start)
-    @container_info = Docker::Container.get('slapi_brain').info
-    @redis = Redis.new(url: set_url)
+    container_info = Docker::Container.get('slapi_brain').info
+    @redis = Redis.new(url: url_set(container_info))
   end
 
   def brain_check(name)
@@ -70,10 +70,10 @@ class Brain
     @redis.hmset(hash_name, key, value)
   end
 
-  def set_url
+  def url_set(container_info)
     # Pull local IP and Brain Contianer IP
     local_ip = Socket.ip_address_list.detect(&:ipv4_private?).ip_address
-    container_ip = @container_info['NetworkSettings']['IPAddress']
+    container_ip = container_info['NetworkSettings']['IPAddress']
 
     # Determine if running via DIND/Compose Config or if running local
     compose_bot = local_ip.rpartition('.')[0] == container_ip.rpartition('.')[0]

@@ -1,0 +1,11 @@
+plugin:
+  type: api
+  managed: true
+  public: true # Required for travis testing
+  api_config:
+    endpoint: '/endpoint'
+    # headers:
+    #   Content-Type: # App Content Type
+    #   Authorization: # If using Token
+  config:
+    Image: 'slapi/slapin-test:api' # Enter user/repo (standard docker pull procedures), you can also pull from a private repo via domain.com/repo

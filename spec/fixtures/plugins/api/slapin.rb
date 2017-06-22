@@ -33,14 +33,21 @@ class Slapin < Sinatra::Base
     @command = @params[:command]
     @channel = @params[:chat][:channel]
     @text_array = @params[:chat][:text].split(' ')
-    search if @command[0] == 'search'
-    save if @command[0] == 'save'
-    hello if @command[0] == 'hello'
-    status 404 if @command[0] == 'fail'
+    case @command[0]
+    when 'search'
+      search
+    when 'save'
+      save
+    when 'hello'
+      hello
+    when 'fail'
+      status 404
+    end
   end
 
   get '/info' do
     {
+      description: 'API Test Plugin',
       help:
         {
           search: 'Search info from brain, Search for all keys: `@bot api search` - Search specific key for value: `@bot api search $key`"',

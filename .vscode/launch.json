@@ -13,7 +13,7 @@
                 "-p", "4567"
             ],
             "useBundler": true,
-            "pathToBundler": "${env.HOME}/.rvm/gems/${env.rvm_ruby_string}/wrappers/bundle",
+            "pathToBundler": "${env:HOME}/.rvm/gems/${env:rvm_ruby_string}/wrappers/bundle",
             "showDebuggerOutput": true,
             "pathToRDebugIDE": "${workspaceRoot}/bin/rdebug-ide"
         },
@@ -29,7 +29,7 @@
                 "-p", "4567"
             ],
             "useBundler": true,
-            "pathToBundler": "${env.HOME}/.rbenv/shims/bundle",
+            "pathToBundler": "${env:HOME}/.rbenv/shims/bundle",
             "showDebuggerOutput": true,
             "pathToRDebugIDE": "${workspaceRoot}/bin/rdebug-ide"
         },
@@ -50,7 +50,7 @@
             "cwd": "${workspaceRoot}",
             "program": "${workspaceRoot}/bin/rspec",
             "useBundler": true,
-            "pathToBundler": "${env.HOME}/.rvm/gems/${env.rvm_ruby_string}/wrappers/bundle",
+            "pathToBundler": "${env:HOME}/.rvm/gems/${env:rvm_ruby_string}/wrappers/bundle",
             "showDebuggerOutput": true,
             "pathToRDebugIDE": "${workspaceRoot}/bin/rdebug-ide",
             "args": [
@@ -65,7 +65,7 @@
             "cwd": "${workspaceRoot}",
             "program": "${workspaceRoot}/bin/rspec",
             "useBundler": true,
-            "pathToBundler": "${env.HOME}/.rvm/gems/${env.rvm_ruby_string}/wrappers/bundle",
+            "pathToBundler": "${env:HOME}/.rvm/gems/${env:rvm_ruby_string}/wrappers/bundle",
             "showDebuggerOutput": true,
             "pathToRDebugIDE": "${workspaceRoot}/bin/rdebug-ide",
             "args": [
@@ -82,7 +82,7 @@
             "program": "${workspaceRoot}/bin/rspec",
             "useBundler": true,
             "env": {"RACK_ENV": "production"},
-            "pathToBundler": "${env.HOME}/.rvm/gems/${env.rvm_ruby_string}/wrappers/bundle",
+            "pathToBundler": "${env:HOME}/.rvm/gems/${env:rvm_ruby_string}/wrappers/bundle",
             "showDebuggerOutput": true,
             "pathToRDebugIDE": "${workspaceRoot}/bin/rdebug-ide",
             "args": [

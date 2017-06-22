@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'httparty'
 require 'logger'
 require 'json'
@@ -9,6 +10,7 @@ require 'socket'
 require 'active_support/core_ext/object/blank'
 require_relative 'helpers/docker'
 require_relative 'helpers/exec'
+require_relative 'helpers/network'
 
 # Plugin class will represent an individual plugin.
 # It will check the metadata of the type of plugins to make decisions.
@@ -19,24 +21,33 @@ class Plugin
   attr_reader :help, :type
   attr_accessor :config
 
-  def initialize(file, settings)
+  def initialize(file, dynamic_port, settings)
     @logger = Logger.new(STDOUT)
     @logger.level = settings.logger_level
     @settings = settings
     @name = File.basename(file, '.*')
-    @config = YAML.load_file(file)
-    @help = ''
-    @type = @config['plugin']['type']
+    config = YAML.load_file(file)
+    @config = config['plugin']
     @headers = {}
-    @headers = @config['plugin']['api_config']['headers'] if @config.dig('plugin', 'api_config', 'headers')
-    @listen_type = @config['plugin']['listen_type'] || 'passive'
-    @managed = @type == 'api' ? false : true
-    @managed = @config['plugin']['managed'] if @config.dig('plugin', 'managed')
+    @headers = @config['api_config']['headers'] if @config.dig('plugin', 'api_config', 'headers')
+    @config['exposed_port'] = dynamic_port if @config['exposed_port'].blank?
+    @config['listen_type'] = 'passive' if @config['listen_type'].blank?
+    @managed = @config['type'] == 'api' ? false : true
+    @managed = @config['managed'] if @config['managed']
     @container = nil
-    @container_hash = { name: @name, HostConfig: {} }
+    @container_hash = {
+      name: @name,
+      Tty: true,
+      HostConfig: {},
+      RestartPolicy: {
+        Name: 'on-failure',
+        MaximumRetryCount: 2
+      }
+    }
     @api_info = {}
     Docker.options[:read_timeout] = 200
     Docker.options[:write_timeout] = 200
+    validate
     load
     @logger.debug("Plugin: #{@name}: Succesfully Loaded")
   end
@@ -53,14 +64,14 @@ class Plugin
     # Split args based on qoutes, args are based on spaces unless in qoutes
     chat_text_array = data_from_chat.text.split(/\s(?=(?:[^"]|"[^"]*")*$)/)
     exec_data = data_type(data_from_chat, chat_text_array, client_id)
-    case @type
+    case @config['type']
     when 'script', 'container'
-      case @listen_type
+      case @config['listen_type']
       when 'passive'
         exec_passive(exec_data)
       when 'active'
         @logger.debug("Plugin: #{@name}: Sending '#{exec_data}' to active plugin")
-        exec_array = @config['plugin']['command'].split(' ')
+        exec_array = @config['command'].split(' ')
         exec_array.push(exec_data)
         response = @container.exec(exec_array, wait: 20)
         response[0][0].to_s
@@ -72,23 +83,34 @@ class Plugin
 
   private
 
+  # Check plugin config for required configuration based on type
+  def validate
+    raise "[ERROR] Plugin: #{@name}: No type set! Type is required for all plugins" unless @config['type']
+    case @config['type']
+    when 'container', 'docker'
+      raise "[ERROR] Plugin: #{@name}: No Image Set! in config" unless @config.dig('config', 'Image')
+    when 'api'
+      raise "[ERROR] Plugin: #{@name}: No Endpoint Set! in api_config" unless @config.dig('api_config', 'endpoint')
+    end
+  end
+
   # Load the plugin configuration.
   # The plugin type is the important switch here.
   def load
-    case @type
+    bot_ip
+    case @config['type']
     when 'script'
-      @lang_settings = lang_settings(@config['plugin']['language'])
+      @lang_settings = lang_settings(@config['language'])
       filename = "#{@name}#{@lang_settings[:file_type]}"
       load_docker(filename)
       write_script(filename)
-    when 'container'
+    when 'container', 'docker'
       # load the docker container set in the config
-      load_passive unless @listen_type == 'active'
-      load_active if @listen_type == 'active'
+      load_passive unless @config['listen_type'] == 'active'
+      load_active if @config['listen_type'] == 'active'
     when 'api'
       load_api
     else
-      @logger.error("Plugin: #{@name}: unknown plugin type configured #{@type}")
       raise "Plugin: #{@name}: only 'script', 'container', and 'api' are known"
     end
     help_load
@@ -109,75 +131,66 @@ class Plugin
   end
 
   def url_set
-    @container_info = Docker::Container.get(@name).info
     # Complete url for plugin endpoint, configured in config/plugin/$name.yml
-    if @managed
-      # Builds URL based on Container Settings
-      port = @container_info['NetworkSettings']['Ports'].values[0][0]['HostPort']
-      container_ip = @container_info['NetworkSettings']['IPAddress'].to_s
-      local_ip = Socket.ip_address_list.detect(&:ipv4_private?).ip_address
-
-      # Determine if running via DIND/Compose Config or if running local
-      compose_bot = local_ip.rpartition('.')[0] == container_ip.rpartition('.')[0]
-      @logger.debug(compose_bot ? "Plugin: #{@name}: running inside DIND" : "Plugin: #{@name}: running on local machine")
-
-      # If Compose, set docker network ip. If, local use localhost
-      ip = compose_bot ? "http://#{container_ip}" : "http://#{local_ip}"
-      @api_url = ip + ':' + port
-    else
-      @api_url = @config['plugin']['api_config']['url']
-    end
+    @api_url = "http://#{@plugin_ip}:#{@config['exposed_port']}" if @managed
+    @api_url = @config['api_config']['url'] unless @managed
     @logger.debug("Plugin: #{@name}: URL is set to #{@api_url}")
   end
 
   def load_api
-    if @managed
-      @logger.debug("Plugin: #{@name}: Is set to managed and being loaded by Slapi")
-      load_docker
-      start_managed
-      url_set
-    end
-
+    managed_api if @managed
     @logger.debug("Plugin: #{@name}: Loaded, getting info from API Endpoint")
+    api_info(0)
+    @config['description'] = @api_info['description'] unless @api_info['description'].blank?
+  end
 
-    @response = OpenStruct.new(body: nil)
+  def api_info(info_count)
+    response = OpenStruct.new(body: nil)
 
-    while @response.body.blank?
+    while info_count < 5
       begin
-        @response = HTTParty.get("#{@api_url}/info")
+        response = HTTParty.get("#{@api_url}/info", timeout: 10)
+        if response.success? && !response.body.blank?
+          @api_info = JSON.parse(response.body)
+          break
+        end
       rescue StandardError
         sleep(1)
+        info_count += 1
+        @logger.error("Plugin: #{@name}: No info endpoint or no data") if info_count >= 5
       end
     end
+  end
 
-    if @response.success?
-      @api_info = JSON.parse(@response.body)
-    else
-      @logger.error("Plugin: #{@name}: No info endpoint or error with endpoint")
-    end
+  def managed_api
+    @logger.debug("Plugin: #{@name}: Is set to managed and being loaded by Slapi")
+    load_docker
+    start_managed
+    plugin_ip
+    url_set
   end
 
   # Keeping DRY, all repetive load tasks go here.
   def load_docker(filename = nil)
-    @logger.debug("Plugin: #{@name}: Set as #{@type} plugin, loading plugin")
-    case @type
+    @logger.debug("Plugin: #{@name}: Set as #{@config['type']} plugin, loading plugin")
+    case @config['type']
     when 'script'
       clear_existing_container(@name)
       image_set # Helper
-      bind_set(filename, true) # Helper
-      hash_set(filename, true) # Helper
+      bind_set(filename) # Helper
+      hash_set(filename) # Helper
     when 'container', 'api'
-      manage_set if @managed # Helper
-      image_set unless @managed # Helper
+      manage_set # Helper
       bind_set # Helper
       hash_set # Helper
+      expose if @container_hash[:ExposedPorts] # Helper
     end
   end
 
   def write_script(filename)
     @logger.debug("Plugin: #{@name}: Writing script for plugin")
     File.open("scripts/#{filename}", 'w') do |file|
-      file.write(@config['plugin']['write'])
+      file.write(@config['write'])
     end
     File.chmod(0o777, "scripts/#{filename}")
   end
@@ -196,35 +209,41 @@ class Plugin
 
   # Build out help commands for users to query in chat
   def help_load
-    if @api_info['help']
-      @help_hash = @api_info['help']
-    elsif @container_hash['Labels']
-      @help_hash = @container_hash['Labels']
-    elsif @config['plugin']['help']
-      @help_hash = @config['plugin']['help']
+    if @api_info.key?('help')
+      help_hash = @api_info['help']
+    elsif @container_hash[:Labels]
+      @config['description'] = @container_hash[:Labels]['description'] if @container_hash.dig(:Labels, 'description')
+      help_hash = @container_hash[:Labels]
+      help_hash.delete('description')
+    else
+      help_hash = ''
     end
 
-    @logger.info("Plugin: #{@name}: #{@help_hash ? 'Help list being built' : 'No help or labels found'}")
+    @logger.info("Plugin: #{@name}: #{help_hash ? 'Help list being built' : 'No help or labels found'}")
 
-    @help_hash&.each do |label, desc|
-      @help += '    ' + label + ' : ' + desc + "\n"
-    end
+    help_array = []
+    help_hash.each { |label, desc| help_array.push("     #{label} : #{desc}\n") } unless help_hash.blank?
+    @help = help_array.join
   end
 
   def exec_passive(exec_data)
     @logger.debug("Plugin: #{@name}: creating and sending '#{exec_data}' to passive plugin")
     @container_hash[:Cmd] = exec_data
-    @container = Docker::Container.create(@container_hash)
 
-    @container.tap do |container|
-      container.start
-      container.attach(tty: true)
-      container.wait(20)
+    response = ''
+    exec_count = 0
+    while response.blank? || exec_count >= 3
+      begin
+        container = Docker::Container.create(@container_hash)
+        @logger.debug("Plugin: #{@name}: Attaching to container")
+        response = container.tap(&:start).attach(tty: true, stdout: true, logs: true)
+        exec_count += 1
+        container.delete(force: true)
+      rescue Docker::Error::TimeoutError
+        @logger.debug("Plugin: #{@name}: #{exec_count >= 3 ? 'too many timeouts' : 'Exec timed out trying again'}")
+      end
     end
-
-    response = @container.logs(stdout: true)
-    @container.delete(force: true)
-    response
+    response[0][0].to_s
   end
 
   def exec_api(data_from_chat, chat_text_array)
@@ -257,10 +276,10 @@ class Plugin
     # Set Payload Type based on Content Type
     payload = @headers.dig('Content-Type') ? content_set(payload_build) : payload_build
 
-    @exec_url = @api_url + @config['plugin']['api_config']['endpoint']
+    @exec_url = @api_url + @config['api_config']['endpoint']
     @logger.debug("Plugin: #{@name}: Exec URL is set to #{@exec_url}")
     @logger.debug("Plugin: #{@name}: Exec '#{chat_text_array.drop(2)}' being sent via API")
-    auth = @config.dig('plugin', 'api_config', 'basic_auth') ? @config['plugin']['api_config']['basic_auth'] : nil
+    auth = @config.dig('plugin', 'api_config', 'basic_auth') ? @config['api_config']['basic_auth'] : nil
     HTTParty.post(@exec_url, basic_auth: auth, body: payload, headers: @headers) if auth
     HTTParty.post(@exec_url, body: payload, headers: @headers) unless auth
   end

@@ -7,21 +7,21 @@ RSpec.describe Plugins, '#exec' do
     it 'returns help list successfully' do
       plugins = Plugins.new(MockSettings.new)
 
-      expect(plugins.help_list('parse')).to eq("parse:\n    parse : parse all data from slack\n")
+      expect(plugins.help_list('parse')).to include('parse all data')
     end
   end
 
   context 'calls help level 1' do
     it 'returns help list successfully' do
       plugins = Plugins.new(MockSettings.new)
-      expect(plugins.help_list).to be_a_kind_of(String)
+      expect(plugins.help_list).to include('parse', 'hello', 'ping', 'help')
     end
   end
 
   context 'calls help level 2' do
     it 'returns help list successfully' do
       plugins = Plugins.new(MockSettings.new(help: { 'level' => 2 }))
-      expect(plugins.help_list).to be_a_kind_of(String)
+      expect(plugins.help_list).to include('parse all data', 'hello world', 'Search for all keys')
     end
   end
 

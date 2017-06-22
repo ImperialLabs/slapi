@@ -4,6 +4,5 @@ plugin:
     listen_type: active
     data_type: all
     command: 'ruby parse.rb'
-    description: "Uses entire data package from chat"
     config:
       Image: 'slapi/slapin-test:advanced-active' # Enter user/repo (standard docker pull procedures), you can also pull from a private repo via domain.com/repo

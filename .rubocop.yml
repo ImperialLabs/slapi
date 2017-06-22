@@ -19,3 +19,7 @@ Metrics/MethodLength:
 
 Metrics/ClassLength:
   Max: 300
+
+Style/NumericLiterals:
+  MinDigits: 6
+  Strict: false

@@ -32,16 +32,16 @@ RSpec.describe Plugin, '#exec' do
     it 'run exec on api type plugin' do
       api_file = File.expand_path('fixtures/plugins/api.yml', File.dirname(__FILE__))
       settings = MockSettings.new
-      plugin = Plugin.new(api_file, settings)
+      plugin = Plugin.new(api_file, 48130, settings)
       mock = MockData.new(text: '<@ABC123> api hello', channel: 'C445NT42J')
       expect(plugin.exec('U4DEAQX1T', mock.constructed)).to eq(200)
     end
 
     it 'run bad option on api type plugin' do
-      api_file = File.expand_path('fixtures/plugins/api.yml', File.dirname(__FILE__))
+      api_file = File.expand_path('fixtures/plugins/api_2.yml', File.dirname(__FILE__))
       settings = MockSettings.new
-      plugin = Plugin.new(api_file, settings)
-      mock = MockData.new(text: '<@ABC123> api fail')
+      plugin = Plugin.new(api_file, 48131, settings)
+      mock = MockData.new(text: '<@ABC123> api_2 fail')
       expect(plugin.exec('U4DEAQX1T', mock.constructed)).to eq('Error: Received code 404')
     end
   end

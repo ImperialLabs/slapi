@@ -3,6 +3,5 @@ plugin:
     language: ruby
     listen_type: passive
     data_type: all
-    description: "Uses entire data package from chat"
     config:
       Image: 'slapi/slapin-test:advanced' # Enter user/repo (standard docker pull procedures), you can also pull from a private repo via domain.com/repo

@@ -32,8 +32,10 @@ class Plugins
     file_location = @settings.plugins['location'] ? @settings.plugins['location'] : '../../config/plugins/'
 
     yaml_files = File.expand_path(file_location + '*.yml', File.dirname(__FILE__))
+    dynamic_port = 48130
     Dir.glob(yaml_files).each do |file|
-      @plugin_hash[File.basename(file, '.*')] = Plugin.new(file, @settings)
+      @plugin_hash[File.basename(file, '.*')] = Plugin.new(file, dynamic_port, @settings)
+      dynamic_port += 1
     end
   end
 
@@ -45,7 +47,7 @@ class Plugins
     else
       help_return += "ping:   check the bot\nhelp:   show this help\nreload:   reload all plugins\n"
       @plugin_hash.each do |name, plugin|
-        description = plugin.config['plugin']['description'] ? plugin.config['plugin']['description'] : ''
+        description = plugin.config['description'] ? plugin.config['description'] : ''
         help_return += @settings.help['level'] == 1 ? name + ':   ' + description + "\n" : name + ':   ' + description + "\n" + plugin.help
       end
     end

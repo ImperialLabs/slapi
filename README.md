@@ -2,10 +2,63 @@
 
 [![Travis](https://img.shields.io/travis/ImperialLabs/slapi.svg)](https://travis-ci.org/ImperialLabs/slapi) [![GitHub release](https://img.shields.io/github/release/ImperialLabs/slapi.svg)](Ihttps://github.com/ImperialLabs/slapi/releases) [![Code Climate](https://codeclimate.com/github/ImperialLabs/slapi/badges/gpa.svg)](https://codeclimate.com/github/ImperialLabs/slapi) [![Test Coverage](https://codeclimate.com/github/ImperialLabs/slapi/badges/coverage.svg)](https://codeclimate.com/github/ImperialLabs/slapi/coverage) [![Issue Count](https://codeclimate.com/github/ImperialLabs/slapi/badges/issue_count.svg)](https://codeclimate.com/github/ImperialLabs/slapi) [![Docker Pulls](https://img.shields.io/docker/pulls/slapi/slapi.svg)](https://hub.docker.com/r/slapi/slapi/) [![Docker Stars](https://img.shields.io/docker/stars/slapi/slapi.svg)](https://hub.docker.com/r/slapi/slapi/)
 
+<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+
+- [Simple Lightweight API Bot (SLAPI)](#simple-lightweight-api-bot-slapi)
+	- [Prerequisites](#prerequisites)
+	- [What is SLAPI?](#what-is-slapi)
+	- [Quick Start](#quick-start)
+		- [Step by Step Guide](#step-by-step-guide)
+		- [Local](#local)
+		- [Docker](#docker)
+		- [Hello World Your Heart Out!](#hello-world-your-heart-out)
+	- [Usage](#usage)
+		- [Docker Setup](#docker-setup)
+		- [Bundler](#bundler)
+			- [Global Install](#global-install)
+			- [Project Local Install](#project-local-install)
+		- [Configuration](#configuration)
+- [Adapter Settings](#adapter-settings)
+- [Bot ConfigFile](#bot-configfile)
+- [Admin Settings](#admin-settings)
+- [Help Settings](#help-settings)
+		- [Running the server](#running-the-server)
+			- [Local](#local)
+			- [Running w/ Docker](#running-w-docker)
+				- [CLI w/ Mounted Sock Port](#cli-w-mounted-sock-port)
+				- [Docker Compose w/ DinD](#docker-compose-w-dind)
+	- [Bot Anatomy](#bot-anatomy)
+	- [API](#api)
+	- [Brain](#brain)
+	- [Plugins](#plugins)
+	- [Rake Tasks](#rake-tasks)
+		- [Run Bot](#run-bot)
+		- [Integration Tests](#integration-tests)
+		- [Cleanup](#cleanup)
+	- [Development](#development)
+		- [Quick Dev](#quick-dev)
+		- [Ruby Setup](#ruby-setup)
+			- [rbenv](#rbenv)
+				- [Install](#install)
+				- [Configure](#configure)
+			- [RVM](#rvm)
+		- [Testing](#testing)
+			- [Local Testing](#local-testing)
+			- [Remote Testing (Docker)](#remote-testing-docker)
+				- [Mounted Socks](#mounted-socks)
+				- [Compose & DinD](#compose-dind)
+			- [Attaching Debugger to Docker](#attaching-debugger-to-docker)
+		- [Linting](#linting)
+	- [How to Contribute](#how-to-contribute)
+		- [External Contributors](#external-contributors)
+		- [Internal Contributors](#internal-contributors)
+
+<!-- /TOC -->
+
 ## Prerequisites
 
 -   Slack Team & Ability to Add Custom Integrations
--   Docker 1.10 or later
+-   Docker 1.10 or later - See [Docker](#docker-setup) section for more info
 -   Ruby 2.3 or later - See [Ruby](#ruby-setup) section for options
 -   Bundler - See [Bundler](#bundler) Section
 
@@ -19,21 +72,6 @@ SLAPI is in the early stages, we just released the MVP. There is no pre-existing
 
 Check out the getting started below and feel free to open an issue for anything, even if you just want us to explain a little more about something.
 
-## Getting Started
-
-Check out the Documentation for specific items
--   [Quick Start](#quick-start)
--   [Usage](#usage)
-    -   [Configuration](#configuration)
-    -   [Running The Server](#running-the-server)
-    -   [Docker Start](#) (Pending)
--   [Bot Anatomy](#bot-anatomy)
-    -   [API](#api)
-    -   [Brain](#brain)
-    -   [Plugins](#plugins)
--   [Rake Tasks](#rake-tasks)
--   [Development](#development)
-
 ## Quick Start
 
 ### Step by Step Guide
@@ -41,6 +79,8 @@ Check out the Documentation for specific items
 Head over to [Here](https://imperiallabs.github.io/quick_landing.html) for a walk through of the basics getting started
 
 ### Local
+
+**IMPORTANT:** Make sure you have looked at [Prerequisites](#prerequisites) first
 
 There are rake tasks created to make this quick to get started.
 
@@ -54,6 +94,8 @@ bundle install --binstubs --path vendor/bundle
 bundle exec rake local
 ```
 ### Docker
+
+**IMPORTANT:** Make sure you have looked at [Prerequisites](#prerequisites) first
 
 ```bash
 git clone https://github.com/ImperialLabs/slapi.git
@@ -84,6 +126,16 @@ plugin:
 ```
 
 ## Usage
+
+### Docker Setup
+
+Docker must be installed for the bot to work.
+
+-   Windows Install - <https://docs.docker.com/docker-for-windows/install/>
+-   OSX Install - <https://docs.docker.com/docker-for-mac/install/>
+-   Linux Install - <https://docs.docker.com/engine/installation/#time-based-release-schedule> (See Docker for Linux on left Side)
+    -   **Important:** If running in Linux, ensure user running SLAPI can run docker, check by running `docker ps`
+    -   To enable a user to run docker without sudo go here <https://docs.docker.com/engine/installation/linux/linux-postinstall/#manage-docker-as-a-non-root-user>
 
 ### Bundler
 
@@ -120,7 +172,7 @@ You will need to put this in the file config/bot.yml or config/bot.local.yml for
 adapter:
   type: slack # Enables option alternative adapters
   token: # API token
-  # Coming Soon
+  ## Coming Soon ##
   # user_agent: # User-agent, defaults to Slack Ruby Client/version.
   # proxy: # Optional HTTP proxy.
   # ca_path: # Optional SSL certificates path.
@@ -296,7 +348,7 @@ There are two quick options here
     -   Runs compose to setup the latest version in dockerhub
 
 You can also just use to avoid creating a bot config
--   run:local
+-   run:local_prod or run:local_dev (if you want debug)
 -   run:docker
 
 ### Integration Tests
@@ -319,6 +371,9 @@ If you just want to clear out the cruft (scripts, bot.test.yml, bundle clean)
 ## Development
 
 ### Quick Dev
+
+**IMPORTANT:** Make sure you have looked at [Prerequisites](#prerequisites) first
+
 When just want to absolutely just run the integration tests
 
 ```bash
@@ -374,6 +429,8 @@ eval "$(rbenv init -)"
 EOF
 ```
 ##### Configure
+
+Install whatever version you wish as long as it's greater than 2.3
 
 ```
 rbenv install 2.3.3
