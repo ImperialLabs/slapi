@@ -7,7 +7,7 @@ RSpec.describe Plugin, '#exec' do
     it 'run exec on script type plugin' do
       hello_file = File.expand_path('fixtures/plugins/hello.yml', File.dirname(__FILE__))
       settings = MockSettings.new
-      plugin = Plugin.new(hello_file, 48132, settings)
+      plugin = Plugin.new(hello_file, 48232, settings)
       mock = MockData.new(text: '<@U4DEAQX1T> hello world')
       expect(plugin.exec('U4DEAQX1T', mock.constructed)).to include('Hello World')
     end
@@ -15,7 +15,7 @@ RSpec.describe Plugin, '#exec' do
     it 'run exec on container passive type plugin' do
       parse_file = File.expand_path('fixtures/plugins/parse.yml', File.dirname(__FILE__))
       settings = MockSettings.new
-      plugin = Plugin.new(parse_file, 48133, settings)
+      plugin = Plugin.new(parse_file, 48233, settings)
       mock = MockData.new(text: '<@U4DEAQX1T> parse')
       expect(plugin.exec('U4DEAQX1T', mock.constructed)).to include('message', 'ABC123', 'parse')
     end
@@ -23,7 +23,7 @@ RSpec.describe Plugin, '#exec' do
     it 'run exec on container active type plugin' do
       parse_file = File.expand_path('fixtures/plugins/active-parse.yml', File.dirname(__FILE__))
       settings = MockSettings.new
-      plugin = Plugin.new(parse_file, 48134, settings)
+      plugin = Plugin.new(parse_file, 48234, settings)
       mock = MockData.new(text: '<@U4DEAQX1T> active-parse')
       expect(plugin.exec('U4DEAQX1T', mock.constructed)).to include('message', 'ABC123', 'active-parse')
     end
@@ -33,7 +33,7 @@ RSpec.describe Plugin, '#exec' do
     before(:each) do
       parse_file = File.expand_path('fixtures/plugins/hello.yml', File.dirname(__FILE__))
       settings = MockSettings.new
-      @lang_plugin = Plugin.new(parse_file, 48135, settings)
+      @lang_plugin = Plugin.new(parse_file, 48235, settings)
     end
 
     it 'returns ruby' do
