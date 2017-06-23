@@ -7,7 +7,7 @@ require 'rbconfig'
 
 Gem::Specification.new do |spec|
   spec.name          = 'slapi'
-  spec.version       = '0.1.0'
+  spec.version       = '0.2.0'
   spec.authors       = ['Levi Smith', 'Aaron Blythe']
   spec.email         = ['atat@hearst.com']
 
