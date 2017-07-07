@@ -38,6 +38,8 @@ class Slapin < Sinatra::Base
       search
     when 'save'
       save
+    when 'delete'
+      delete
     when 'hello'
       hello
     when 'fail'
@@ -71,7 +73,7 @@ class Slapin < Sinatra::Base
       },
       headers: @headers
     )
-    nil
+    body nil
   end
 
   def attachment(fallback, title, text)
@@ -122,5 +124,16 @@ class Slapin < Sinatra::Base
       headers: @headers
     )
     attachment('Data Saved', 'Data Saved', 'Data Save Successful') if response.success?
+  end
+
+    def delete
+    PARTY.post(
+      '/v1/delete',
+      body: {
+        'plugin' => 'api',
+        'key' => @command[1]
+      },
+      headers: @headers
+    )
   end
 end

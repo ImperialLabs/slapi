@@ -32,6 +32,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'codeclimate-test-reporter', '~> 1.0'
   spec.add_development_dependency 'github_changelog_generator', '~> 1.14.1'
   spec.add_development_dependency 'rake'
+  spec.add_development_dependency 'fuubar'
   spec.add_development_dependency 'rspec', '~> 3.6'
   spec.add_development_dependency 'nyan-cat-formatter'
   spec.add_development_dependency 'rubocop'

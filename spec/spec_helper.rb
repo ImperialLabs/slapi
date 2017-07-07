@@ -19,6 +19,7 @@
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 require_relative 'helpers/mock_objects.rb'
 require 'simplecov'
+require 'fuubar'
 SimpleCov.start
 
 RSpec.configure do |config|

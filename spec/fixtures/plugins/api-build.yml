@@ -1,7 +1,6 @@
 plugin:
   type: api
   managed: true
-  public: true # Required for travis testing
   build: true # Optional: Choose True or False if building a Dockerfile, managed must also be set to true
   build_force: true
   api_config:

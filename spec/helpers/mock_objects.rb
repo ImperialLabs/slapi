@@ -7,9 +7,9 @@ class MockSettings
     @help = data[:help] || @config['help']
     @admin = data[:admin] || @config['admin']
     @logger_level = @config['logger_level'] || 'error'
-    @adapter = @config['adapter']
-    @bot = @config['bot']
-    @plugins = @config['plugins']
+    @adapter = data[:adapter] || @config['adapter']
+    @bot = data[:bot] || @config['bot']
+    @plugins = data[:plugins] || @config['plugins']
     @port = '4567'
     @environment = 'test'
   end

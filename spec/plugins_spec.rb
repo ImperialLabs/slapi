@@ -2,34 +2,15 @@ require_relative '../lib/plugins/plugins.rb'
 require 'spec_helper'
 
 RSpec.describe Plugins, '#exec' do
-
-  context 'calls specific help for parse plugin' do
-    it 'returns help list successfully' do
-      plugins = Plugins.new(MockSettings.new)
-
-      expect(plugins.help_list('parse')).to include('parse all data')
-    end
+  context 'normal plugins setting test' do
+    let(:plugins) { Plugins.new(MockSettings.new) }
+    it { expect(plugins.help_list('parse-default')).to include('parse all data') }
+    it { expect(plugins.help_list).to include('parse', 'hello', 'ping', 'help') }
+    it { expect(plugins.load).to be_a_kind_of(Array) }
   end
 
-  context 'calls help level 1' do
-    it 'returns help list successfully' do
-      plugins = Plugins.new(MockSettings.new)
-      expect(plugins.help_list).to include('parse', 'hello', 'ping', 'help')
-    end
-  end
-
-  context 'calls help level 2' do
-    it 'returns help list successfully' do
-      plugins = Plugins.new(MockSettings.new(help: { 'level' => 2 }))
-      expect(plugins.help_list).to include('parse all data', 'hello world', 'Search for all keys')
-    end
-  end
-
-
-  context 'update plugin cache' do
-    it 'configures and returns successfully' do
-      plugins = Plugins.new(MockSettings.new)
-      expect(plugins.load).to be_a_kind_of(Array)
-    end
+  context 'plugins settings with level 2 help' do
+    let(:plugins) { Plugins.new(MockSettings.new(help: { 'level' => 2 })) }
+    it { expect(plugins.help_list).to include('parse all data', 'hello world') }
   end
 end

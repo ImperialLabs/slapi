@@ -11,6 +11,8 @@ require 'active_support/core_ext/object/blank'
 require_relative 'helpers/docker'
 require_relative 'helpers/exec'
 require_relative 'helpers/network'
+require_relative 'plugin_api'
+require_relative 'plugin_container'
 
 # Plugin class will represent an individual plugin.
 # It will check the metadata of the type of plugins to make decisions.
@@ -48,6 +50,7 @@ class Plugin
     Docker.options[:read_timeout] = 200
     Docker.options[:write_timeout] = 200
     validate
+    @network = Network.new
     load
     @logger.debug("Plugin: #{@name}: Succesfully Loaded")
   end
@@ -97,7 +100,7 @@ class Plugin
   # Load the plugin configuration.
   # The plugin type is the important switch here.
   def load
-    bot_ip
+    @bot_ip = @network.bot_ip(@config) # Helper to set bot_ip
     case @config['type']
     when 'script'
       @lang_settings = lang_settings(@config['language'])
@@ -144,10 +147,10 @@ class Plugin
     @config['description'] = @api_info['description'] unless @api_info['description'].blank?
   end
 
-  def api_info(info_count)
+  def api_info(retry_count)
     response = OpenStruct.new(body: nil)
 
-    while info_count < 5
+    while retry_count < 5
       begin
         response = HTTParty.get("#{@api_url}/info", timeout: 10)
         if response.success? && !response.body.blank?
@@ -156,8 +159,8 @@ class Plugin
         end
       rescue StandardError
         sleep(1)
-        info_count += 1
-        @logger.error("Plugin: #{@name}: No info endpoint or no data") if info_count >= 5
+        retry_count += 1
+        @logger.error("Plugin: #{@name}: No info endpoint or no data") if retry_count >= 5
       end
     end
   end
@@ -166,7 +169,7 @@ class Plugin
     @logger.debug("Plugin: #{@name}: Is set to managed and being loaded by Slapi")
     load_docker
     start_managed
-    plugin_ip
+    @plugin_ip = @network.plugin_ip(@logger, @config, @name)
     url_set
   end
 
@@ -183,7 +186,11 @@ class Plugin
       manage_set # Helper
       bind_set # Helper
       hash_set # Helper
-      expose if @container_hash[:ExposedPorts] # Helper
+      if @config['app_port'].blank? && !@container_hash[:ExposedPorts].blank?
+        container_port = @container_hash[:ExposedPorts].keys[0].to_s
+        @config['app_port'] = container_port.chomp('/tcp')
+      end
+      @container_hash.merge!(@network.expose(@config)) if @container_hash[:ExposedPorts] # Helper
     end
   end
 
@@ -222,69 +229,7 @@ class Plugin
     @logger.info("Plugin: #{@name}: #{help_hash ? 'Help list being built' : 'No help or labels found'}")
 
     help_array = []
-    help_hash.each { |label, desc| help_array.push("     #{label} : #{desc}\n") } unless help_hash.blank?
+    help_hash.each { |label, desc| help_array.push("   #{label} : #{desc}\n") } unless help_hash.blank?
     @help = help_array.join
-  end
-
-  def exec_passive(exec_data)
-    @logger.debug("Plugin: #{@name}: creating and sending '#{exec_data}' to passive plugin")
-    @container_hash[:Cmd] = exec_data
-
-    response = ''
-    exec_count = 0
-    while response.blank? || exec_count >= 3
-      begin
-        container = Docker::Container.create(@container_hash)
-        @logger.debug("Plugin: #{@name}: Attaching to container")
-        response = container.tap(&:start).attach(tty: true, stdout: true, logs: true)
-        exec_count += 1
-        container.delete(force: true)
-      rescue Docker::Error::TimeoutError
-        @logger.debug("Plugin: #{@name}: #{exec_count >= 3 ? 'too many timeouts' : 'Exec timed out trying again'}")
-      end
-    end
-    response[0][0].to_s
-  end
-
-  def exec_api(data_from_chat, chat_text_array)
-    response = api_response(data_from_chat, chat_text_array)
-
-    if response.success?
-      response.body unless response.body.blank?
-      response.code if @settings.environment == 'test'
-    else
-      @logger.error("Plugin: #{@name}: returned code of #{response.code}")
-      return "Error: Received code #{response.code}"
-    end
-  end
-
-  def api_response(data_from_chat, chat_text_array)
-    payload_build = {
-      chat:
-        {
-          type: data_from_chat['type'],
-          channel: data_from_chat['channel'],
-          user: data_from_chat['user'],
-          text: data_from_chat['text'],
-          timestamp: data_from_chat['ts'],
-          team: data_from_chat['team']
-        },
-      # Data without botname and plugin stripped leaving args
-      command: chat_text_array.drop(2)
-    }
-
-    # Set Payload Type based on Content Type
-    payload = @headers.dig('Content-Type') ? content_set(payload_build) : payload_build
-
-    @exec_url = @api_url + @config['api_config']['endpoint']
-    @logger.debug("Plugin: #{@name}: Exec URL is set to #{@exec_url}")
-    @logger.debug("Plugin: #{@name}: Exec '#{chat_text_array.drop(2)}' being sent via API")
-    auth = @config.dig('plugin', 'api_config', 'basic_auth') ? @config['api_config']['basic_auth'] : nil
-    HTTParty.post(@exec_url, basic_auth: auth, body: payload, headers: @headers) if auth
-    HTTParty.post(@exec_url, body: payload, headers: @headers) unless auth
-  end
-
-  def content_set(payload_build)
-    @headers['Content-Type'] == 'application/json' ? payload_build.to_json : payload_build
   end
 end

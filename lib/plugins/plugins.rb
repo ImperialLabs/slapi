@@ -6,6 +6,7 @@ require 'json'
 require 'yaml'
 require 'docker'
 require_relative 'plugin'
+require_relative 'helpers/network'
 
 # Plugins class will act as a cache of the plugins currently loaded.
 # Its two main functions are to:
@@ -19,6 +20,7 @@ class Plugins
     @settings = settings
     @logger = Logger.new(STDOUT)
     @logger.level = settings.logger_level
+    @network = Network.new
     load
   end
 
@@ -30,12 +32,12 @@ class Plugins
   # Future iterations should allow for configuration based on commands from chat.
   def load
     file_location = @settings.plugins['location'] ? @settings.plugins['location'] : '../../config/plugins/'
-
     yaml_files = File.expand_path(file_location + '*.yml', File.dirname(__FILE__))
-    dynamic_port = 48130
+    port_start = 48130
     Dir.glob(yaml_files).each do |file|
+      dynamic_port = @network.port_find(port_start)
       @plugin_hash[File.basename(file, '.*')] = Plugin.new(file, dynamic_port, @settings)
-      dynamic_port += 1
+      port_start = dynamic_port + 1
     end
   end
 

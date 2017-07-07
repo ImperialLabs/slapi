@@ -24,7 +24,7 @@ module Sinatra
         # @option attachments [String] :title_link
         # @option attachments [String] :text
         # @option attachments [String] :color ('#229954') defaults to @bot::GREEN(constant) if not specified
-        # @return [String] the resulting webpage
+        # @return [Integer] returns status
         slapi.post '/v1/attachment' do
           raise 'missing channel' unless params[:channel]
           raise 'missing text' unless params[:attachments][:text]
@@ -43,7 +43,6 @@ module Sinatra
             channel
           )
           status 200
-          { 'message' => 'it worked' }.to_json
         end
 
         # Handles a POST request for '/v1/speak'
@@ -53,7 +52,7 @@ module Sinatra
         # @param [Hash] params the parameters sent on the request
         # @option params [String] :channel The Slack Channel ID (ID only supported by Emote)
         # @option params [String] :text The text that will be posted in the channel, supports formatting
-        # @return [String] the resulting webpage
+        # @return [Integer] returns status
         slapi.post '/v1/emote' do
           raise 'missing channel' unless params[:channel]
           raise 'missing text' unless params[:text]
@@ -63,7 +62,6 @@ module Sinatra
             params[:channel]
           )
           status 200
-          { 'message' => 'it worked' }.to_json
         end
 
         # Handles a POST request for '/v1/speak'
@@ -73,7 +71,7 @@ module Sinatra
         # @param [Hash] params the parameters sent on the request
         # @option params [String] :channel The Slack Channel ID (Public Channel Name works, private requires ID)
         # @option params [String] :text The text that will be posted in the channel, supports formatting
-        # @return [String] the resulting webpage
+        # @return [Integer] returns status
         slapi.post '/v1/speak' do
           raise 'missing channel' unless params[:channel]
           raise 'missing text' unless params[:text]
@@ -83,9 +81,10 @@ module Sinatra
             params[:channel]
           )
           status 200
-          { 'message' => 'it worked' }.to_json
         end
 
+        # Handles a POST request for '/v1/ping'
+        # @return [String] returns pong
         slapi.get '/ping' do
           return 'pong'
         end

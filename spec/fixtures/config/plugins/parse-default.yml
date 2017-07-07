@@ -1,0 +1,7 @@
+plugin:
+    type: container
+    language: ruby
+    listen_type: passive
+    data_type: all
+    config:
+      Image: 'slapi/slapin-test:advanced' # Enter user/repo (standard docker pull procedures), you can also pull from a private repo via domain.com/repo

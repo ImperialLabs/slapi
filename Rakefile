@@ -30,7 +30,42 @@ help:
   dm_user: false
 
 plugins:
-  location: '../../spec/fixtures/plugins/'")
+  location: '../../spec/fixtures/config/plugins/'")
+    end
+  end
+
+  RSpec::Core::RakeTask.new(:spec) do |t|
+    t.pattern = Dir.glob('spec/*_spec.rb')
+  end
+
+  task all: [:bot_file, :spec]
+end
+
+namespace :integration_debug do
+  desc 'Build bot config with mock components'
+  task :bot_file do
+    File.open('config/bot.test.yml', 'w') do |f|
+      f.write("adapter:
+  type: slack # Enables option alternative adapters
+  token: #{ENV['SLACK_TOKEN']}
+
+# Bot ConfigFile
+bot:
+  name: integration_bot
+
+logger_level: debug
+
+# Admin Settings
+admin:
+  users:
+
+# Help Settings
+help:
+  level: 1
+  dm_user: false
+
+plugins:
+  location: '../../spec/fixtures/config/plugins/'")
     end
   end
 
@@ -58,7 +93,23 @@ namespace :cleanup do
     sh 'rm -f config/bot.test.yml'
   end
 
-  task all: [:bundle, :scripts, :dev_files]
+  desc 'Clean out running instances'
+  task :slapi_instances do
+      sh "ps -ef | grep slapi | grep rackup | awk '{print $2}' | xargs kill -9"
+  end
+
+  desc '[Warning] - Clean out running docker containers, removes all running containers'
+  task :docker_instances do
+      sh "docker ps | awk '{print $1}' | grep -v CONTAINER | xargs docker rm -f"
+  end
+
+  desc '[Warning] - Clean out all docker images, removes all images on box. Must rebuild or pull all images aftewrods'
+  task :images do
+      sh "docker images | awk '{print $1}' | grep -v REPOSITORY | xargs docker rmi"
+  end
+
+  task all: [:bundle, :scripts, :dev_files, :slapi_instances]
+  task instances: [:slapi_instances, :docker_instances]
 end
 
 namespace :run do
@@ -113,8 +164,16 @@ plugins:
   end
 end
 
+
+
 desc 'Runs Integration Tests'
 task integration: 'integration:all'
+
+desc 'Runs Integration Tests w/ Debug'
+task integration_debug: 'integration_debug:all'
+
+desc '[Warning] - Clean Room Integration Tests, deletes all active docker instances and slapi instances then runs integration tests'
+task clean_integration: [ 'cleanup:instances', 'integration:all']
 
 desc 'Cleanup everything'
 task cleanup: 'cleanup:all'

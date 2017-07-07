@@ -48,13 +48,13 @@ class Plugin
 
   def build
     if Docker::Image.exist?(@name) && !@config['build_force']
-      built_image
+      pull_image
     else
       build_image
     end
   end
 
-  def built_image
+  def pull_image
     @logger.debug("Plugin: #{@name}: Image already exists and build_force is off, using existing image")
     @image = Docker::Image.get(@name)
     @image_info = @image.info
@@ -63,15 +63,30 @@ class Plugin
   def build_image
     file_location = File.expand_path('../' + @settings.plugins['location'] + @name, File.dirname(__FILE__))
     @logger.debug("Plugin: #{@name}: Building from Dockerfile from location - #{file_location}")
-    if @config['build_stream']
-      @image = Docker::Image.build_from_dir(file_location) do |v|
-        log = JSON.parse(v)
-        $stdout.puts log['stream'] if log.key?('stream')
-      end
-    end
+    build_stream(file_location) if @config['build_stream']
     @image = Docker::Image.build_from_dir(file_location) unless @config['build_stream']
     @image_info = Docker::Image.get(@image.info['id']).info
-    @image.tag(repo: @name, tag: 'latest', force: true)
+    repo_info = repo?
+    @image.tag(repo: repo_info[:name], tag: repo_info[:tag], force: true)
+  end
+
+  def build_stream(file_location)
+    @image = Docker::Image.build_from_dir(file_location) do |v|
+      log = JSON.parse(v)
+      $stdout.puts log['stream'] if log.key?('stream')
+    end
+  end
+
+  def repo?
+    if @config.dig('config', 'Image')
+      repo_name = @config['config']['Image'][/[^:]+/]
+      repo_tag = @config['config']['Image'].include?(':') ? @config['config']['Image'].sub("#{repo_name}:", '') : 'latest'
+      @config['config']['Image'] = "#{repo_name}:#{repo_tag}"
+    else
+      repo_name = @name
+      repo_tag = 'latest'
+    end
+    { name: repo_name, tag: repo_tag }
   end
 
   def hash_set(filename = nil)

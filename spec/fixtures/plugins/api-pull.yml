@@ -1,7 +1,6 @@
 plugin:
   type: api
   managed: true
-  public: true # Required for travis testing
   api_config:
     endpoint: '/endpoint'
     # headers:
