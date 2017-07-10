@@ -17,7 +17,6 @@ before_deploy:
   - export GIT_TAG=$SLAPI_VERSION.b$TRAVIS_BUILD_NUMBER
   - git tag $GIT_TAG -a -m "SLAPI Build Bot - Generated tag from TravisCI for build $TRAVIS_BUILD_NUMBER"
   - git push -q https://slapibot:$GH_TOKEN@github.com/imperiallabs/slapi --tags
-  - ls -R
 deploy:
   provider: releases
   prerelease: true

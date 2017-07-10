@@ -1,8 +1,28 @@
 # Change Log
 
-## [0.1.1](https://github.com/ImperialLabs/slapi/tree/HEAD)
+## [0.2.0.b219](https://github.com/ImperialLabs/slapi/tree/0.2.0.b219) (2017-07-07)
+[Full Changelog](https://github.com/ImperialLabs/slapi/compare/0.1.1...0.2.0.b219)
 
-[Full Changelog](https://github.com/ImperialLabs/slapi/compare/0.1.0...HEAD)
+**Implemented enhancements:**
+
+- SLAPI API Plugin: Dynamic Port Assignment [\#60](https://github.com/ImperialLabs/slapi/issues/60)
+- Dynamic ports [\#61](https://github.com/ImperialLabs/slapi/pull/61) ([TheFynx](https://github.com/TheFynx))
+- Docker timeouts [\#59](https://github.com/ImperialLabs/slapi/pull/59) ([TheFynx](https://github.com/TheFynx))
+
+**Fixed bugs:**
+
+- SLAPI API Plugin: Dynamic Port Assignment [\#60](https://github.com/ImperialLabs/slapi/issues/60)
+- Api exec rework [\#62](https://github.com/ImperialLabs/slapi/pull/62) ([TheFynx](https://github.com/TheFynx))
+- Dynamic ports [\#61](https://github.com/ImperialLabs/slapi/pull/61) ([TheFynx](https://github.com/TheFynx))
+- Docker timeouts [\#59](https://github.com/ImperialLabs/slapi/pull/59) ([TheFynx](https://github.com/TheFynx))
+
+**Closed issues:**
+
+- Propose common error codes and messages [\#7](https://github.com/ImperialLabs/slapi/issues/7)
+- Create plugin swagger config [\#4](https://github.com/ImperialLabs/slapi/issues/4)
+
+## [0.1.1](https://github.com/ImperialLabs/slapi/tree/0.1.1) (2017-06-07)
+[Full Changelog](https://github.com/ImperialLabs/slapi/compare/0.1.0...0.1.1)
 
 **Fixed bugs:**
 
