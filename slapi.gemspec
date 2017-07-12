@@ -7,7 +7,7 @@ require 'rbconfig'
 
 Gem::Specification.new do |spec|
   spec.name          = 'slapi'
-  spec.version       = '0.2.0'
+  spec.version       = '0.2.1'
   spec.authors       = ['Levi Smith', 'Aaron Blythe']
   spec.email         = ['atat@hearst.com']
 
@@ -32,15 +32,13 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'codeclimate-test-reporter', '~> 1.0'
   spec.add_development_dependency 'github_changelog_generator', '~> 1.14.1'
   spec.add_development_dependency 'rake'
+  spec.add_development_dependency 'factory_girl', '~> 4.0'
   spec.add_development_dependency 'fuubar'
   spec.add_development_dependency 'rspec', '~> 3.6'
-  spec.add_development_dependency 'nyan-cat-formatter'
   spec.add_development_dependency 'rubocop'
   spec.add_development_dependency 'debase', '~> 0.2.2.beta10'
   spec.add_development_dependency 'ruby-debug-ide', '~> 0.6.1.beta4'
-  spec.add_development_dependency 'thin'
   spec.add_development_dependency 'rack-test'
-  spec.add_development_dependency 'capybara'
   spec.add_development_dependency 'yard'
   spec.add_development_dependency 'simplecov'
 end
