@@ -43,12 +43,12 @@ class Brain
     @redis = Redis.new(url: url_set(container_info))
   end
 
-  def brain_check(name)
-    container = Docker::Container.get(name)
-    container&.delete(force: true) if container
-  rescue StandardError => _error
-    false
-  end
+  # def brain_check(name)
+  #   container = Docker::Container.get(name)
+  #   container&.delete(force: true) if container
+  # rescue StandardError => _error
+  #   false
+  # end
 
   def query_key(hash_name, key)
     @logger.debug("Key retrieved for #{hash_name}")
