@@ -33,13 +33,13 @@ class Brain
     container_hash['Entrypoint'] = @image.info['Config']['Entrypoint']
     container_hash['WorkingDir'] = @image.info['Config']['WorkingDir']
     container_hash['Labels'] = @image.info['Config']['Labels']
-    container_hash[:Image] = 'redis:3-alpine'
-    container_hash[:Cmd] = ['redis-server', '--appendonly', 'yes']
-    container_hash[:HostConfig][:PortBindings] = { '6379/tcp' => [{ 'HostPort' => '6379', 'HostIp' => '0.0.0.0' }] }
-    container_hash[:HostConfig][:Binds] = ["#{Dir.pwd}/brain/:/data"]
+    # container_hash[:Image] = 'redis:3-alpine'
+    # container_hash[:Cmd] = ['redis-server', '--appendonly', 'yes']
+    # container_hash[:HostConfig][:PortBindings] = { '6379/tcp' => [{ 'HostPort' => '6379', 'HostIp' => '0.0.0.0' }] }
+    # container_hash[:HostConfig][:Binds] = ["#{Dir.pwd}/brain/:/data"]
     container = Docker::Container.create(container_hash)
-    container.tap(&:start)
-    container_info = Docker::Container.get('slapi_brain').info
+    # container.tap(&:start)
+    # container_info = Docker::Container.get('slapi_brain').info
     @redis = Redis.new(url: url_set(container_info))
   end
 

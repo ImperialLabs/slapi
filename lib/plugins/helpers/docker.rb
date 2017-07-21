@@ -33,11 +33,11 @@ class Plugin
   #   @binds.push("#{Dir.pwd}/config/plugins/#{@name}.yml:#{@config['mount_config']}") if @config['mount_config']
   # end
 
-  def image_set
-    repo = @config['type'] == 'script' ? @lang_settings[:image] : @config['config']['Image']
-    @image = Docker::Image.create(fromImage: repo)
-    @image_info = @image.info
-  end
+  # def image_set
+  #   repo = @config['type'] == 'script' ? @lang_settings[:image] : @config['config']['Image']
+  #   @image = Docker::Image.create(fromImage: repo)
+  #   @image_info = @image.info
+  # end
 
   def manage_set
     clear_existing_container(@name)
@@ -105,14 +105,14 @@ class Plugin
     @container_hash[:Labels] = @config['help']
   end
 
-  def managed_hash
-    @container_hash[:Entrypoint] = @image_info['Config']['Entrypoint'] ? @image_info['Config']['Entrypoint'] : @image_info['Config']['Cmd']
-    @container_hash[:ExposedPorts] = @image_info['Config']['ExposedPorts'] if @image_info.dig('Config', 'ExposedPorts')
-    @container_hash[:WorkingDir] = @image_info['Config']['WorkingDir']
-    @container_hash[:Labels] = {}
-    @container_hash[:Labels].merge!(@image_info['Config']['Labels']) if @image_info.dig('Config', 'Labels')
-    @container_hash[:Labels].merge(@config['help']) unless @config['help'].blank?
-  end
+  # def managed_hash
+  #   @container_hash[:Entrypoint] = @image_info['Config']['Entrypoint'] ? @image_info['Config']['Entrypoint'] : @image_info['Config']['Cmd']
+  #   @container_hash[:ExposedPorts] = @image_info['Config']['ExposedPorts'] if @image_info.dig('Config', 'ExposedPorts')
+  #   @container_hash[:WorkingDir] = @image_info['Config']['WorkingDir']
+  #   @container_hash[:Labels] = {}
+  #   @container_hash[:Labels].merge!(@image_info['Config']['Labels']) if @image_info.dig('Config', 'Labels')
+  #   @container_hash[:Labels].merge(@config['help']) unless @config['help'].blank?
+  # end
 
 #   def build_hash
 #     @config['config'].each do |key, value|
