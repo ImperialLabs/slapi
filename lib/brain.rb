@@ -13,21 +13,32 @@ class Brain
     @headers = {}
     @logger = Logger.new(STDOUT)
     @logger.level = settings.logger_level
-    brain_config = default_config.with_indifferent_access if settings.brain.blank?
+    brain_config = default_brain.with_indifferent_access if settings.brain.blank?
     brain_config = settings.brain.with_indifferent_access if settings.brain.present?
+    port = Network.port_find(49230)
+    brain_config.merge(default_config(brain_config[:service], port))
     load(brain_config)
   end
 
-  def default_config
+  def default_brain
     {
       service: 'redis',
       container_config: {
-        name: 'slapi_brain',
         Image: 'redis:3-alpine:latest',
         Cmd: ['redis-server', '--appendonly', 'yes'],
         HostConfig: {
-          '6379/tcp' => [{ 'HostPort' => '6379', 'HostIp' => '0.0.0.0' }],
           Binds: ["#{Dir.pwd}/brain/:/data"]
+        }
+      }
+    }
+  end
+
+  def default_config(service, port)
+    {
+      container_config: {
+        name: "slapi_#{service}_brain",
+        HostConfig: {
+          "#{port}/tcp" => [{ 'HostPort' => port, 'HostIp' => '0.0.0.0' }]
         }
       }
     }
