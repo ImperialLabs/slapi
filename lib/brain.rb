@@ -5,6 +5,7 @@ require 'json'
 require 'active_support/core_ext/hash'
 require 'active_support/core_ext/object'
 require_relative 'helpers/container'
+require_relative 'helpers/config'
 require_relative 'helpers/network'
 
 # Slapi Brain Helper for Sinatra Extension Access
@@ -16,7 +17,10 @@ class Brain
     brain_config = default_brain.with_indifferent_access if settings.brain.blank?
     brain_config = settings.brain.with_indifferent_access if settings.brain.present?
     port = Network.port_find(49230)
-    brain_config.merge(default_config(brain_config[:service], port))
+    ip = Network.bot_ip
+    @brain_url = "#{ip}:#{port}"
+    default = default_config(brain_config[:service], port)
+    brain_config[:container_config] = Config.merge(brain_config[:container_config], default)
     load(brain_config)
   end
 
@@ -24,8 +28,7 @@ class Brain
     {
       service: 'redis',
       container_config: {
-        Image: 'redis:3-alpine:latest',
-        Cmd: ['redis-server', '--appendonly', 'yes'],
+        Image: 'slapi/brain-redis',
         HostConfig: {
           Binds: ["#{Dir.pwd}/brain/:/data"]
         }
@@ -38,7 +41,8 @@ class Brain
       container_config: {
         name: "slapi_#{service}_brain",
         HostConfig: {
-          "#{port}/tcp" => [{ 'HostPort' => port, 'HostIp' => '0.0.0.0' }]
+          '4700/tcp' => [{ 'HostPort' => port, 'HostIp' => '0.0.0.0' }],
+          Binds: ["#{Dir.pwd}/../config/#{Config.bot_file}/:/brain/bot.yml"]
         }
       }
     }

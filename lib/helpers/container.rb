@@ -88,19 +88,6 @@ module Container
     container.tap(&:start)
   end
 
-  def container_config(config, container_config)
-    config.each do |key, value|
-      if value.is_a?(Array)
-        value.each do |v|
-          container_config[key] << v
-        end
-      else
-        container_config[key] = value
-      end
-    end
-    container_config
-  end
-
   def build_stream(file_location)
     image = Docker::Image.build_from_dir(file_location) do |v|
       log = JSON.parse(v)

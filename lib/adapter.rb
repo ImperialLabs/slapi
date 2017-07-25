@@ -6,6 +6,7 @@ require 'yaml'
 require 'active_support/core_ext/hash'
 require 'active_support/core_ext/object'
 require_relative 'helpers/container'
+require_relative 'helpers/config'
 require_relative 'helpers/network'
 
 # Adapter Class
@@ -21,7 +22,10 @@ class Adapter
     adapter_config = default_adapter.with_indifferent_access if settings.adapter.blank?
     adapter_config = settings.adapter.with_indifferent_access if settings.adapter.present?
     port = Network.port_find(49130)
-    adapter_config.merge(default_config(adapter_config[:service], port))
+    ip = Network.bot_ip
+    @adapter_url = "#{ip}:#{port}"
+    default = default_config(adapter_config[:service], port)
+    adapter_config[:container_config] = Config.merge(adapter_config[:container_config], default)
     load(adapter_config)
   end
 
@@ -39,7 +43,8 @@ class Adapter
       container_config: {
         name: "slapi_#{service}_adapter",
         HostConfig: {
-          "#{port}/tcp" => [{ 'HostPort' => port, 'HostIp' => '0.0.0.0' }]
+          '4700/tcp' => [{ 'HostPort' => port, 'HostIp' => '0.0.0.0' }],
+          Binds: ["#{Dir.pwd}/../config/#{Config.bot_file}/:/brain/bot.yml"]
         }
       }
     }
@@ -69,8 +74,8 @@ class Adapter
   end
 
   def users(type, user)
-    body = { type: type, user: user}.to_json
-    HTTParty.post( '/users', body: body, headers: @headers )
+    body = { type: type, user: user }.to_json
+    HTTParty.post('/users', body: body, headers: @headers)
   end
 
   def message(type, channel, text, user)
@@ -93,6 +98,6 @@ class Adapter
   end
 
   def party(path, body)
-    HTTParty.post(@brain_url + path, body: body, headers: @headers)
+    HTTParty.post(@adapter_url + path, body: body, headers: @headers)
   end
 end
