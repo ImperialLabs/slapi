@@ -51,53 +51,68 @@ class Adapter
   end
 
   def load(adapter_config)
-    Container.cleanup(adapter_config[:container_config][:name])
-    Container.pull(adapter_config[:container_config][:name], adapter_config[:container_config])
-    build_info = Container.build(adapter_config[:container_config][:name], adapter_config[:container_config], @logger)
-    adapter_config[:container_config] = Container.config_merge(build_info[:image], adapter_config[:container_config])
+    container_config = adapter_config[:container_config]
+    Container.cleanup(container_config[:name])
+    Container.pull(container_config[:name], container_config)
+    build_info = Container.build(container_config[:name], container_config, @logger)
+    adapter_config[:container_config] = Container.config_merge(build_info[:image], container_config)
     container = Container.create(adapter_config[:container_config])
     Container.start(container)
   end
 
   def info
-    HTTParty.get('/info', headers: @headers)
+    party('get', '/info')
   end
 
   def join(channel)
     body = { channel: channel }.to_json
-    HTTParty.post('/join', body: body, headers: @headers)
+    party('post', '/join', body: body)
   end
 
   def part(channel)
     body = { channel: channel }.to_json
-    HTTParty.post('/part', body: body, headers: @headers)
+    party('post', '/part', body: body)
   end
 
   def users(type, user)
     body = { type: type, user: user }.to_json
-    HTTParty.post('/users', body: body, headers: @headers)
+    party('post', '/users', body: body)
   end
 
-  def message(type, channel, text, user)
+  def message(type, channel, text, user = nil)
     body = { type: type, channel: channel, text: text, user: user }.to_json
-    HTTParty.post('/messages', body: body, headers: @headers)
+    send_message(body)
+  end
+
+  def formatted(channel, attachment)
+    body = { type: 'formatted', channel: channel, attachment: attachment }.to_json
+    send_message(body)
+  end
+
+  send_message(body)
+    party('post', '/messages', body: body)
   end
 
   def rooms(type)
     body = { type: type }.to_json
-    HTTParty.post('/rooms', body: body, headers: @headers)
+    party('post', '/rooms', body: body)
   end
 
   def run
-    HTTParty.post('/run', headers: @headers)
+    party('post', '/run')
   end
 
   def shutdown
-    HTTParty.post('/shutdown', headers: @headers)
+    party('post', '/shutdown')
     Container.shutdown(@container)
   end
 
-  def party(path, body)
-    HTTParty.post(@adapter_url + path, body: body, headers: @headers)
+  def party(type, path, body = nil)
+    case type
+    when 'post'
+      HTTParty.post(@adapter_url + path, body: body, headers: @headers)
+    when 'get'
+      HTTParty.post(@adapter_url + path, headers: @headers)
+    end
   end
 end

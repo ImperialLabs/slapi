@@ -21,7 +21,6 @@ class Plugins
     @logger = Logger.new(STDOUT)
     @logger.level = settings.logger_level
     @network = Network.new
-    load
   end
 
   # Loads the plugin configuration.
@@ -39,6 +38,11 @@ class Plugins
       @plugin_hash[File.basename(file, '.*')] = Plugin.new(file, dynamic_port, @settings)
       port_start = dynamic_port + 1
     end
+  end
+
+  def reload
+    @plugin_hash.garbage_collect
+    load
   end
 
   # Routes the execution to the correct plugin if it exists.
@@ -61,7 +65,7 @@ class Plugins
     @plugin_hash[requested_plugin]&.exec(client_id, data)
   end
 
-  # Verifies plugin that's eing executed
+  # Verifies plugin that's being executed
   def verify(requested_plugin)
     @plugin_hash[requested_plugin]
   end

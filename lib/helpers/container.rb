@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'socket'
 require 'logger'
 require 'json'
 require 'yaml'
@@ -19,16 +18,16 @@ module Container
 
   def build(name, config, logger)
     if Docker::Image.exist?(name) && !config['build_force']
-      existing_image
+      existing_image(name, logger)
     else
-      build_image
+      build_image(name, config, logger)
     end
   end
 
   def build_image(name, config, logger)
     file_location = File.expand_path('../' + settings.plugins['location'] + name, File.dirname(__FILE__))
     logger.debug("Container: #{name}: Building from Dockerfile from location - #{file_location}")
-    image = if config['build_stream'] ? build_stream(file_location) : Docker::Image.build_from_dir(file_location)
+    image = config['build_stream'].present? ? build_stream(file_location) : Docker::Image.build_from_dir(file_location)
     image_info = Docker::Image.get(image.info['id']).info
     repo_info = repo(name, config, logger)
     image.tag(repo: repo_info[:name], tag: repo_info[:tag], force: true)
@@ -51,16 +50,16 @@ module Container
   def script_image(name, logger, lang = nil)
     case lang
     when 'ruby', 'rb'
-      { file_type: '.rb', name: 'slapi/ruby', tag:'latest' }
+      { file_type: '.rb', name: 'slapi/ruby', tag: 'latest' }
     when 'python', 'py'
-      { file_type: '.py', name: 'slapi/python', tag:'latest' }
+      { file_type: '.py', name: 'slapi/python', tag: 'latest' }
     when 'node', 'nodejs', 'javascript', 'js'
-      { file_type: '.js', name: 'slapi/nodejs', tag:'latest' }
+      { file_type: '.js', name: 'slapi/nodejs', tag: 'latest' }
     when 'bash', 'shell', 'sh'
-      { file_type: '.sh', name: 'slapi/base', tag:'latest' }
+      { file_type: '.sh', name: 'slapi/base', tag: 'latest' }
     else
       logger.warn("Container: #{name}: Language not set in config, defaulting to shell/bash")
-      { file_type: '.sh', name: 'slapi/base', tag:'latest' }
+      { file_type: '.sh', name: 'slapi/base', tag: 'latest' }
     end
   end
 
@@ -99,7 +98,7 @@ module Container
   def cleanup(name)
     begin
       container = Docker::Container.get(name)
-    rescue => e
+    rescue
       @logger.debug("Container: #{@name}: No exisiting container")
       return false
     end

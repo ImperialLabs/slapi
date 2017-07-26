@@ -11,12 +11,12 @@ module Sinatra
         # @return [Integer] returns status 200 if succesful
         slapi.post '/v1/messages' do
           begin
-            slapi.listener(JSON.parse(params))
+            slapi.bot.listener(JSON.parse(params))
             status 200
           rescue => e
             status 500
             body "[ERROR] - Received #{e}"
-            @logger.error("[ERROR] - Received #{e}")
+            slapi.logger.error("[ERROR] - Received #{e}")
           end
         end
       end

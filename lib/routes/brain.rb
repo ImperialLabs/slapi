@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'sinatra'
 
 module Sinatra
@@ -20,13 +21,19 @@ module Sinatra
         # @option params [String] :value Value being saved into brain
         # @return [Integer] status
         slapi.post '/v1/save' do
-          raise 'missing plugin name' unless params[:plugin]
+          raise 'missing plugin name' unless params[:hash]
           raise 'missing key' unless params[:key]
           raise 'missing value' unless params[:value]
 
           # Saves into brain as Plugin: plugin name (hash), key, value
-          slapi.save(params[:plugin], params[:key], params[:value])
-          status 200
+          begin
+            slapi.bot.brain.save(params[:hash], params[:key], params[:value])
+            status 200
+          rescue => e
+            status 500
+            body "[ERROR] - Received #{e}"
+            @logger.error("[ERROR] - Received #{e}")
+          end
         end
 
         # Handles a POST request for '/v1/delete'
@@ -36,12 +43,18 @@ module Sinatra
         # @option params [String] :key Key you wish to delete (will delete value as well)
         # @return [Integer] status
         slapi.post '/v1/delete' do
-          raise 'missing plugin name' unless params[:plugin]
+          raise 'missing plugin name' unless params[:hash]
           raise 'missing key' unless params[:key]
 
           # Saves into brain as Plugin: plugin name (hash), key
-          slapi.delete(params[:plugin], params[:key])
-          status 200
+          begin
+            slapi.bot.brain.delete(params[:hash], params[:key])
+            status 200
+          rescue => e
+            status 500
+            body "[ERROR] - Received #{e}"
+            slapi.logger.error("[ERROR] - Received #{e}")
+          end
         end
 
         # Handles a GET request for '/v1/key_query'
@@ -51,29 +64,23 @@ module Sinatra
         # @option headers [String] :key Key you wish to query
         # @return [Integer] returns status 200
         # @return [String] returns key value
-        slapi.post '/v1/query_key' do
-          raise 'missing plugin name' unless params[:plugin]
+        slapi.post '/v1/query' do
+          raise 'missing plugin name' unless params[:hash]
           raise 'missing key' unless params[:key]
 
           # Searches brain via Plugin: plugin name (hash), key
-          response = slapi.query_key(params[:plugin], params[:key])
-          status 200
-          body response
-        end
-
-        # Handles a GET request for '/v1/hash_query'
-        #
-        # @headers [Hash] params the parameters sent on the request
-        # @option headers [String] :plugin Hash to Query for Keys (Plugin Name used as Hash Name)
-        # @return [Integer] returns status 200
-        # @return [String] returns hash keys
-        slapi.post '/v1/query_hash' do
-          raise 'missing plugin name' unless params[:plugin]
-
-          # Searches brain via Plugin: plugin name (hash)
-          response = slapi.query_hash(params[:plugin])
-          status 200
-          body response
+          begin
+            if params[:key]
+              body slapi.bot.brain.query(params[:hash], params[:key])
+            else
+              body slapi.bot.brain.query(params[:hash])
+            end
+            status 200
+          rescue => e
+            status 500
+            body "[ERROR] - Received #{e}"
+            slapi.logger.error("[ERROR] - Received #{e}")
+          end
         end
       end
     end

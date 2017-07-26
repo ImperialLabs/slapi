@@ -5,9 +5,6 @@ require 'sinatra/base'
 require 'sinatra/config_file'
 require 'logger'
 require 'json'
-require 'yaml'
-require 'docker'
-require 'httparty'
 
 # Slapi Class - Primary Class
 # Its main functions are to:
@@ -27,10 +24,8 @@ class Slapi < Sinatra::Base
   @logger = Logger.new(STDOUT)
   @logger.level = settings.logger_level
 
-  bot_config = Config.file
-
   config_file '../config/environments.yml'
-  config_file bot_config
+  config_file Config.file
 
   configure :production, :test, :development do
     enable :logging
@@ -46,12 +41,6 @@ class Slapi < Sinatra::Base
 
   @logger.debug("Slapi: Current environment is set to: #{settings.environment}")
 
-  # Load Brain
-  # Utilizes library from brain/redis
-  @brain = Brain.new(settings)
-
-  # Run Slapi Bot/Slack Client
-  # Utilizes Library from client/bot
-  @adapter = Adapter.new(settings)
-  @adapter.run
+  @bot = Bot.new(settings)
+  @bot.run
 end

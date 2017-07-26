@@ -25,24 +25,18 @@ module Sinatra
         # @option attachments [String] :text
         # @option attachments [String] :color ('#229954') defaults to @bot::GREEN(constant) if not specified
         # @return [Integer] returns status
-        slapi.post '/v1/attachment' do
+        slapi.post '/v1/formatted' do
           raise 'missing channel' unless params[:channel]
-          raise 'missing text' unless params[:attachments][:text]
-          raise 'missing fallback' unless params[:attachments][:fallback]
-          raise 'missing title' unless params[:attachments][:title]
-          channel = params[:channel]
-          slapi.chat_attachment(
-            {
-              pretext: params[:attachments][:pretext],
-              fallback: params[:attachments][:fallback],
-              title: params[:attachments][:title],
-              title_link: params[:attachments][:title_link],
-              text: params[:attachments][:text],
-              color: params[:attachments][:color] ? params[:attachments][:color] : '#229954'
-            },
-            channel
-          )
+          raise 'missing text' unless params[:attachment][:text]
+          raise 'missing fallback' unless params[:attachment][:fallback]
+          raise 'missing title' unless params[:attachment][:title]
+          slapi.bot.adapter.formatted(params[:channel], params[:attachment])
           status 200
+        end
+
+        # Changed primary route name, leaving here until documentation and tests are updated
+        slapi.post '/v1/attachment' do
+          redirect '/v1/formatted'
         end
 
         # Handles a POST request for '/v1/speak'
@@ -57,10 +51,8 @@ module Sinatra
           raise 'missing channel' unless params[:channel]
           raise 'missing text' unless params[:text]
 
-          slapi.chat_me(
-            params[:text],
-            params[:channel]
-          )
+          slapi.bot.adapter.message('emote', params[:channel], params[:text], params[:user]) if params[:user]
+          slapi.bot.adapter.message('emote', params[:channel], params[:text]) unless params[:user]
           status 200
         end
 
@@ -76,10 +68,9 @@ module Sinatra
           raise 'missing channel' unless params[:channel]
           raise 'missing text' unless params[:text]
 
-          slapi.chat(
-            params[:text],
-            params[:channel]
-          )
+          slapi.bot.adapter.message('plain', params[:channel], params[:text], params[:user]) if params[:user]
+          slapi.bot.adapter.message('plain', params[:channel], params[:text]) unless params[:user]
+          status 200
           status 200
         end
 
