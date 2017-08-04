@@ -17,11 +17,11 @@ class Plugin
         response = container.tap(&:start).attach(tty: true, stdout: true, logs: true)
         break unless response.blank?
         retry_count += 1
-        container.delete(force: true)
       rescue Docker::Error::TimeoutError
         @logger.debug("Plugin: #{@name}: #{retry_count >= 3 ? 'too many timeouts' : 'Exec timed out trying again'}")
       end
     end
+    container.delete(force: true)
     response[0][0].to_s
   end
 end
