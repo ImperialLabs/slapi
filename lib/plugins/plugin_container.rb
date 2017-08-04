@@ -16,6 +16,7 @@ class Plugin
         @logger.debug("Plugin: #{@name}: Attaching to container")
         response = container.tap(&:start).attach(tty: true, stdout: true, logs: true)
         break unless response.blank?
+        container.delete(force: true)
         retry_count += 1
       rescue Docker::Error::TimeoutError
         @logger.debug("Plugin: #{@name}: #{retry_count >= 3 ? 'too many timeouts' : 'Exec timed out trying again'}")
