@@ -1,13 +1,23 @@
+####
+# SLAPI Config File
+# v0.3.0 - Changes Made
+#   - Adapter token is now nested under the config: hash
+# v0.2.0 - Added Option
+#   - Added plugin location for testing purposes
+# v0.1.0 - First Config Format Released
+####
+
 # Adapter Settings
 adapter:
   type: slack # Enables option alternative adapters
-  token: # API token
-  # user_agent: # User-agent, defaults to Slack Ruby Client/version.
-  # proxy: # Optional HTTP proxy.
-  # ca_path: # Optional SSL certificates path.
-  # ca_file: # Optional SSL certificates file.
-  # endpoint: # Slack endpoint, default is https://slack.com/api.
-  # logger: # Optional Logger instance that logs HTTP requests.
+  config:
+    token: # API token
+    # user_agent: # User-agent, defaults to Slack Ruby Client/version.
+    # proxy: # Optional HTTP proxy.
+    # ca_path: # Optional SSL certificates path.
+    # ca_file: # Optional SSL certificates file.
+    # endpoint: # Slack endpoint, default is https://slack.com/api.
+    # logger: # Optional Logger instance that logs HTTP requests.
 
 # Bot ConfigFile
 bot:

@@ -7,7 +7,7 @@ require 'timeout'
 # Its main functions are to:
 #  1. Set the Bot IP Address based on Public and if in DIND
 #  2. Exposed Ports using user provided or dynamic port assignments
-class Network
+module Network
   def bot_ip(config = nil)
     option = config['managed'] ? 'private' : 'public' if config['type'] == 'api'
     option = 'private' unless config['type'] == 'api'

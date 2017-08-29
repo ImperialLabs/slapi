@@ -171,14 +171,14 @@ You will need to put this in the file config/bot.yml or config/bot.local.yml for
 # Adapter Settings
 adapter:
   type: slack # Enables option alternative adapters
-  token: # API token
-  ## Coming Soon ##
-  # user_agent: # User-agent, defaults to Slack Ruby Client/version.
-  # proxy: # Optional HTTP proxy.
-  # ca_path: # Optional SSL certificates path.
-  # ca_file: # Optional SSL certificates file.
-  # endpoint: # Slack endpoint, default is https://slack.com/api.
-  # logger: # Optional Logger instance that logs HTTP requests.
+  config:
+    token: # API token
+    # user_agent: # User-agent, defaults to Slack Ruby Client/version.
+    # proxy: # Optional HTTP proxy.
+    # ca_path: # Optional SSL certificates path.
+    # ca_file: # Optional SSL certificates file.
+    # endpoint: # Slack endpoint, default is https://slack.com/api.
+    # logger: # Optional Logger instance that logs HTTP requests.
 
 # Bot ConfigFile
 bot:

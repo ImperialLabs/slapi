@@ -19,13 +19,13 @@ class Slapi < Sinatra::Base
   set :root, File.dirname(__FILE__)
   register Sinatra::ConfigFile
 
-  Dir[File.dirname(__FILE__) + '/**/*.rb'].each { |file| require file }
+  Dir[File.dirname(__FILE__) + '**/**/*.rb'].each { |file| require file }
 
   @logger = Logger.new(STDOUT)
   @logger.level = settings.logger_level
 
   config_file '../config/environments.yml'
-  config_file Config.file
+  config_file Config.bot_file
 
   configure :production, :test, :development do
     enable :logging
@@ -35,9 +35,6 @@ class Slapi < Sinatra::Base
   register Sinatra::SlapiRoutes::Chat
   register Sinatra::SlapiRoutes::Brain
   register Sinatra::SlapiRoutes::Adapter
-
-  # Logging outside of requests is not available in Sinatra unless you do something like this:
-  # http://stackoverflow.com/questions/14463512/how-do-i-access-sinatras-logger-outside-the-request-scope
 
   @logger.debug("Slapi: Current environment is set to: #{settings.environment}")
 

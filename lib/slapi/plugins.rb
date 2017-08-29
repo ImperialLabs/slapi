@@ -1,12 +1,9 @@
 # frozen_string_literal: true
 
-require 'httparty'
 require 'logger'
-require 'json'
 require 'yaml'
-require 'docker'
 require_relative 'plugin'
-require_relative 'helpers/network'
+require_relative 'modules/network'
 
 # Plugins class will act as a cache of the plugins currently loaded.
 # Its two main functions are to:

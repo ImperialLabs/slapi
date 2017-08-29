@@ -4,9 +4,9 @@ require 'logger'
 require 'json'
 require 'active_support/core_ext/hash'
 require 'active_support/core_ext/object'
-require_relative 'helpers/container'
-require_relative 'helpers/config'
-require_relative 'helpers/network'
+require_relative 'modules/container'
+require_relative 'modules/config'
+require_relative 'modules/network'
 
 # Slapi Brain Helper for Sinatra Extension Access
 class Brain

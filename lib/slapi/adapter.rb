@@ -5,9 +5,9 @@ require 'json'
 require 'yaml'
 require 'active_support/core_ext/hash'
 require 'active_support/core_ext/object'
-require_relative 'helpers/container'
-require_relative 'helpers/config'
-require_relative 'helpers/network'
+require_relative 'modules/container'
+require_relative 'modules/config'
+require_relative 'modules/network'
 
 # Adapter Class
 # Its main functions are to:
