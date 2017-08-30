@@ -188,18 +188,20 @@ Resources:
             adapter:
               type: slack
               token: ${SlackToken}
-
+            bot:
+              name: slapi
+            admin:
+              users: nil
             help:
               level: ${HelpLevel}
               dm_user: ${HelpDM}
-
             plugins:
               location: '../../config/plugins/'
             EOF
 
             cat > '/etc/systemd/system/slapi.service' << EOF
             [Unit]
-            Description=Ensemble
+            Description=SLAPI Bot
             
             [Service]
             TimeoutStartSec=0
@@ -207,9 +209,8 @@ Resources:
             Restart=always
             RestartSec=10
             Type=simple
-            User=app
             WorkingDirectory=/opt/slapi
-            ExecStart=/usr/local/bin/bundle exec rackup -p 4567
+            ExecStart=/opt/slapi/bin/rackup -E production -o 0.0.0.0 -p 4567
             Restart=always
 
             [Install]
