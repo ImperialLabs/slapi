@@ -17,20 +17,20 @@ before_deploy:
   - export GIT_TAG=$SLAPI_VERSION.b$TRAVIS_BUILD_NUMBER
   - git tag $GIT_TAG -a -m "SLAPI Build Bot - Generated tag from TravisCI for build $TRAVIS_BUILD_NUMBER"
   - git push -q https://slapibot:$GH_TOKEN@github.com/imperiallabs/slapi --tags
-deploy:
-  provider: releases
-  prerelease: true
-  file:
-    - Dockerfile
-    - docker-compose.yml
-    - docker-dev-compose.yml
-    - CHANGELOG.md
-  skip_cleanup: true
-  on:
-    repo: ImperialLabs/slapi
-    tags: false
-  apikey:
-    secure: hIkZH+cYblr+rNZNkih1c+WhsHL0ClRK5iadKrV10I3zhQWPQsgO05JddrTQ1OK25OALei+1nkbCW1izHccgGf312f9hF/75M38qI1K9UN4uaK8NlXCCLW/UtrOrPfDJMIca1eM3YvUjYLMd8nDINhurhAag9vEmPPNLJFBik/Q3lbVYY0/8S3HlI4CIB/rU9wVd0GaEmOZPHUpaFxJw+PzT7XqWbinnLBzomCoL93Z5J/g8smbSBL5msdw4PI5OOuu4LRHb8+OzkoJ972avOwIw3tdapPr/sU4YbROS6UY10XyrmpsKWyAjENRGi7SLOXJc55QR1v68inqxTZSqoxDkjFlr7JiQxwGeGg3kR/c5+6LHPj7BkjCSL03bNyu/N31bQcimbtQI801w7ysghQu7uHKPaxvKFz2xUwuag+43sw30c3zBEfzL4rm6PVS4mAWR0Q6H8K/UyRYDeBWq939KDLaCo91ArOoKyJ8P4Sl0VoVpqjpu47gwWRNHcoyLXwzqRoyFRktM7f6A/ztTtvOGaaONb4qoUwNDRkTnD5KSr5JIWM4qa4krzfdhYtnRM7Z0apSowhbwXEVFn/gYoN9CArvSxym+CrLOPHNu75xmREXuXiEpKjxnVHPk3+JfzNGePNw0ZJIxCRfc505TrGjHhJJYjHqtLxWuJn017cc=
+#deploy:
+#  provider: releases
+#  prerelease: true
+#  file:
+#    - Dockerfile
+#    - docker-compose.yml
+#    - docker-dev-compose.yml
+#    - CHANGELOG.md
+#  skip_cleanup: true
+#  on:
+#    repo: ImperialLabs/slapi
+#    tags: false
+#  apikey:
+#    secure: hIkZH+cYblr+rNZNkih1c+WhsHL0ClRK5iadKrV10I3zhQWPQsgO05JddrTQ1OK25OALei+1nkbCW1izHccgGf312f9hF/75M38qI1K9UN4uaK8NlXCCLW/UtrOrPfDJMIca1eM3YvUjYLMd8nDINhurhAag9vEmPPNLJFBik/Q3lbVYY0/8S3HlI4CIB/rU9wVd0GaEmOZPHUpaFxJw+PzT7XqWbinnLBzomCoL93Z5J/g8smbSBL5msdw4PI5OOuu4LRHb8+OzkoJ972avOwIw3tdapPr/sU4YbROS6UY10XyrmpsKWyAjENRGi7SLOXJc55QR1v68inqxTZSqoxDkjFlr7JiQxwGeGg3kR/c5+6LHPj7BkjCSL03bNyu/N31bQcimbtQI801w7ysghQu7uHKPaxvKFz2xUwuag+43sw30c3zBEfzL4rm6PVS4mAWR0Q6H8K/UyRYDeBWq939KDLaCo91ArOoKyJ8P4Sl0VoVpqjpu47gwWRNHcoyLXwzqRoyFRktM7f6A/ztTtvOGaaONb4qoUwNDRkTnD5KSr5JIWM4qa4krzfdhYtnRM7Z0apSowhbwXEVFn/gYoN9CArvSxym+CrLOPHNu75xmREXuXiEpKjxnVHPk3+JfzNGePNw0ZJIxCRfc505TrGjHhJJYjHqtLxWuJn017cc=
 addons:
   code_climate:
     repo_token: 8c8cb2ca3d4bdd23364118388b7dcfa42fc38e232b88e7f8f14fc9be856218fd

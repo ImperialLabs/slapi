@@ -32,7 +32,7 @@ Parameters:
   
   CIDRA:
     Type: String
-    Default: 172.31.48.0/24
+    Default: 172.33.200.0/24
     Description: Subnet A CIDR Block
 
 ###############################################################################
@@ -127,7 +127,7 @@ Resources:
             export DEBIAN_FRONTEND=noninteractive
             export INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
             export STACKNAME='${AWS::StackName}'
-            export HOSTNAME="${MetricsSubdomain}-${!INSTANCE_ID}.${HostedZone}"
+            export HOSTNAME="slapi.bot"
 
             ##########################################################
             # Upgrade OS & Install Dependencies
@@ -176,9 +176,10 @@ Resources:
             # Install SLAPI
             ##########################################################
             cd /opt
-            git clone https://github.com/ImperialLabs/slapi.git
+            git clone https://github.com/ImperialLabs/slapi.git || error_exit "Failed to clone SLAPI Project"
             cd slapi
-            bundle install --binstubs --path vendor/bundle
+            gem install bundle || error_exit "Failed to install Bundle"
+            bundle install --binstubs --path vendor/bundle || error_exit "Failed to run Bundle Install"
 
             ##########################################################
             # Configure SLAPI
@@ -208,7 +209,7 @@ Resources:
             Type=simple
             User=app
             WorkingDirectory=/opt/slapi
-            ExecStart=bundle exec rackup -p 4567
+            ExecStart=/usr/local/bin/bundle exec rackup -p 4567
             Restart=always
 
             [Install]
