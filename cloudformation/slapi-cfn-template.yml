@@ -1,0 +1,236 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: SLAPI - Ubuntu Xenial Based (20170811 AMI Build)
+
+Parameters:
+###############################################################################
+# NETWORK AND SYTEM PARAMS
+###############################################################################
+  VPC:
+    Description: Choose VPC to use
+    Type: AWS::EC2::VPC::Id
+    Default: ''
+
+  InstanceType:
+    Type: String
+    Default: t2.micro
+    AllowedValues:
+      - t2.nano
+      - t2.micro
+      - t2.small
+      - t2.medium
+    ConstraintDescription: must be a valid EC2 instance type.
+
+  KeyName:
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
+    Type: AWS::EC2::KeyPair::KeyName
+
+  SSHSecurityGroup:
+    Description: Select Security Group for SSH Access
+    Type: AWS::EC2::SecurityGroup::Id
+    Default: ''
+  
+  CIDRA:
+    Type: String
+    Default: 172.31.48.0/24
+    Description: Subnet A CIDR Block
+
+###############################################################################
+# SLAPI PARAMS
+###############################################################################
+  SlackToken:
+    Type: String
+    NoEcho: 'true'
+    Default: ''
+    Description: Slack Token for Bot
+
+  HelpLevel:
+    Type: String
+    Default: '1'
+    Description: Enter 1 or 2 to set help list level
+
+  HelpDM:
+    Type: String
+    Default: 'false'
+    Description: Enter True or False, True will send all helps requests as DM to user
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+    -
+      Label:
+        default: Instance & Network Configuration
+      Parameters:
+        - InstanceType
+        - KeyName
+        - VPC
+        - SSHSecurityGroup
+        - CIDRA
+    -
+      Label:
+        default: SLAPI Configuration
+      Parameters:
+        - SecretToken
+        - HelpLevel
+        - HelpDM
+
+Mappings:
+  RegionMap:
+    us-west-2:
+      HVM64: ami-8803e0f0
+    eu-west-1:
+      HVM64: ami-674cbc1e
+
+Resources:
+###############################################################################
+# SUBNET CONFIG
+###############################################################################
+  SubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      # Get Availability Zones and select first in string
+      AvailabilityZone: !Select [ 0, !GetAZs "" ]
+      CidrBlock: !Ref CIDRA
+      Tags:
+        - Key: Name
+          Value: Public-Subnet-A
+        - Key: Application
+          Value: !Ref AWS::StackId
+        - Key: Network
+          Value: "Public"
+
+  Ec2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !FindInMap [ RegionMap, !Ref "AWS::Region", HVM64 ]
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyName
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: "true"
+          DeviceIndex: "0"
+          GroupSet:
+            - !Ref SSHSecurityGroup
+          SubnetId:
+            Ref: SubnetA
+      BlockDeviceMappings:
+        - DeviceName: "/dev/sda1"
+          Ebs:
+            VolumeSize: '15'
+      UserData:
+        "Fn::Base64":
+          "Fn::Sub": |
+            #!/bin/bash -xev
+            ##########################################################
+            # Global Variable Set
+            ##########################################################
+            export DEBIAN_FRONTEND=noninteractive
+            export INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
+            export STACKNAME='${AWS::StackName}'
+            export HOSTNAME="${MetricsSubdomain}-${!INSTANCE_ID}.${HostedZone}"
+
+            ##########################################################
+            # Upgrade OS & Install Dependencies
+            ##########################################################
+            apt-get update && apt-get upgrade -yq
+            apt-get install -y wget curl python-setuptools python-pip git ruby ruby-dev build-essential
+
+            ##########################################################
+            # Install cfn bootstraping tools
+            ##########################################################
+            if [ -z $(command -v cfn-signal) ]; then
+                easy_install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
+            fi
+
+            ##########################################################
+            # Helper function to set wait timer
+            ##########################################################
+            error_exit()
+            {
+              cfn-signal -e 1 -r "$1" "${WaitHandle}"
+              exit 1
+            }
+            export -f error_exit
+
+            ##########################################################
+            # Set Hostname and Hosts File
+            ##########################################################
+            hostname ${!HOSTNAME} || error_exit 'Failed to set hostname'
+            echo "${!HOSTNAME}" > /etc/hostname || error_exit 'Failed to set hostname file'
+
+            cat > '/etc/hosts' << EOF
+            127.0.0.1 ${!HOSTNAME} ${!HOSTNAME%%.*} localhost
+            ::1 localhost6.localdomain6 localhost6
+            EOF
+
+            ##########################################################
+            # Install Docker
+            ##########################################################
+            apt-get install apt-transport-https ca-certificates curl software-properties-common || error_exit "Failed to install docker pre-reqs"
+            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - || error_exit "Failed to download docker"
+            add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" || error_exit "Failed to add docker repository"
+            apt-get update || error_exit "Failed update apt-get"
+            apt-get install -y docker-ce || error_exit "Failed to install docker-ce"
+
+            ##########################################################
+            # Install SLAPI
+            ##########################################################
+            cd /opt
+            git clone https://github.com/ImperialLabs/slapi.git
+            cd slapi
+            bundle install --binstubs --path vendor/bundle
+
+            ##########################################################
+            # Configure SLAPI
+            ##########################################################
+            cat > '/opt/slapi/config/bot.yml' << EOF
+            adapter:
+              type: slack
+              token: ${SlackToken}
+
+            help:
+              level: ${HelpLevel}
+              dm_user: ${HelpDM}
+
+            plugins:
+              location: '../../config/plugins/'
+            EOF
+
+            cat > '/etc/systemd/system/slapi.service' << EOF
+            [Unit]
+            Description=Ensemble
+            
+            [Service]
+            TimeoutStartSec=0
+            TimeoutStopSec=30
+            Restart=always
+            RestartSec=10
+            Type=simple
+            User=app
+            WorkingDirectory=/opt/slapi
+            ExecStart=bundle exec rackup -p 4567
+            Restart=always
+
+            [Install]
+            WantedBy=multi-user.target
+            EOF
+
+            systemctl enable slapi
+
+            ##########################################################
+            # Send Success Signal to CFN Wait Handle
+            ##########################################################
+            /usr/local/bin/cfn-signal -e 0 -r 'Server setup complete' "${WaitHandle}"
+
+            ##########################################################
+            # Reboot After Success for all updates made
+            ##########################################################
+            reboot
+  WaitHandle:
+    Type: AWS::CloudFormation::WaitConditionHandle
+  WaitCondition:
+    Type: AWS::CloudFormation::WaitCondition
+    DependsOn: Ec2Instance
+    Properties:
+      Handle:  !Ref WaitHandle
+      Timeout: '2300'
