@@ -17,7 +17,7 @@ module Network
     option == 'public' ? public_ip : local_ip
   end
 
-  def plugin_ip(logger, config, name)
+  def plugin_ip(name, config, logger)
     container_info = Docker::Container.get(name).info
     # Builds URL based on Container Settings
     container_ip = container_info['NetworkSettings']['IPAddress'].to_s
@@ -33,15 +33,19 @@ module Network
   end
 
   def expose(config)
+    port = config[:ExposedPorts].keys[0].to_s.chomp('/tcp')
+    expose_port = config[:ExposedPorts].present? ? port : config['app_port']
     expose_ip = config['public'] ? '0.0.0.0' : '127.0.0.1'
     exposed_port = {
-      HostConfig: {
-        PortBindings: {
-          "#{config['app_port']}/tcp" =>
-          [{
-            HostIp: expose_ip.to_s,
-            HostPort: config['exposed_port'].to_s
-          }]
+      config: {
+        HostConfig: {
+          PortBindings: {
+            "#{expose_port}/tcp" =>
+            [{
+              HostIp: expose_ip.to_s,
+              HostPort: config['app_port']
+            }]
+          }
         }
       }
     }

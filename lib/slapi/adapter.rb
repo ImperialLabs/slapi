@@ -25,7 +25,7 @@ class Adapter
     ip = Network.bot_ip
     @adapter_url = "#{ip}:#{port}"
     default = default_config(adapter_config[:service], port)
-    adapter_config[:container_config] = Config.merge(adapter_config[:container_config], default)
+    adapter_config[:container_config] = Config.merge(adapter_config[:container_config], default).with_indifferent_access
     load(adapter_config)
   end
 
@@ -43,7 +43,9 @@ class Adapter
       container_config: {
         name: "slapi_#{service}_adapter",
         HostConfig: {
-          '4700/tcp' => [{ 'HostPort' => port, 'HostIp' => '0.0.0.0' }],
+          PortBindings: {
+            '4700/tcp' => [{ 'HostPort' => port, 'HostIp' => '0.0.0.0' }],
+          },
           Binds: ["#{Dir.pwd}/../config/#{Config.bot_file}/:/brain/bot.yml"]
         }
       }
@@ -89,7 +91,7 @@ class Adapter
     send_message(body)
   end
 
-  send_message(body)
+  def send_message(body)
     party('post', '/messages', body: body)
   end
 

@@ -10,7 +10,7 @@ module Sinatra
         # Handles a POST request for '/v1/reload'
         # @return [Integer] returns status 200
         slapi.post '/reload' do
-          slapi.reload_plugins
+          slapi.bot.plugins.reload
           status 200
         end
       end

@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
-require 'logger'
 require 'yaml'
-require_relative 'plugin'
+require_relative 'plugins/plugin'
 require_relative 'modules/network'
 
 # Plugins class will act as a cache of the plugins currently loaded.
@@ -15,8 +14,6 @@ class Plugins
   def initialize(settings)
     @plugin_hash = {}
     @settings = settings
-    @logger = Logger.new(STDOUT)
-    @logger.level = settings.logger_level
     @network = Network.new
   end
 
@@ -43,14 +40,14 @@ class Plugins
   end
 
   # Routes the execution to the correct plugin if it exists.
-  def help_list(requested_plugin = nil)
+  def help_list(plugin = nil)
     help_return = ''
-    if requested_plugin
-      help_return += requested_plugin + ':' + "\n" + @plugin_hash[requested_plugin].help
+    if plugin
+      help_return += plugin + ':' + "\n" + @plugin_hash[plugin].help
     else
       help_return += "ping:   check the bot\nhelp:   show this help\nreload:   reload all plugins\n"
       @plugin_hash.each do |name, plugin|
-        description = plugin.config['description'] ? plugin.config['description'] : ''
+        description = plugin.plugin_config['description'] ? plugin.plugin_config['description'] : ''
         help_return += @settings.help['level'] == 1 ? name + ':   ' + description + "\n" : name + ':   ' + description + "\n" + plugin.help
       end
     end
@@ -58,12 +55,12 @@ class Plugins
   end
 
   # Routes the execution to the correct plugin
-  def exec(data, client_id, requested_plugin = nil)
-    @plugin_hash[requested_plugin]&.exec(client_id, data)
+  def exec(data, client_id, plugin = nil)
+    @plugin_hash[plugin]&.exec(client_id, data)
   end
 
   # Verifies plugin that's being executed
-  def verify(requested_plugin)
-    @plugin_hash[requested_plugin]
+  def verify(plugin)
+    @plugin_hash[plugin]
   end
 end

@@ -3,6 +3,9 @@
 require 'logger'
 require 'json'
 require 'yaml'
+require_relative 'adapter'
+require_relative 'brain'
+require_relative 'plugins'
 
 # Adapter Class
 # Its main functions are to:
@@ -20,7 +23,7 @@ class Bot
     @logger.level = settings.logger_level
     @brain = Brain.new(settings)
     @adapter = Adapter.new(settings)
-    @plugins = Plugin.new(settings)
+    @plugins = Plugins.new(settings)
     @adapter_info = @adapter.info
   end
 
@@ -37,7 +40,8 @@ class Bot
       @plugins.reload
     else
       @logger.debug("Slapi: #{data.user} request forwarded to check against plugins")
-      plugin(data)
+      plugin = lookup(data)
+      @plugins.exec(data, @adapter_info['bot']['id'], plugin) if @plugins.verify(plugin)
     end
   end
 
@@ -48,50 +52,59 @@ class Bot
   def shutdown
     @adapter.shutdown
     @brain.shutdown
+    @slapins.shutdown
   end
 
+  private
+
   def ping(data)
-    attachment = {
-      title: 'Bot Check',
-      text: 'PONG',
-      color: GREEN
-    }
-    @adapter.formatted(data.channel, attachment)
+    attachment(data, 'Bot Check', 'PONG', 'PONG', GREEN)
   end
 
   def help(data)
-    plugin = Plugin.lookup(data)
-    help_success(data, plugin) if help_verify(data)
-    help_fail(data) unless help_verify(data)
-    @plugins.help_list
-  end
-
-  def help_success(data, plugin)
+    plugin = lookup(data)
     unless data.command.include?('help ') || @settings.help['level'] == 2
-      help_text = "Please use `@#{@bot_name} help plugin_name` for specific info"
+      help_text = "Please use `@#{@adapter_info['bot']['name']} help plugin_name` for specific info"
     end
+    if plugin
+      if @plugins.verify(plugin)
+        help_text = @plugins.help_list(plugin)
+        color = YELLOW
+      else
+        help_text = "Sorry <@#{data.user}>, I did not find any help commands or plugins to list"
+        color = RED
+      end
+    else
+      color = YELLOW
+      help = @plugins.help_list
+    end
+    attachment(data, 'Help List', 'Your help has arrived!', help, color, help_text)
+  end
+
+  def attachment(data, title, fallback, text, color = YELLOW, pre_text = nil)
     attachment = {
-      pretext: help_text,
-      fallback: 'Your help has arrived!',
-      title: 'Help List',
-      text: @plugins.help_list(plugin),
-      color: YELLOW
+      pretext: pre_text,
+      fallback: fallback,
+      title: title,
+      text: text,
+      color: color
     }
     @adapter.formatted(data.channel, attachment)
   end
 
-  def help_fail(data)
-    attachment = {
-      title: 'Help Error',
-      fallback: 'Plugins or Commands not Found!',
-      text: "Sorry <@#{data.user}>, I did not find any help commands or plugins to list",
-      color: RED
-    }
-    @adapter.formatted(data.channel, attachment)
-  end
-
-  def plugin(data)
-    plugin = Plugin.lookup(data) # TODO: Need to create Plugin module helper
-    @plugins.exec(plugin) if @plugins.verify(plugin)
+  def lookup(data)
+    plugin = nil
+    if data.text.include? ' '
+      data_array = data.text.split(' ')
+      bot_name = data.text.include?(@adapter_info['bot']['id'])
+      plugin = bot_name ? data_array[2] : data_array[1] if data.text.include? 'help'
+      plugin = bot_name ? data_array[1] : data_array[0] if data.text.exclude? 'help'
+    elsif data.text == 'help'
+      plugin = nil
+    elsif data.text.exclude? @adapter_info['bot']['id']
+      plugin = data.text
+    end
+    @logger.debug("Slapi: Plugin Requested: #{plugin ? plugin : 'no plugin requested'}")
+    plugin
   end
 end

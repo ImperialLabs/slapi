@@ -6,10 +6,10 @@ require 'yaml'
 require 'docker'
 require 'active_support/core_ext/hash'
 require 'active_support/core_ext/object'
+require 'active_support/core_ext/object/blank'
 
 # Docker/Container Helpers
-# Its main functions are to:
-#  1.
+# Its main functions are to provide simplified access to Docker
 module Container
   def pull(name, config)
     repo(name, config)
@@ -47,6 +47,10 @@ module Container
     return if config[:type] == 'script' ? script_repo : { name: repo_name, tag: repo_tag }
   end
 
+  def create(config)
+    Docker::Container.create(config)
+  end
+
   def script_image(name, logger, lang = nil)
     case lang
     when 'ruby', 'rb'
@@ -77,14 +81,15 @@ module Container
     container_config
   end
 
-  def binds
-    binds = []
-    binds.push("#{Dir.pwd}/scripts/#{filename}:/scripts/#{filename}") if @config['type'] == 'script'
-    binds.push("#{Dir.pwd}/config/plugins/#{@name}.yml:#{@config['mount_config']}") if @config['mount_config']
+  def start(name, passive = nil)
+    container = Docker::Container.get(name)
+    container.tap(&:start) unless passive
+    container.tap(&:start).attach(tty: true, stdout: true, logs: true) if passive
   end
 
-  def start(container)
-    container.tap(&:start)
+  def exec(name, exec_array)
+    container = Docker::Container.get(name)
+    container.exec(exec_array, wait: 20)
   end
 
   def build_stream(file_location)
@@ -99,10 +104,10 @@ module Container
     begin
       container = Docker::Container.get(name)
     rescue
-      @logger.debug("Container: #{@name}: No exisiting container")
+      @logger.debug("Container: #{name}: No exisiting container")
       return false
     end
-    @logger.debug("Container: #{@name}: existing container removed") if container
+    @logger.debug("Container: #{name}: existing container removed") if container
     container&.delete(force: true) if container
   end
 
