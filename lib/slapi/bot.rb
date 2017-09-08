@@ -17,42 +17,38 @@ class Bot
   YELLOW = '#F7DC6F'
   RED = '#A93226'
 
-  def intialize(settings)
+  def initialize(settings)
     @settings = settings
     @logger = Logger.new(STDOUT)
     @logger.level = settings.logger_level
     @brain = Brain.new(settings)
     @adapter = Adapter.new(settings)
     @plugins = Plugins.new(settings)
-    @adapter_info = @adapter.info
+    @adapter_info = @adapter.info(0)
   end
 
   def listener(data)
-    case data.command
+    case data[:text]
     when 'ping', 'Ping'
-      @logger.debug("Slapi: #{data.user} requested ping")
+      @logger.debug("Slapi: #{data[:user]} requested ping")
       ping(data)
     when 'help', 'Help'
-      @logger.debug("Slapi: #{data.user} requested help")
+      @logger.debug("Slapi: #{data[:user]} requested help")
       help(data)
     when 'reload', 'Reload'
-      @logger.debug("Slapi: #{data.user} requested plugin reload")
+      @logger.debug("Slapi: #{data[:user]} requested plugin reload")
       @plugins.reload
     else
-      @logger.debug("Slapi: #{data.user} request forwarded to check against plugins")
+      @logger.debug("Slapi: #{data[:user]} request forwarded to check against plugins")
       plugin = lookup(data)
       @plugins.exec(data, @adapter_info['bot']['id'], plugin) if @plugins.verify(plugin)
     end
   end
 
-  def run
-    @adapter.run
-  end
-
   def shutdown
     @adapter.shutdown
     @brain.shutdown
-    @slapins.shutdown
+    @plugins.shutdown
   end
 
   private
@@ -63,7 +59,7 @@ class Bot
 
   def help(data)
     plugin = lookup(data)
-    unless data.command.include?('help ') || @settings.help['level'] == 2
+    unless data[:text].include?('help ') || @settings.help['level'] == 2
       help_text = "Please use `@#{@adapter_info['bot']['name']} help plugin_name` for specific info"
     end
     if plugin
@@ -71,7 +67,7 @@ class Bot
         help_text = @plugins.help_list(plugin)
         color = YELLOW
       else
-        help_text = "Sorry <@#{data.user}>, I did not find any help commands or plugins to list"
+        help_text = "Sorry <@#{data[:user]}>, I did not find any help commands or plugins to list"
         color = RED
       end
     else
@@ -89,20 +85,20 @@ class Bot
       text: text,
       color: color
     }
-    @adapter.formatted(data.channel, attachment)
+    @adapter.formatted(data[:channel], attachment)
   end
 
   def lookup(data)
     plugin = nil
-    if data.text.include? ' '
-      data_array = data.text.split(' ')
-      bot_name = data.text.include?(@adapter_info['bot']['id'])
-      plugin = bot_name ? data_array[2] : data_array[1] if data.text.include? 'help'
-      plugin = bot_name ? data_array[1] : data_array[0] if data.text.exclude? 'help'
-    elsif data.text == 'help'
+    if data[:text].include? ' '
+      data_array = data[:text].split(' ')
+      bot_name = data[:text].include?(@adapter_info['bot']['id'])
+      plugin = bot_name ? data_array[2] : data_array[1] if data[:text].include? 'help'
+      plugin = bot_name ? data_array[1] : data_array[0] if data[:text].exclude? 'help'
+    elsif data[:text] == 'help'
       plugin = nil
-    elsif data.text.exclude? @adapter_info['bot']['id']
-      plugin = data.text
+    elsif data[:text].exclude? @adapter_info['bot']['id']
+      plugin = data[:text]
     end
     @logger.debug("Slapi: Plugin Requested: #{plugin ? plugin : 'no plugin requested'}")
     plugin

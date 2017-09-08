@@ -14,7 +14,6 @@ class Plugins
   def initialize(settings)
     @plugin_hash = {}
     @settings = settings
-    @network = Network.new
   end
 
   # Loads the plugin configuration.
@@ -28,7 +27,7 @@ class Plugins
     yaml_files = File.expand_path(file_location + '*.yml', File.dirname(__FILE__))
     port_start = 48130
     Dir.glob(yaml_files).each do |file|
-      dynamic_port = @network.port_find(port_start)
+      dynamic_port = Network.port_find(port_start)
       @plugin_hash[File.basename(file, '.*')] = Plugin.new(file, dynamic_port, @settings)
       port_start = dynamic_port + 1
     end

@@ -9,7 +9,7 @@
 
 # Adapter Settings
 adapter:
-  type: slack # Enables option alternative adapters
+  service: slack # Enables option alternative adapters
   config:
     token: # API token
     # user_agent: # User-agent, defaults to Slack Ruby Client/version.

@@ -7,7 +7,7 @@ require 'rbconfig'
 
 Gem::Specification.new do |spec|
   spec.name          = 'slapi'
-  spec.version       = '0.2.0'
+  spec.version       = '0.3.0'
   spec.authors       = ['Levi Smith', 'Aaron Blythe']
   spec.email         = ['atat@hearst.com']
 
@@ -23,9 +23,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'docker-api', '~> 1.33.0'
   spec.add_dependency 'sinatra'
-  spec.add_dependency 'redis'
   spec.add_dependency 'sinatra-contrib'
-  spec.add_dependency 'slack-ruby-client'
   spec.add_dependency 'httparty'
   spec.add_dependency 'sterile'
 

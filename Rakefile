@@ -11,8 +11,9 @@ namespace :integration do
   task :bot_file do
     File.open('config/bot.test.yml', 'w') do |f|
       f.write("adapter:
-  type: slack # Enables option alternative adapters
-  token: #{ENV['SLACK_TOKEN']}
+  service: slack # Enables option alternative adapters
+  config:
+    token: #{ENV['SLACK_TOKEN']}
 
 # Bot ConfigFile
 bot:
@@ -46,8 +47,9 @@ namespace :integration_debug do
   task :bot_file do
     File.open('config/bot.test.yml', 'w') do |f|
       f.write("adapter:
-  type: slack # Enables option alternative adapters
-  token: #{ENV['SLACK_TOKEN']}
+  service: slack # Enables option alternative adapters
+  config:
+    token: #{ENV['SLACK_TOKEN']}
 
 # Bot ConfigFile
 bot:
@@ -117,8 +119,9 @@ namespace :run do
   task :bot_file do
     File.open('config/bot.local.yml', 'w') do |f|
       f.write("adapter:
-  type: slack
-  token: #{ENV['SLACK_TOKEN']}
+  service: slack
+  config:
+    token: #{ENV['SLACK_TOKEN']}
 
 # Bot ConfigFile
 bot:

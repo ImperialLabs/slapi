@@ -3,7 +3,7 @@
 require 'logger'
 require 'json'
 require 'active_support/core_ext/hash'
-require 'active_support/core_ext/object'
+require 'active_support/core_ext/object/blank'
 require_relative 'modules/container'
 require_relative 'modules/config'
 require_relative 'modules/network'
@@ -18,10 +18,12 @@ class Brain
     brain_config = settings.brain.with_indifferent_access if settings.brain.present?
     port = Network.port_find(49230)
     ip = Network.bot_ip
-    @brain_url = "#{ip}:#{port}"
-    default = default_config(brain_config[:service], port)
-    brain_config[:container_config] = Config.merge(brain_config[:container_config], default)
-    load(brain_config)
+    @brain_url = "http://#{ip}:#{port}"
+    @name = "slapi_#{brain_config[:service]}_brain"
+    default = default_config(port)
+    brain_config[:container_config] = Config.merge(brain_config[:container_config], default[:container_config])
+    brain_config[:container_config][:HostConfig] = Config.merge(brain_config[:container_config][:HostConfig], default[:container_config][:HostConfig])
+    load(brain_config, settings)
   end
 
   def default_brain
@@ -36,29 +38,31 @@ class Brain
     }
   end
 
-  def default_config(service, port)
+  def default_config(port)
     {
       container_config: {
-        name: "slapi_#{service}_brain",
+        name: @name,
         HostConfig: {
-          '4700/tcp' => [{ 'HostPort' => port, 'HostIp' => '0.0.0.0' }],
-          Binds: ["#{Dir.pwd}/../config/#{Config.bot_file}/:/brain/bot.yml"]
+          PortBindings: {
+            '4700/tcp' => [{ HostPort: port.to_s, HostIp: '0.0.0.0' }]
+          },
+          Binds: ["#{Dir.pwd}/config/#{Config.bot_file}/:/brain/bot.yml"]
         }
       }
     }
   end
 
-  def load(brain_config)
-    Container.cleanup(brain_config[:container_config][:name])
-    Container.pull(brain_config[:container_config][:name], brain_config[:container_config])
-    build_info = Container.build(brain_config[:container_config][:name], brain_config[:container_config], @logger)
-    brain_config[:container_config] = Container.config_merge(build_info[:image], brain_config[:container_config])
-    container = Container.create(brain_config[:container_config])
-    Container.start(container)
+  def load(brain_config, settings)
+    Container.cleanup(brain_config[:container_config][:name], @logger)
+    repo_info = Container.pull(brain_config[:container_config][:name], brain_config[:container_config], @logger)
+    build_info = Container.build(repo_info, brain_config, @logger, settings.plugins['location'])
+    brain_config[:container_config] = Container.config_merge(build_info, brain_config[:container_config])
+    Container.create(brain_config[:container_config].to_hash)
+    Container.start(@name)
   end
 
   def shutdown
-    Container.shutdown(@container)
+    Container.cleanup(@name, @logger)
   end
 
   def query(hash, key = nil)
