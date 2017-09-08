@@ -97,7 +97,7 @@ class Bot
       plugin = bot_name ? data_array[1] : data_array[0] if data[:text].exclude? 'help'
     elsif data[:text] == 'help'
       plugin = nil
-    elsif data[:text].exclude? @adapter_info['bot']['id']
+    elsif !data[:text].include? @adapter_info['bot']['id']
       plugin = data[:text]
     end
     @logger.debug("Slapi: Plugin Requested: #{plugin ? plugin : 'no plugin requested'}")

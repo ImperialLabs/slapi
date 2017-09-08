@@ -26,20 +26,22 @@ class Plugin
     @logger.level = settings.logger_level
     @settings = settings
     @name = "slapin_#{File.basename(file, '.*')}"
-    @type = plugin_config.type
-    @passive = plugin_config.listen_type == 'active' ? false : true
     config = YAML.load_file(file).with_indifferent_access
-    plugin_config = config.plugin.with_indifferent_access
-    plugin_config[:app_port] = dynamic_port if @plugin_config.app_port.blank?
-    plugin_config[:managed] = @type == 'api' ? false : true if @plugin_config.managed.blank?
-    @plugin_config = default_builder(plugin_config) if plugin_config.managed?
+    plugin_config = config[:plugin].with_indifferent_access
+    @type = plugin_config[:type]
+    @passive = plugin_config[:listen_type] == 'active' ? false : true
+    plugin_config[:app_port] = dynamic_port if plugin_config[:app_port].blank?
+    plugin_config[:managed] = @type == 'api' ? false : true if plugin_config[:managed].blank?
+    @plugin_config = default_builder(plugin_config) if plugin_config[:managed]
+    @plugin_config = plugin_config unless plugin_config[:managed]
+    @api_info = {}
     load
     @logger.debug("Plugin: #{@name}: Succesfully Loaded")
   end
 
   def default_builder(plugin_config)
     plugin_config[:config] = Config.merge(plugin_config[:config], default_config)
-    plugin_config[:config] = Config.merge(plugin_config[:config], mount_config(plugin_config.mount_config)) if plugin_config.mount_config
+    plugin_config[:config] = Config.merge(plugin_config[:config], mount_config(plugin_config[:mount_config])) if plugin_config[:mount_config]
 
     case @type
     when 'script'
@@ -118,11 +120,11 @@ class Plugin
 
   def load
     if @type == 'script'
-      filetype = Container.script_image(@name, @logger, @plugin_config.language)
+      filetype = Container.script_image(@name, @logger, @plugin_config[:language])
       write_script(filetype)
-      @plugin_config.config[:Labels] = @plugin_config['help']
+      @plugin_config[:config][:Labels] = @plugin_config['help']
       load_managed
-    elsif plugin_config.managed
+    elsif plugin_config[:managed]
       @logger.debug("Plugin: #{@name}: Is set to managed and being loaded by Slapi")
       load_managed
     end
@@ -139,19 +141,17 @@ class Plugin
   end
 
   def load_managed
-    container_config = @plugin_config.config
-    Container.cleanup(container_config[:name])
-    Container.pull(container_config[:name], container_config) unless @plugin_config.build
-    Container.build(container_config[:name], container_config, @logger) if @plugin_config.build
-    build_info = Container.build(container_config[:name], container_config, @logger)
-    @plugin_config.config = Container.config_merge(build_info[:image], container_config)
-    @plugin_config.config = Container.config_merge(@plugin_config.config, Network.expose(@plugin_config)) if @type == 'api' || @exposed_listener
-    Container.create(@plugin_config.config) unless @passive
+    Container.cleanup(@plugin_config[:config][:name], @logger)
+    repo_info = Container.pull(@plugin_config[:config][:name], @plugin_config[:config], @logger) unless @plugin_config[:build]
+    build_info = Container.build(repo_info, @plugin_config[:config], @logger)
+    @plugin_config[:config] = Container.config_merge(build_info, @plugin_config[:config])
+    @plugin_config[:config] = Container.config_merge(@plugin_config[:config], Network.expose(@plugin_config)) if @type == 'api' || @exposed_listener
+    Container.create(@plugin_config[:config].to_hash) unless @passive
     Container.start(name) unless @passive
   end
 
   def load_api
-    @plugin_ip = @network.plugin_ip(@name, @plugin_config, @logger)
+    @plugin_ip = Network.plugin_ip(@name, @plugin_config, @logger)
     @api_url = "http://#{@plugin_ip}:#{@config['exposed_port']}" if @managed
     @api_url = @config['api_config']['url'] unless @managed
     @logger.debug("Plugin: #{@name}: URL is set to #{@api_url}")
@@ -183,9 +183,9 @@ class Plugin
   def help_load
     if @api_info.key?('help')
       help_hash = @api_info['help']
-    elsif @plugin_config.config[:Labels]
-      @plugin_config[:description] = @plugin_config.config[:Labels]['description'] if @plugin_config.config.dig(:Labels, 'description')
-      help_hash = @plugin_config.config[:Labels]
+    elsif @plugin_config[:config][:Labels]
+      @plugin_config[:description] = @plugin_config[:config][:Labels]['description'] if @plugin_config[:config].dig(:Labels, 'description')
+      help_hash = @plugin_config[:config][:Labels]
       help_hash.delete('description')
     else
       help_hash = ''
@@ -201,12 +201,12 @@ class Plugin
   def exec(client_id, chat_data = nil)
     data_from_chat = Exec.sterilize(chat_data)
     chat_text_array = Exec.split(data_from_chat)
-    exec_data = Exec.data_type(data_from_chat, chat_text_array, client_id)
+    exec_data = Exec.data_type(@plugin_config, data_from_chat, chat_text_array, client_id)
 
     case @type
     when 'script', 'container'
-      Exec.passive(@plugin_config, exec_data, logger) if @passive
-      Exec.active(@plugin_config, exec_data, logger) unless @passive
+      Exec.passive(@plugin_config, exec_data, @logger) if @passive
+      Exec.active(@plugin_config, exec_data, @logger) unless @passive
     when 'api'
       Exec.api(@plugin_config, data_from_chat, chat_text_array, @logger)
     end

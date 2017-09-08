@@ -14,6 +14,7 @@ class Plugins
   def initialize(settings)
     @plugin_hash = {}
     @settings = settings
+    load
   end
 
   # Loads the plugin configuration.

@@ -85,10 +85,12 @@ module Container
       container_config
     end
 
-    def start(name, passive = nil)
-      container = Docker::Container.get(name)
-      container.tap(&:start) unless passive
-      container.tap(&:start).attach(tty: true, stdout: true, logs: true) if passive
+    def start(name, passive = nil, plugin_config = {})
+      container = Docker::Container.get(name) unless passive
+      container = Container.create(plugin_config[:config]) if passive
+      response = container.tap(&:start) unless passive
+      response = container.tap(&:start).attach(tty: true, stdout: true, logs: true) if passive
+      response
     end
 
     def exec(name, exec_array)
