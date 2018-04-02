@@ -21,21 +21,21 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'docker-api', '~> 1.33.0'
-  spec.add_dependency 'sinatra'
+  spec.add_dependency 'docker-api', '~> 1.34.0'
+  spec.add_dependency 'sinatra', '~> 2.0.1'
   spec.add_dependency 'sinatra-contrib'
   spec.add_dependency 'httparty'
   spec.add_dependency 'sterile'
 
   spec.add_development_dependency 'codeclimate-test-reporter', '~> 1.0'
-  spec.add_development_dependency 'github_changelog_generator', '~> 1.14.1'
+  spec.add_development_dependency 'github_changelog_generator', '~> 1.14.3'
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'fuubar'
-  spec.add_development_dependency 'rspec', '~> 3.6'
+  spec.add_development_dependency 'rspec', '~> 3.7'
   spec.add_development_dependency 'nyan-cat-formatter'
   spec.add_development_dependency 'rubocop'
-  spec.add_development_dependency 'debase', '~> 0.2.2.beta10'
-  spec.add_development_dependency 'ruby-debug-ide', '~> 0.6.1.beta4'
+  spec.add_development_dependency 'debase', '~> 0.2.2'
+  spec.add_development_dependency 'ruby-debug-ide', '~> 0.6.1'
   spec.add_development_dependency 'thin'
   spec.add_development_dependency 'rack-test'
   spec.add_development_dependency 'capybara'

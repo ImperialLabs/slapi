@@ -36,7 +36,7 @@ class Bot
       help(data)
     elsif data[:text].include?('reload')
       @logger.debug("Slapi: #{data[:user]} requested plugin reload")
-      @plugins.reload
+      reload(data)
     else
       @logger.debug("Slapi: #{data[:user]} request forwarded to check against plugins")
       plugin = lookup(data)
@@ -74,6 +74,11 @@ class Bot
       help = @plugins.help_list
     end
     attachment(data, 'Help List', 'Your help has arrived!', help, color, help_text)
+  end
+
+  def reload(data)
+    @plugins.reload
+    attachment(data, 'Plugin Reload', 'Plugins Reloaded', 'Plugins Reloaded', YELLOW)
   end
 
   def attachment(data, title, fallback, text, color = YELLOW, pre_text = nil)

@@ -9,6 +9,7 @@ require_relative 'modules/network'
 #  1. Load the configuration of all plugins
 #  2. Route the execution to the right plugin
 class Plugins
+  include GC
   attr_reader :plugin_hash
 
   def initialize(settings)
@@ -35,7 +36,7 @@ class Plugins
   end
 
   def reload
-    @plugin_hash.garbage_collect
+    garbage_collect
     load
   end
 
