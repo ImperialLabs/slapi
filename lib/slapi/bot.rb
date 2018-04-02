@@ -28,14 +28,13 @@ class Bot
   end
 
   def listener(data)
-    case data[:text]
-    when 'ping', 'Ping'
+    if data[:text].include?('ping')
       @logger.debug("Slapi: #{data[:user]} requested ping")
       ping(data)
-    when 'help', 'Help'
+    elsif data[:text].include?('help')
       @logger.debug("Slapi: #{data[:user]} requested help")
       help(data)
-    when 'reload', 'Reload'
+    elsif data[:text].include?('reload')
       @logger.debug("Slapi: #{data[:user]} requested plugin reload")
       @plugins.reload
     else
@@ -90,11 +89,11 @@ class Bot
 
   def lookup(data)
     plugin = nil
-    if data[:text].include? ' '
+    if data[:text].include?(' ')
       data_array = data[:text].split(' ')
       bot_name = data[:text].include?(@adapter_info['bot']['id'])
-      plugin = bot_name ? data_array[2] : data_array[1] if data[:text].include? 'help'
-      plugin = bot_name ? data_array[1] : data_array[0] if data[:text].exclude? 'help'
+      plugin = bot_name ? data_array[2] : data_array[1] if data[:text].include?('help')
+      plugin = bot_name ? data_array[1] : data_array[0] unless data[:text].include?('help')
     elsif data[:text] == 'help'
       plugin = nil
     elsif !data[:text].include? @adapter_info['bot']['id']

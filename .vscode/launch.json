@@ -29,7 +29,7 @@
                 "-p", "4567"
             ],
             "useBundler": true,
-            "pathToBundler": "${env:HOME}/.rbenv/shims/bundle",
+            "pathToBundler": "bundle",
             "showDebuggerOutput": true,
             "pathToRDebugIDE": "${workspaceRoot}/bin/rdebug-ide"
         },

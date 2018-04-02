@@ -28,7 +28,7 @@ class Slapi < Sinatra::Base
   set :adapter, {}
 
   config_file '../config/environments.yml'
-  config_file Config.bot_file
+  config_file '../config/' + Config.bot_file
 
   configure :production, :test, :development do
     enable :logging
@@ -38,6 +38,5 @@ class Slapi < Sinatra::Base
   @@logger.level = settings.logger_level
 
   @@logger.debug("Slapi: Current environment is set to: #{settings.environment}")
-
   @@bot = Bot.new(settings)
 end

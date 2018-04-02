@@ -46,7 +46,7 @@ class Brain
           PortBindings: {
             '4700/tcp' => [{ HostPort: port.to_s, HostIp: '0.0.0.0' }]
           },
-          Binds: ["#{Dir.pwd}/config/#{Config.bot_file}/:/brain/bot.yml"]
+          Binds: ["#{Dir.pwd}/config/#{Config.bot_file}:/brain/bot.yml"]
         }
       }
     }

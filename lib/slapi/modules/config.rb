@@ -5,10 +5,15 @@
 module Config
   class << self
     def bot_file
-      return '../config/bot.test.yml' if File.file?('config/bot.test.yml')
-      return '../config/bot.local.yml' if File.file?('config/bot.local.yml')
-      return '../config/bot.yml' if File.file?('config/bot.yml')
-      raise 'No bot config found' if File.file?('config/bot*yml')
+      if File.file?('config/bot.test.yml')
+        'bot.test.yml'
+      elsif File.file?('config/bot.local.yml')
+        'bot.local.yml'
+      elsif File.file?('config/bot.yml')
+        'bot.yml'
+      else
+        raise 'No bot config found'
+      end
     end
 
     def merge(config, merge_config)

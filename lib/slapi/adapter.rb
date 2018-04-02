@@ -50,7 +50,7 @@ class Adapter
           PortBindings: {
             '4700/tcp' => [{ 'HostPort' => port.to_s, 'HostIp' => '0.0.0.0' }]
           },
-          Binds: ["#{Dir.pwd}/config/#{Config.bot_file}/:/adapter/bot.yml"]
+          Binds: ["#{Dir.pwd}/config/#{Config.bot_file}:/adapter/bot.yml"]
         }
       }
     }
@@ -71,11 +71,11 @@ class Adapter
       begin
         response = HTTParty.get(@adapter_url + '/info', headers: @headers, timeout: 10)
         if response.success? && response.body.present?
-          info = JSON.parse(response.body)
+          info = JSON.parse(response)
           break
         end
       rescue StandardError
-        sleep(1)
+        sleep(5)
         retry_count += 1
         @logger.error("Plugin: #{@name}: No info endpoint or no data") if retry_count >= 5
       end
